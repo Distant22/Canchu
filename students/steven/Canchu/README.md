@@ -2,7 +2,7 @@
 ## 王行遠 — Week 0 Assignment 
 
 #### **Updated 23/07/05** 
-Website: [http://13.238.215.17/](https://13.54.210.189/)
+Website: [http://13.54.210.189/](http://13.54.210.189/)
 
 
 
