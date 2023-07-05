@@ -2,11 +2,13 @@
 ## 王行遠 — Week 0 Assignment 
 
 #### **Updated 23/07/05** 
-Website: [https://13.238.215.17/](https://13.54.210.189/)
+Website: [http://13.238.215.17/](https://13.54.210.189/)
 
-#### **Result：ERR_CONNECTION_REFUSED**
+
 
 ===========================================================
+
+### **昨天卡關：ERR_CONNECTION_REFUSED**
 
 **已測試內容：**
 * Security Group 加上 HTTP 的 80 Port 以及 SSH 的 22 Port
@@ -16,6 +18,8 @@ Website: [https://13.238.215.17/](https://13.54.210.189/)
 * 重開新的 instances 
 
 上述內容已全數確認，然而並未解決問題
+
+#### **解法：網址要用HTTP而不是HTTPS...**
 
 **參考資源：**
 https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/TroubleshootingInstancesConnecting.html#TroubleshootingInstancesConnectionTimeout
@@ -50,3 +54,8 @@ console.log('Listening on port',port)
 #### 4. Run the application
 ` sudo /home/ubuntu/.nvm/versions/node/v18.16.1/bin/node server.js ` 
 
+#### 5. Run web server in the background
+I use nohup for solution.
+```
+sudo nohup /home/ubuntu/.nvm/versions/node/v18.16.1/bin/node server.js
+```
