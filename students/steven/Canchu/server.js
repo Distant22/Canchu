@@ -49,7 +49,13 @@ app.post('/api/1.0/users/signup', (req, res) => {
       return res.status(400).json({ error: 'Missing required fields' });
     
     } else {
-
+	const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (emailRegex.test(email)) {
+		console.log(emailRegex.test(email))
+        } else {
+        	// Email format is incorrect
+        	return res.status(400).json({ error: 'Email format is incorrect' });
+        }
 	const sqlCheck = 'SELECT COUNT(*) as count FROM users WHERE Email = ?'
 	db.query(sqlCheck, [email], (errorCheck, resultsCheck) => {
 		if (errorCheck) {
