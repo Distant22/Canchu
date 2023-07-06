@@ -62,6 +62,13 @@ app.post('/api/1.0/users/signup', (req, res) => {
 			console.log('Email Fail!',name,email,password)
         		return res.status(403).json({ error: 'Email already exists' });
       		} else {
+			const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                        if (emailRegex.test(email)) {
+                        
+			} else {
+                        	// Email format is incorrect
+                                return res.status(400).json({ error: 'Email format is incorrect' });
+                        }
 			const sqlInsert = 'INSERT INTO users (Name, Email, Password) VALUES (?,?,?)'
 			db.query(sqlInsert, [name,email,password], (errorInsert, resultsInsert) => {
 				if(errorInsert){
