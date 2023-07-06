@@ -60,7 +60,7 @@ app.post('/api/1.0/users/signup', (req, res) => {
       		if (userCount > 0) {
         		// A user with the same email already exists
 			console.log('Email Fail!',name,email,password)
-        		return res.status(400).json({ error: 'Email already exists' });
+        		return res.status(403).json({ error: 'Email already exists' });
       		} else {
 			const sqlInsert = 'INSERT INTO users (Name, Email, Password) VALUES (?,?,?)'
 			db.query(sqlInsert, [name,email,password], (errorInsert, resultsInsert) => {
