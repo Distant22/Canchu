@@ -71,7 +71,7 @@ app.post('/api/1.0/users/signup', (req, res) => {
 				const resultID = resultsInsert.insertId;
 				const user = {
       					id: resultID,
-      					provider: 'facebook',
+      					provider: 'native',
       					name: name,
       					email: email,
       					picture: 'https://schoolvoyage.ga/images/123498.png'
