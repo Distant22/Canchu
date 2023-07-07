@@ -44,15 +44,15 @@ app.get('/api/1.0/users/signin', (req, res) => {
 
 app.post('/api/1.0/users/signin', (req, res) => {
 	const { provider, email, password, access_token } = req.body;
+	if(!provider){
+                return res.status(400).json({ error: 'Provider is required' })
+        }
 	if (provider !== 'native' && provider !== 'facebook') {
     		return res.status(403).json({ error: 'Invalid provider' });
   	}
 	if (provider == 'native' && (!email || !password)) {
     		return res.status(400).json({ error: 'Email and password are required' });
   	}
-	if(!provider){
-		return res.status(400).json({ error: 'Provider is required' })
-	}
 	if (provider === 'facebook' && !access_token) {
     		return res.status(400).json({ error: 'Access token is required for Facebook login' });
   	}
