@@ -50,6 +50,9 @@ app.post('/api/1.0/users/signin', (req, res) => {
 	if (provider == 'native' && (!email || !password)) {
     		return res.status(400).json({ error: 'Email and password are required' });
   	}
+	if(!provider){
+		return res.status(400).json({ error: 'Provider is required' })
+	}
 	if (provider === 'facebook' && !access_token) {
     		return res.status(400).json({ error: 'Access token is required for Facebook login' });
   	}
