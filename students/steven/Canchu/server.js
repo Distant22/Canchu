@@ -5,6 +5,7 @@ const bodyParser = require('body-parser');
 const jwt = require('jsonwebtoken');
 const mysql = require('mysql');
 const bcrypt = require('bcrypt');
+const axios = require('axios');
 require('dotenv').config();
 
 // Generate a JWT token
@@ -56,38 +57,61 @@ app.post('/api/1.0/users/signin', (req, res) => {
 	if (provider === 'facebook' && !access_token) {
     		return res.status(400).json({ error: 'Access token is required for Facebook login' });
   	}
-	const sqlCheck = "SELECT ID, name, password FROM users WHERE email = ?"
-	db.query(sqlCheck, [email], (errorCheck, resultsCheck) => {
-                if (errorCheck) {
-                        console.log('Database error:',errorCheck);
-                        return res.status(500).json({ error: 'Database error' });
-                }
-		if(resultsCheck.length == 0){
-			return res.status(403).json({ error: 'Email not exist' });
-		} else {
-			bcrypt.compare(password, resultsCheck[0].password).then(function (res) {
-			const hashPwd = bcrypt.hashSync(resultsCheck[0].password, 10)
-				if(!res){
-					return res.status(403).json({ error: 'Incorrect Password' });
-				}
-  			});
+	if (provider === 'facebook') {
+		axios
+			.get(`https://graph.facebook.com/v17.0/me?fields=id,name,email&access_token=${access_token}`)
+			.then((response) => { 
+				const {id, name, email} = response.data;
+				console.log("Facebook success!Data is:",response.data)
+				const user = {
+        				id,
+          				provider,
+          				name,
+          				email,
+          				picture: `https://graph.facebook.com/${id}/picture?type=large`,
+        			};
+        			const token = generateToken(user);
+        			res.status(200).json({
+          				data: {
+            					access_token: token,
+            					user: user,
+          				},
+			        });
+			})
+	} else {
+		const sqlCheck = "SELECT ID, name, password FROM users WHERE email = ?"
+		db.query(sqlCheck, [email], (errorCheck, resultsCheck) => {
+        	        if (errorCheck) {
+                	        console.log('Database error:',errorCheck);
+                	        return res.status(500).json({ error: 'Database error' });
+        	        }
+			if(resultsCheck.length == 0){
+				return res.status(403).json({ error: 'Email not exist' });
+			} else {
+				bcrypt.compare(password, resultsCheck[0].password).then(function (res) {
+				const hashPwd = bcrypt.hashSync(resultsCheck[0].password, 10)
+					if(!res){
+						return res.status(403).json({ error: 'Incorrect Password' });
+					}
+  				});
 		
-			console.log('Log In Success! Info:',req.body,",Select total:",resultsCheck);
-        		const user = {
-                		id: resultsCheck[0].ID,
-                		provider: provider,
-                		name: resultsCheck[0].name,
-                		email: email,
-                		picture: "https://schoolvoyage.ga/images/123498.png"
-        		}
-        		return res.status(200).json({
-                		data: {
-                        		access_token: generateToken(user),
-                        		user: user
-                		}
-        		})
-		}
-	})
+				console.log('Log In Success! Info:',req.body,",Select total:",resultsCheck);
+        			const user = {
+                			id: resultsCheck[0].ID,
+                			provider: provider,
+                			name: resultsCheck[0].name,
+                			email: email,
+                			picture: "https://schoolvoyage.ga/images/123498.png"
+        			}
+        			return res.status(200).json({
+                			data: {
+                        			access_token: generateToken(user),
+                        			user: user
+                			}
+        			})
+			}
+		})
+	}
 })
 
 app.post('/api/1.0/users/signup', async (req, res) => {
