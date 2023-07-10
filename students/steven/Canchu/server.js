@@ -11,12 +11,12 @@ require('dotenv').config();
 // Generate a JWT token
 function generateToken(payload) {
 	// Replace 'your_secret_key' with your own secret key for signing the token
-	const token = jwt.sign(payload, 'dt22', { expiresIn: '1h' });
+	const token = jwt.sign(payload, process.env.JWT_SIGN, { expiresIn: '1h' });
 	return token;
 }
 
 const db = mysql.createConnection({
-	host: process.env.DB_HOST,
+	host: process.env.DB_HOST || 'localhost',
 	user: process.env.DB_USERNAME,
 	password: process.env.DB_PASSWORD,
 	database: 'user'
@@ -41,6 +41,7 @@ const authorize = (req, res, next) => {
 		// Verify and decode the access token
 		const decoded = jwt.verify(accessToken, 'dt22');
 		req.user = decoded; // Attach the user information to the request object
+		// console.log("解碼後：",decoded)
 		next();
 	} catch (error) {
 		return res.status(403).json({ error: 'Invalid token' });
@@ -96,7 +97,8 @@ app.put('/api/1.0/users/picture', authorize, (req,res) => {
 app.get('/api/1.0/users/:id/profile', authorize, (req, res) => {
 	const userId = req.params.id;
 	// Retrieve user profile information from the database
-	const sql = 'SELECT id, name, picture, friend_count, introduction, tags FROM users WHERE id = ?';
+	const sql = 'SELECT id, name, picture, friend_count, friendship, introduction, tags FROM users WHERE id = ?';
+	// console.log("使用者：",req.user)
 	db.query(sql, [userId], (error, results) => {
 		if (error) {
 			console.error('Database error:', error);
@@ -110,16 +112,13 @@ app.get('/api/1.0/users/:id/profile', authorize, (req, res) => {
 		const response = {
 			data: {
 				user: {
-					id: userProfile.id,
-					name: userProfile.name,
-					picture: userProfile.picture,
-					friend_count: userProfile.friend_count,
-					introduction: userProfile.introduction,
-					tags: userProfile.tags,
-					friendship: {
-						id: 1, // Assuming friendship ID is always 1 for simplicity
-						status: 'requested',
-					},
+					id: req.user.id,
+					name: req.user.name,
+					picture: req.user.picture,
+					friend_count: req.user.friend_count,
+					introduction: req.user.introduction,
+					tags: req.user.tags,
+					friendship: req.user.friendship
 				},
 			},
 		};
@@ -158,7 +157,7 @@ app.post('/api/1.0/users/signin', async (req, res) => {
 			.get(`https://graph.facebook.com/v17.0/me?fields=id,name,email&access_token=${access_token}`)
 			.then((response) => { 
 				const {id, name, email} = response.data;
-				console.log("Facebook success!Data is:",response.data)
+				// console.log("Facebook success!Data is:",response.data)
 				const user = {
 					id,
 					provider,
@@ -175,7 +174,7 @@ app.post('/api/1.0/users/signin', async (req, res) => {
 				});
 			})
 	} else {
-		const sqlCheck = "SELECT ID, name, password FROM users WHERE email = ?"
+		const sqlCheck = "SELECT * FROM users WHERE email = ?"
 		db.query(sqlCheck, [email], (errorCheck, resultsCheck) => {
 			if (errorCheck) {
 				console.log('Database error:',errorCheck);
@@ -184,23 +183,35 @@ app.post('/api/1.0/users/signin', async (req, res) => {
 			if(resultsCheck.length == 0){
 				return res.status(403).json({ error: 'Email not exist' });
 			} else {
-				bcrypt.compare(password, resultsCheck[0].password).then(function (pwdResult) {
+				const userInfo = resultsCheck[0]
+				bcrypt.compare(password, userInfo.Password).then(function (pwdResult) {
 					console.log("tmp:",pwdResult)
 					if(!pwdResult){
 							return res.status(403).json({ error: 'Incorrect Password' });
 					} else {
-						console.log('Log In Success! Info:',req.body,",Select total:",resultsCheck);
+						// console.log("登入UserInfo：",userInfo)
 						const user = {
-								id: resultsCheck[0].ID,
-								provider: provider,
-								name: resultsCheck[0].name,
-								email: email,
-								picture: "https://schoolvoyage.ga/images/123498.png"
+							id: userInfo.ID,
+							provider: provider,
+							name: userInfo.Name,
+							email: userInfo.Email,
+							picture: userInfo.picture,
+							introduction: userInfo.introduction,
+							tags: userInfo.tags,
+							friend_count: userInfo.friend_count,
+							friendship: userInfo.friendship
 						}
+						// console.log("登入後的User結果：",user)
 						return res.status(200).json({
 							data: {
 								access_token: generateToken(user),
-								user: user
+								user: {
+									id: user.id,
+									provider: user.provider,
+									name: user.name,
+									email: user.email,
+									picture: user.picture
+								}
 							}
 						})
 					}
@@ -223,7 +234,7 @@ app.post('/api/1.0/users/signup', async (req, res) => {
 				console.log(emailRegex.test(email))
 			} else {
 				// Email format is incorrect
-			console.error('Email incorrect format error')
+				console.error('Email incorrect format error')
 				return res.status(400).json({ error: 'Email format is incorrect' });
 			}
 		const sqlCheck = 'SELECT COUNT(*) as count FROM users WHERE Email = ?'
@@ -246,28 +257,38 @@ app.post('/api/1.0/users/signup', async (req, res) => {
 				}
 				try{
 					const hashPwd = bcrypt.hashSync(password, 10);
-					const sqlInsert = 'INSERT INTO users (Name, Email, Password) VALUES (?,?,?)'
-					db.query(sqlInsert, [name,email,hashPwd], (errorInsert, resultsInsert) => {
-						if(errorInsert){
-							console.error('Database error:',errorInsert);
-							return res.status(500).json({ error: 'Database error' });
-						}
-						const resultID = resultsInsert.insertId;
-						const user = {
-							id: resultID,
-							provider: 'native',
-							name: name,
-							email: email,
-							picture: 'https://schoolvoyage.ga/images/123498.png'
-						};
-						// Send the success response
-						res.status(200).json({
-							data: {
-								access_token: generateToken(user),
-								user: user
+					const sqlInsert = 'INSERT INTO users (Name, Email, Password, friend_count, introduction, tags, friendship, picture) VALUES (?,?,?,?,?,?,?,?)'
+					db.query(sqlInsert, [name,email,hashPwd,0,'','',null,''], (errorInsert, resultsInsert) => {
+							if(errorInsert){
+								console.error('Database error:',errorInsert);
+								return res.status(500).json({ error: 'Database error' });
 							}
-						});
-						console.log('Email Success!',name,email,password,hashPwd)	
+							// console.log("註冊結果：",resultsInsert)
+							const resultID = resultsInsert.insertId;
+							const user = {
+								id: resultID,
+								provider: 'native',
+								name: name,
+								email: email,
+								picture: '',
+								introduction: '',
+								tags: '',
+								friend_count: 0,
+								friendship: null
+							};
+							// Send the success response
+							res.status(200).json({
+								data: {
+									access_token: generateToken(user),
+									user: {
+										id: user.id,
+										provider: user.provider,
+										name: user.name,
+										email: user.email,
+										picture: user.picture,
+									}
+								}
+							});
 					})
 				} catch(error) {
 					console.error('Hashing error:',error)
