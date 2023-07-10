@@ -99,6 +99,7 @@ app.get('/api/1.0/users/:id/profile', authorize, (req, res) => {
 	const sql = 'SELECT id, name, picture, friend_count, introduction, tags FROM users WHERE id = ?';
 	// const sql = 'SELECT u.id, u.name, u.picture, u.friend_count, u.introduction, u.tags, f.id, f.status FROM users u JOIN friendship f ON u.id = f.user_id WHERE u.id = ?';
 	// const sql = 'SELECT users.id, users.name, users.picture, users.friend_count, users.introduction, users.tags, friendship.id ,friendship.status FROM users JOIN friendship ON users.id = friendship.user_id WHERE users.id = ?'
+	console.log("Get profile, ID=",userId)
 	db.query(sql, [userId], (error, results) => {
 		if (error) {
 			console.error('Database error:', error);
@@ -108,6 +109,7 @@ app.get('/api/1.0/users/:id/profile', authorize, (req, res) => {
 			return res.status(400).json({ error: 'User not found' });
 		}
 		const userProfile = results[0];
+		console.log("User Profile Selected, results=",userProfile)
 		// Construct the response object
 		const friendsql =  'SELECT id, status FROM friendship WHERE id = ?'
 		db.query(friendsql, [userId], (error,results) => {
@@ -115,7 +117,7 @@ app.get('/api/1.0/users/:id/profile', authorize, (req, res) => {
 				console.error('Database error:', error);
 				return res.status(500).json({ error: 'Server error' });
 			}
-
+			
 			const friendshipData = results.length === 0 ? null : results.map(friendship => ({
 				id: friendship.id,
 				status: friendship.status
@@ -124,7 +126,7 @@ app.get('/api/1.0/users/:id/profile', authorize, (req, res) => {
 			const response = {
 				data: {
 					user: {
-						id: userId,
+						id: userProfile.id,
 						name: userProfile.name,
 						picture: userProfile.picture,
 						friend_count: userProfile.friend_count,
@@ -134,6 +136,7 @@ app.get('/api/1.0/users/:id/profile', authorize, (req, res) => {
 					},
 				},
 			};
+			console.log("User Profile get success, response=",response)
 			return res.status(200).json(response);
 		})
 	});
@@ -212,6 +215,7 @@ app.post('/api/1.0/users/signin', async (req, res) => {
 							tags: userInfo.tags,
 							friend_count: userInfo.friend_count
 						}
+						console.log("Signin success, user info=",user)
 						return res.status(200).json({
 							data: {
 								access_token: generateToken(user),
@@ -283,6 +287,7 @@ app.post('/api/1.0/users/signup', async (req, res) => {
 								tags: '',
 								friend_count: 0
 							};
+							console.log("User signup success, info=",user)
 							// Send the success response
 							res.status(200).json({
 								data: {
