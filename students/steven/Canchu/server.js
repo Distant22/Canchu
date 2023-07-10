@@ -114,7 +114,7 @@ app.get('/api/1.0/users/:id/profile', authorize, (req, res) => {
 		const response = {
 			data: {
 				user: {
-					id: req.user.id,
+					id: userId,
 					name: req.user.name,
 					picture: req.user.picture,
 					friend_count: req.user.friend_count,
@@ -205,7 +205,7 @@ app.post('/api/1.0/users/signin', async (req, res) => {
 							friend_count: userInfo.friend_count,
 							friendship: userInfo.friendship
 						}
-						// console.log("登入後的User結果：",user)
+						console.log("登入後的User結果：",user)
 						return res.status(200).json({
 							data: {
 								access_token: generateToken(user),
@@ -267,7 +267,7 @@ app.post('/api/1.0/users/signup', async (req, res) => {
 								console.error('Database error:',errorInsert);
 								return res.status(500).json({ error: 'Database error' });
 							}
-							// console.log("註冊結果：",resultsInsert)
+							console.log("註冊結果：",resultsInsert)
 							const resultID = resultsInsert.insertId;
 							const user = {
 								id: resultID,
