@@ -39,6 +39,7 @@ const authorize = (req, res, next) => {
 	const accessToken = token.split(' ')[1];
 	try {
 		// Verify and decode the access token
+		console.log("try decoded:",accessToken)
 		const decoded = jwt.verify(accessToken, 'dt22');
 		req.user = decoded; // Attach the user information to the request object
 		// console.log("解碼後：",decoded)
@@ -52,6 +53,7 @@ app.put('/api/1.0/users/profile', authorize, (req,res) => {
 	const { name, introduction, tags } = req.body;
 	const id = req.user.id;
 	const sql = 'UPDATE users SET name = ? , introduction = ? , tags = ? WHERE id = ?'
+	console.log("Check profile name intro tag update:",req.body)
 	db.query(sql, [name, introduction, tags, id], (error, results) => {
 		if (error) {
 			console.error('Database error:', error);
@@ -112,7 +114,7 @@ app.get('/api/1.0/users/:id/profile', authorize, (req, res) => {
 		const response = {
 			data: {
 				user: {
-					id: parseInt(req.user.id,10),
+					id: req.user.id,
 					name: req.user.name,
 					picture: req.user.picture,
 					friend_count: req.user.friend_count,
