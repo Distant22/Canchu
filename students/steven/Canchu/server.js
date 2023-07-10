@@ -112,7 +112,7 @@ app.get('/api/1.0/users/:id/profile', authorize, (req, res) => {
 		const response = {
 			data: {
 				user: {
-					id: req.user.id,
+					id: parseInt(req.user.id,10),
 					name: req.user.name,
 					picture: req.user.picture,
 					friend_count: req.user.friend_count,
@@ -122,6 +122,7 @@ app.get('/api/1.0/users/:id/profile', authorize, (req, res) => {
 				},
 			},
 		};
+		console.log("Check profile update:",response)
 		return res.status(200).json(response);
 	});
 });
