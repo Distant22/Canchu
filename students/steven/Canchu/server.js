@@ -39,10 +39,10 @@ const authorize = (req, res, next) => {
 	const accessToken = token.split(' ')[1];
 	try {
 		// Verify and decode the access token
-		console.log("try decoded:",accessToken)
+		console.log("目前傳進來的Access Token:",accessToken)
 		const decoded = jwt.verify(accessToken, 'dt22');
 		req.user = decoded; // Attach the user information to the request object
-		console.log("解碼後：",decoded)
+		console.log("Token解碼後：",decoded)
 		next();
 	} catch (error) {
 		return res.status(403).json({ error: 'Invalid token' });
@@ -77,6 +77,7 @@ app.put('/api/1.0/users/profile', authorize, (req,res) => {
 app.put('/api/1.0/users/picture', authorize, (req,res) => {
 	const { picture } = req.body;
 	const id = req.user.id;
+	console.log("現在要嘗試更新id=",id,"的資料")
 	const sql = 'UPDATE users SET picture = ? WHERE id = ?'
 	db.query(sql, [picture, id], (error, results) => {
 		if (error) {
@@ -110,6 +111,10 @@ app.get('/api/1.0/users/:id/profile', authorize, (req, res) => {
 			return res.status(400).json({ error: 'User not found' });
 		}
 		const userProfile = results[0];
+		console.log("Token比對：",req.user.id,req.params.id)
+		if(parseInt(req.user.id,10)!==parseInt(req.params.id,10)){
+			return res.status(403).json({ error: 'Wrong token provided' })
+		}
 		// Construct the response object
 		const response = {
 			data: {
