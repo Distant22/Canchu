@@ -115,7 +115,7 @@ app.get('/api/1.0/users/:id/profile', authorize, (req, res) => {
 		const response = {
 			data: {
 				user: {
-					id: userProfile.ID,
+					id: userId,
 					name: userProfile.name,
 					picture: userProfile.picture,
 					friend_count: userProfile.friend_count,
