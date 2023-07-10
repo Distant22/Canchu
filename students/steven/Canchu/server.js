@@ -39,10 +39,8 @@ const authorize = (req, res, next) => {
 	const accessToken = token.split(' ')[1];
 	try {
 		// Verify and decode the access token
-		console.log("目前傳進來的Access Token:",accessToken)
 		const decoded = jwt.verify(accessToken, 'dt22');
 		req.user = decoded; // Attach the user information to the request object
-		console.log("Token解碼後：",decoded)
 		next();
 	} catch (error) {
 		return res.status(403).json({ error: 'Invalid token' });
@@ -53,7 +51,6 @@ app.put('/api/1.0/users/profile', authorize, (req,res) => {
 	const { name, introduction, tags } = req.body;
 	const id = req.user.id;
 	const sql = 'UPDATE users SET name = ? , introduction = ? , tags = ? WHERE id = ?'
-	console.log("Check profile name intro tag update:",req.body)
 	db.query(sql, [name, introduction, tags, id], (error, results) => {
 		if (error) {
 			console.error('Database error:', error);
@@ -77,7 +74,6 @@ app.put('/api/1.0/users/profile', authorize, (req,res) => {
 app.put('/api/1.0/users/picture', authorize, (req,res) => {
 	const { picture } = req.body;
 	const id = req.user.id;
-	console.log("現在要嘗試更新id=",id,"的資料")
 	const sql = 'UPDATE users SET picture = ? WHERE id = ?'
 	db.query(sql, [picture, id], (error, results) => {
 		if (error) {
@@ -101,7 +97,6 @@ app.get('/api/1.0/users/:id/profile', authorize, (req, res) => {
 	const userId = req.params.id;
 	// Retrieve user profile information from the database
 	const sql = 'SELECT id, name, picture, friend_count, friendship, introduction, tags FROM users WHERE id = ?';
-	// console.log("使用者：",req.user)
 	db.query(sql, [userId], (error, results) => {
 		if (error) {
 			console.error('Database error:', error);
@@ -125,7 +120,6 @@ app.get('/api/1.0/users/:id/profile', authorize, (req, res) => {
 				},
 			},
 		};
-		console.log("Check profile update:",response)
 		return res.status(200).json(response);
 	});
 });
@@ -144,7 +138,6 @@ app.get('/api/1.0/users/signin', (req, res) => {
 
 app.post('/api/1.0/users/signin', async (req, res) => {
 	const { provider, email, password, access_token } = req.body;
-	console.log("登入帳密：",req.body)
 	if(!provider){
 		return res.status(400).json({ error: 'Provider is required' })
 	}
@@ -190,7 +183,6 @@ app.post('/api/1.0/users/signin', async (req, res) => {
 			} else {
 				const userInfo = resultsCheck[0]
 				bcrypt.compare(password, userInfo.Password).then(function (pwdResult) {
-					console.log("tmp:",pwdResult)
 					if(!pwdResult){
 							return res.status(403).json({ error: 'Incorrect Password' });
 					} else {
@@ -206,7 +198,6 @@ app.post('/api/1.0/users/signin', async (req, res) => {
 							friend_count: userInfo.friend_count,
 							friendship: userInfo.friendship
 						}
-						console.log("登入後的User結果：",user)
 						return res.status(200).json({
 							data: {
 								access_token: generateToken(user),
@@ -228,7 +219,6 @@ app.post('/api/1.0/users/signin', async (req, res) => {
 
 app.post('/api/1.0/users/signup', async (req, res) => {
     // Extract data from request body
-    console.error(req.body);
     const { name, email, password } = req.body;
     // Perform validation
     if (!name || !email || !password) {    
@@ -268,7 +258,6 @@ app.post('/api/1.0/users/signup', async (req, res) => {
 								console.error('Database error:',errorInsert);
 								return res.status(500).json({ error: 'Database error' });
 							}
-							console.log("註冊結果：",resultsInsert)
 							const resultID = resultsInsert.insertId;
 							const user = {
 								id: resultID,
