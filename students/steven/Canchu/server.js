@@ -111,21 +111,17 @@ app.get('/api/1.0/users/:id/profile', authorize, (req, res) => {
 			return res.status(400).json({ error: 'User not found' });
 		}
 		const userProfile = results[0];
-		console.log("Token比對：",req.user.id,req.params.id)
-		if(parseInt(req.user.id,10)!==parseInt(req.params.id,10)){
-			return res.status(403).json({ error: 'Wrong token provided' })
-		}
 		// Construct the response object
 		const response = {
 			data: {
 				user: {
-					id: userId,
-					name: req.user.name,
-					picture: req.user.picture,
-					friend_count: req.user.friend_count,
-					introduction: req.user.introduction,
-					tags: req.user.tags,
-					friendship: req.user.friendship
+					id: userProfile.ID,
+					name: userProfile.name,
+					picture: userProfile.picture,
+					friend_count: userProfile.friend_count,
+					introduction: userProfile.introduction,
+					tags: userProfile.tags,
+					friendship: userProfile.friendship
 				},
 			},
 		};
