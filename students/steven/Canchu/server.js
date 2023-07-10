@@ -111,7 +111,7 @@ app.get('/api/1.0/users/:id/profile', authorize, (req, res) => {
 		const userProfile = results[0];
 		console.log("User Profile Selected, results=",userProfile)
 		// Construct the response object
-		const friendsql =  'SELECT id, status FROM friendship WHERE id = ?'
+		const friendsql =  'SELECT friend_id, status FROM friendship WHERE user_id = ?'
 		db.query(friendsql, [userId], (error,results) => {
 			if (error) {
 				console.error('Database error:', error);
@@ -119,7 +119,7 @@ app.get('/api/1.0/users/:id/profile', authorize, (req, res) => {
 			}
 			
 			const friendshipData = results.length === 0 ? null : results.map(friendship => ({
-				id: friendship.id,
+				id: friendship.friend_id,
 				status: friendship.status
 			}));
 
@@ -132,7 +132,7 @@ app.get('/api/1.0/users/:id/profile', authorize, (req, res) => {
 						friend_count: userProfile.friend_count,
 						introduction: userProfile.introduction,
 						tags: userProfile.tags,
-						friendship: friendshipData
+						friendship: friendshipData[0]
 					},
 				},
 			};
