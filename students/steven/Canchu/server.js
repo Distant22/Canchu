@@ -42,7 +42,7 @@ const authorize = (req, res, next) => {
 		console.log("try decoded:",accessToken)
 		const decoded = jwt.verify(accessToken, 'dt22');
 		req.user = decoded; // Attach the user information to the request object
-		// console.log("解碼後：",decoded)
+		console.log("解碼後：",decoded)
 		next();
 	} catch (error) {
 		return res.status(403).json({ error: 'Invalid token' });
@@ -143,6 +143,7 @@ app.get('/api/1.0/users/signin', (req, res) => {
 
 app.post('/api/1.0/users/signin', async (req, res) => {
 	const { provider, email, password, access_token } = req.body;
+	console.log("登入帳密：",req.body)
 	if(!provider){
 		return res.status(400).json({ error: 'Provider is required' })
 	}
