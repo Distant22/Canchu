@@ -96,7 +96,9 @@ app.put('/api/1.0/users/picture', authorize, (req,res) => {
 app.get('/api/1.0/users/:id/profile', authorize, (req, res) => {
 	const userId = req.params.id;
 	// Retrieve user profile information from the database
-	const sql = 'SELECT id, name, picture, friend_count, friendship, introduction, tags FROM users WHERE id = ?';
+	const sql = 'SELECT id, name, picture, friend_count, introduction, tags FROM users WHERE id = ?';
+	// const sql = 'SELECT u.id, u.name, u.picture, u.friend_count, u.introduction, u.tags, f.id, f.status FROM users u JOIN friendship f ON u.id = f.user_id WHERE u.id = ?';
+	// const sql = 'SELECT users.id, users.name, users.picture, users.friend_count, users.introduction, users.tags, friendship.id ,friendship.status FROM users JOIN friendship ON users.id = friendship.user_id WHERE users.id = ?'
 	db.query(sql, [userId], (error, results) => {
 		if (error) {
 			console.error('Database error:', error);
@@ -107,20 +109,33 @@ app.get('/api/1.0/users/:id/profile', authorize, (req, res) => {
 		}
 		const userProfile = results[0];
 		// Construct the response object
-		const response = {
-			data: {
-				user: {
-					id: userId,
-					name: userProfile.name,
-					picture: userProfile.picture,
-					friend_count: userProfile.friend_count,
-					introduction: userProfile.introduction,
-					tags: userProfile.tags,
-					friendship: userProfile.friendship
+		const friendsql =  'SELECT id, status FROM friendship WHERE id = ?'
+		db.query(friendsql, [userId], (error,results) => {
+			if (error) {
+				console.error('Database error:', error);
+				return res.status(500).json({ error: 'Server error' });
+			}
+
+			const friendshipData = results.length === 0 ? null : results.map(friendship => ({
+				id: friendship.id,
+				status: friendship.status
+			}));
+
+			const response = {
+				data: {
+					user: {
+						id: userId,
+						name: userProfile.name,
+						picture: userProfile.picture,
+						friend_count: userProfile.friend_count,
+						introduction: userProfile.introduction,
+						tags: userProfile.tags,
+						friendship: friendshipData
+					},
 				},
-			},
-		};
-		return res.status(200).json(response);
+			};
+			return res.status(200).json(response);
+		})
 	});
 });
 
@@ -182,21 +197,20 @@ app.post('/api/1.0/users/signin', async (req, res) => {
 				return res.status(403).json({ error: 'Email not exist' });
 			} else {
 				const userInfo = resultsCheck[0]
-				bcrypt.compare(password, userInfo.Password).then(function (pwdResult) {
+				bcrypt.compare(password, userInfo.password).then(function (pwdResult) {
 					if(!pwdResult){
 							return res.status(403).json({ error: 'Incorrect Password' });
 					} else {
 						// console.log("登入UserInfo：",userInfo)
 						const user = {
-							id: userInfo.ID,
+							id: userInfo.id,
 							provider: provider,
-							name: userInfo.Name,
-							email: userInfo.Email,
+							name: userInfo.name,
+							email: userInfo.email,
 							picture: userInfo.picture,
 							introduction: userInfo.introduction,
 							tags: userInfo.tags,
-							friend_count: userInfo.friend_count,
-							friendship: userInfo.friendship
+							friend_count: userInfo.friend_count
 						}
 						return res.status(200).json({
 							data: {
@@ -252,8 +266,8 @@ app.post('/api/1.0/users/signup', async (req, res) => {
 				}
 				try{
 					const hashPwd = bcrypt.hashSync(password, 10);
-					const sqlInsert = 'INSERT INTO users (Name, Email, Password, friend_count, introduction, tags, friendship, picture) VALUES (?,?,?,?,?,?,?,?)'
-					db.query(sqlInsert, [name,email,hashPwd,0,'','',null,''], (errorInsert, resultsInsert) => {
+					const sqlInsert = 'INSERT INTO users (Name, Email, Password, friend_count, introduction, tags, picture) VALUES (?,?,?,?,?,?,?)'
+					db.query(sqlInsert, [name,email,hashPwd,0,'','',''], (errorInsert, resultsInsert) => {
 							if(errorInsert){
 								console.error('Database error:',errorInsert);
 								return res.status(500).json({ error: 'Database error' });
@@ -267,8 +281,7 @@ app.post('/api/1.0/users/signup', async (req, res) => {
 								picture: '',
 								introduction: '',
 								tags: '',
-								friend_count: 0,
-								friendship: null
+								friend_count: 0
 							};
 							// Send the success response
 							res.status(200).json({
