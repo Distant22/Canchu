@@ -50,21 +50,22 @@ const authorize = (req, res, next) => {
 app.get('/api/1.0/friends/pending', authorize, (req,res) => {
 	// Friendship: ｜id：邀請者的user_ID，回傳於id｜user_id：收到邀請者的user_ID，應該和token解碼的ID相同｜friendship.id：朋友表的主鍵，回傳於index
 	// user 2 發邀請給 user 1，friendship id 為 4；id = 2 , friend_id = 4 , user_id = 1
-	const sql = 'SELECT users.id, users.name, users.picture, friendship.id, friendship.status FROM users INNER JOIN friendship ON users.id = friendship.friend_id WHERE friendship.user_id = ?'
+	const sql = 'SELECT users.id, users.name, users.picture, friendship.friend_id, friendship.status FROM users INNER JOIN friendship ON users.id = friendship.friend_id WHERE friendship.user_id = ?'
 	db.query(sql, [req.user.id], (error, results) => {
 		if (error) {
 			console.error('Database error:', error);
 			return res.status(500).json({ error: 'Server error' });
 		}
 		const pendingList = results.map((result) => {
-			const {id, name, picture, index, status} = result
+			console.log("測試取資料：",result)
+			const {id, name, picture, friend_id, status} = result
 			return {
 				id,
 				name,
 				picture,
 				friendship:  { 
-					id: index, 
-					status: status 
+					id: friend_id, 
+					status: status
 				}
 		  	};
 		})
