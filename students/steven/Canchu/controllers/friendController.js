@@ -14,5 +14,13 @@ module.exports = {
     getPending: async(req,res) => {
         const id = req.user.id
         await friendModel.getPending(res,id)
+    },
+    postAgree: async(req,res) => {
+        const id = req.params.friendship_id
+        await friendModel.postAgree(res,id)
+    },
+    deleteFriend: async(req,res) => {
+        const id = req.params.friendship_id
+        await friendModel.deleteFriend(res,id)
     }
 }
