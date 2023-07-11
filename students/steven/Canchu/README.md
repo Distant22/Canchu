@@ -1,5 +1,11 @@
 ## Dt22 — Assignment 
 
+#### Run the application
+  ```
+  sudo /home/ubuntu/.nvm/versions/node/v18.16.1/bin/node server.js &
+  ```
+  `&` is for server to continue running in background.
+
 <details>
   <summary>Week 0</summary>
   
@@ -74,12 +80,6 @@
 
   #### Website
   http://13.54.210.189/api/1.0/users/signup
-  
-  #### Run the application
-  ```
-  sudo /home/ubuntu/.nvm/versions/node/v18.16.1/bin/node server.js &
-  ```
-  `&` is for server to continue running in background.
 
 </details>
 
@@ -92,12 +92,6 @@
 
   #### Website
   http://13.54.210.189/api/1.0/users/signin
-  
-  #### Run the application
-  ```
-  sudo /home/ubuntu/.nvm/versions/node/v18.16.1/bin/node server.js &
-  ```
-  `&` is for server to continue running in background.
 
 </details>
 
@@ -108,11 +102,20 @@
 
   #### Website
   http://13.54.210.189/api/1.0/users/profile
+
+</details>
+
+<details>
+  <summary>Week 2 Part 1</summary>
   
-  #### Run the application
-  ```
-  sudo /home/ubuntu/.nvm/versions/node/v18.16.1/bin/node server.js &
-  ```
-  `&` is for server to continue running in background.
+  #### Create Friends API
+
+  #### Website
+  http://13.54.210.189/api/1.0/friends/pending
+
+</details>
+
+<details>
+  <summary>Week 2 Part 2</summary>
 
 </details>
