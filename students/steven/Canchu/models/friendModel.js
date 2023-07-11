@@ -72,22 +72,23 @@ module.exports = {
             if(results.user_id !== self_id){
                 console.error("要求同意Request的ID為",self_id,"，但能同意的只有ID為",results.user_id,"的使用者")
                 return res.status(400).json({ error: 'This user has no permission to agree friend request'})
-            }
-        })
-        console.log("通過。接下來...")
-        const sql = 'UPDATE friendship SET status = ? WHERE id = ?'
-        db.query(sql, ['friend',id], (error, results) => {
-            if (error) {
-                console.error('Database error:', error);
-                return res.status(500).json({ error: 'Server error' });
-            }
-            res.status(200).json({
-                data: {
-                    friendship: {
-                        id: id
+            } else {
+                console.log("通過。接下來...")
+                const sql = 'UPDATE friendship SET status = ? WHERE id = ?'
+                db.query(sql, ['friend',id], (error, results) => {
+                    if (error) {
+                        console.error('Database error:', error);
+                        return res.status(500).json({ error: 'Server error' });
                     }
-                }
-            });
+                    res.status(200).json({
+                        data: {
+                            friendship: {
+                                id: id
+                            }
+                        }
+                    });
+                })
+            }
         })
     },
     getPending: async(res, user_id) => {
