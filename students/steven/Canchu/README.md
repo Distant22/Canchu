@@ -6,6 +6,7 @@
   ```
   `&` is for server to continue running in background.
 
+### Summary of each part
 <details>
   <summary>Week 0</summary>
   
