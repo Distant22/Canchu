@@ -20,9 +20,9 @@ db.connect((err) => {
 });
 
 module.exports = {
-    postRequest: async(res,user_id,req_user_id) => {
+    postRequest: async(res,my_id,friend_id) => {
         const searchsql = 'SELECT * FROM users WHERE id = ?'
-        db.query(searchsql, [user_id], (error, results) => {
+        db.query(searchsql, [my_id], (error, results) => {
             if (error) {
                 console.error('Database error:', error);
                 return res.status(500).json({ error: 'Server error' });
@@ -31,7 +31,7 @@ module.exports = {
                 return res.status(400).json({ error: 'No user found' });
             }
             const sql = 'INSERT INTO friendship (user_id, status, friend_id) VALUES (?,?,?)'
-            db.query(sql, [user_id,'pending',req_user_id], (error, results) => {
+            db.query(sql, [my_id,'pending',friend_id], (error, results) => {
                 if (error) {
                     console.error('Database error:', error);
                     return res.status(500).json({ error: 'Server error' });
@@ -39,11 +39,43 @@ module.exports = {
                 res.status(200).json({
                     data: {
                         friendship: {
-                            id: user_id
+                            id: results.insertId
                         }
                     }
                 });
             })
+        })
+    },
+    deleteFriend: async(res,id) => {
+        const sql = 'DELETE FROM friendship WHERE id = ?'
+        db.query(sql, [id], (error, results) => {
+            if (error) {
+                console.error('Database error:', error);
+                return res.status(500).json({ error: 'Server error' });
+            }
+            res.status(200).json({
+                data: {
+                    friendship: {
+                        id: id
+                    }
+                }
+            });
+        })
+    },
+    postAgree: async(res,id) => {
+        const sql = 'UPDATE friendship SET status = ? WHERE id = ?'
+        db.query(sql, ['friend',id], (error, results) => {
+            if (error) {
+                console.error('Database error:', error);
+                return res.status(500).json({ error: 'Server error' });
+            }
+            res.status(200).json({
+                data: {
+                    friendship: {
+                        id: id
+                    }
+                }
+            });
         })
     },
     getPending: async(res, user_id) => {
