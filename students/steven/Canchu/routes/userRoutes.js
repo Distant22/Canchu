@@ -8,9 +8,9 @@ router.post('/signup', userController.signup);
 
 router.get('/signup', (req, res) => {res.send('This is the signup page for Week1 Assignment. -Dt22')})
 router.get('/signin', (req, res) => {res.send('This is the signin page for Week1 Assignment. -Dt22')})
-router.get('/:id/profile', util.authorize_json, userController.getProfile);
+router.get('/:id/profile', util.authorize_bearer, userController.getProfile);
 
-router.put('/profile', util.authorize_json, userController.updateProfile);
-router.put('/picture', util.authorize_json, userController.updatePicture);
+router.put('/profile', util.authorize_bearer, userController.updateProfile);
+router.put('/picture', util.authorize_bearer, userController.updatePicture);
 
 module.exports = router;
