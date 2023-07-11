@@ -17,7 +17,7 @@ module.exports = {
     },
     postAgree: async(req,res) => {
         const id = req.params.friendship_id
-        await friendModel.postAgree(res,id)
+        await friendModel.postAgree(res,id,req.user.id)
     },
     deleteFriend: async(req,res) => {
         const id = req.params.friendship_id
