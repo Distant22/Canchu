@@ -47,14 +47,14 @@ module.exports = {
         })
     },
     deleteFriend: async(res,id,self_id) => {
-        const validate_sql = 'SELECT user_id FROM friendship WHERE id = ?'
+        const validate_sql = 'SELECT user_id, friend_id FROM friendship WHERE id = ?'
         db.query(validate_sql, [id], (error, results) => {
             if (error) {
                 console.error('Database error:', error);
                 return res.status(500).json({ error: 'Server error' });
             }
             if(results[0].user_id !== self_id && results[0].friend_id !== self_id){
-                console.error("要求同意Request的ID為",self_id,"，但能同意的只有ID為",results[0].user_id,"或ID為",results[0].friend_id,"的使用者，id為",id)
+                console.error("要求刪除Request的ID為",self_id,"，但能同意的只有ID為",results[0].user_id,"或ID為",results[0].friend_id,"的使用者，id為",id)
 		return res.status(400).json({ error: 'This user has no permission to agree friend request'})
             } else {
                 console.log("通過。接下來...")
@@ -76,17 +76,16 @@ module.exports = {
         })
     },
     postAgree: async(res,id,self_id) => {
-        const validate_sql = 'SELECT user_id, friend_id FROM friendship WHERE id = ?'
+        const validate_sql = 'SELECT user_id FROM friendship WHERE id = ?'
         db.query(validate_sql, [id], (error, results) => {
             if (error) {
                 console.error('Database error:', error);
                 return res.status(500).json({ error: 'Server error' });
             }
             if(results[0].user_id !== self_id){
-                console.error("要求刪除Request的ID為",self_id,"，但能同意的只有ID為",results[0].user_id,"的使用者，id為",id)
+                console.error("要求同意Request的ID為",self_id,"，但能同意的只有ID為",results[0].user_id,"的使用者，id為",id)
 		return res.status(400).json({ error: 'This user has no permission to agree friend request'})
             } else {
-                console.log("通過。刪除Request的ID分別為：",results[0].user_id,results[0].friend_id)
                 const sql = 'UPDATE friendship SET status = ? WHERE id = ?'
                 db.query(sql, ['friend',id], (error, results) => {
                     if (error) {
