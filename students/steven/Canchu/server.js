@@ -39,21 +39,76 @@ const authorize = (req, res, next) => {
 	const accessToken = token.split(' ')[1];
 	try {
 		// Verify and decode the access token
-		console.log("目前傳進來的Access Token:",accessToken)
 		const decoded = jwt.verify(accessToken, 'dt22');
 		req.user = decoded; // Attach the user information to the request object
-		console.log("Token解碼後：",decoded)
 		next();
 	} catch (error) {
 		return res.status(403).json({ error: 'Invalid token' });
 	}
 };
 
+app.get('/api/1.0/friends/pending', authorize, (req,res) => {
+	// Friendship: ｜id：邀請者的user_ID，回傳於id｜user_id：收到邀請者的user_ID，應該和token解碼的ID相同｜friendship.id：朋友表的主鍵，回傳於index
+	// user 2 發邀請給 user 1，friendship id 為 4；id = 2 , friend_id = 4 , user_id = 1
+	const sql = 'SELECT users.id, users.name, users.picture, friendship.id, friendship.status FROM users INNER JOIN friendship ON users.id = friendship.friend_id WHERE friendship.user_id = ?'
+	db.query(sql, [req.user.id], (error, results) => {
+		if (error) {
+			console.error('Database error:', error);
+			return res.status(500).json({ error: 'Server error' });
+		}
+		const pendingList = results.map((result) => {
+			const {id, name, picture, index, status} = result
+			return {
+				id,
+				name,
+				picture,
+				friendship:  { 
+					id: index, 
+					status: status 
+				}
+		  	};
+		})
+		res.status(200).json({
+			data: {
+				users: pendingList
+			}
+		});
+	})
+})
+
+app.post('/api/1.0/friends/:user_id/request', authorize, (req,res) => {
+	const searchsql = 'SELECT * FROM users WHERE id = ?'
+	db.query(searchsql, [req.params.user_id], (error, results) => {
+		if (error) {
+			console.error('Database error:', error);
+			return res.status(500).json({ error: 'Server error' });
+		}
+		if(results.length === 0){
+			return res.status(400).json({ error: 'No user found' });
+		}
+		const sql = 'INSERT INTO friendship (user_id, status, friend_id) VALUES (?,?,?)'
+		db.query(sql, [req.params.user_id,'pending',req.user.id], (error, results) => {
+			if (error) {
+				console.error('Database error:', error);
+				return res.status(500).json({ error: 'Server error' });
+			}
+			res.status(200).json({
+				data: {
+					friendship: {
+						id: req.params.user_id
+					}
+				}
+			});
+		})
+	})
+	
+})
+
+
 app.put('/api/1.0/users/profile', authorize, (req,res) => {
 	const { name, introduction, tags } = req.body;
 	const id = req.user.id;
 	const sql = 'UPDATE users SET name = ? , introduction = ? , tags = ? WHERE id = ?'
-	console.log("Check profile name intro tag update:",req.body)
 	db.query(sql, [name, introduction, tags, id], (error, results) => {
 		if (error) {
 			console.error('Database error:', error);
@@ -77,7 +132,6 @@ app.put('/api/1.0/users/profile', authorize, (req,res) => {
 app.put('/api/1.0/users/picture', authorize, (req,res) => {
 	const { picture } = req.body;
 	const id = req.user.id;
-	console.log("現在要嘗試更新id=",id,"的資料")
 	const sql = 'UPDATE users SET picture = ? WHERE id = ?'
 	db.query(sql, [picture, id], (error, results) => {
 		if (error) {
@@ -100,8 +154,10 @@ app.put('/api/1.0/users/picture', authorize, (req,res) => {
 app.get('/api/1.0/users/:id/profile', authorize, (req, res) => {
 	const userId = req.params.id;
 	// Retrieve user profile information from the database
-	const sql = 'SELECT id, name, picture, friend_count, friendship, introduction, tags FROM users WHERE id = ?';
-	// console.log("使用者：",req.user)
+	const sql = 'SELECT id, name, picture, friend_count, introduction, tags FROM users WHERE id = ?';
+	// const sql = 'SELECT u.id, u.name, u.picture, u.friend_count, u.introduction, u.tags, f.id, f.status FROM users u JOIN friendship f ON u.id = f.user_id WHERE u.id = ?';
+	// const sql = 'SELECT users.id, users.name, users.picture, users.friend_count, users.introduction, users.tags, friendship.id ,friendship.status FROM users JOIN friendship ON users.id = friendship.user_id WHERE users.id = ?'
+	console.log("Get profile, ID=",userId)
 	db.query(sql, [userId], (error, results) => {
 		if (error) {
 			console.error('Database error:', error);
@@ -111,22 +167,36 @@ app.get('/api/1.0/users/:id/profile', authorize, (req, res) => {
 			return res.status(400).json({ error: 'User not found' });
 		}
 		const userProfile = results[0];
+		console.log("User Profile Selected, results=",userProfile)
 		// Construct the response object
-		const response = {
-			data: {
-				user: {
-					id: userId,
-					name: userProfile.name,
-					picture: userProfile.picture,
-					friend_count: userProfile.friend_count,
-					introduction: userProfile.introduction,
-					tags: userProfile.tags,
-					friendship: userProfile.friendship
+		const friendsql =  'SELECT friend_id, status FROM friendship WHERE user_id = ?'
+		db.query(friendsql, [userId], (error,results) => {
+			if (error) {
+				console.error('Database error:', error);
+				return res.status(500).json({ error: 'Server error' });
+			}
+			
+			const friendshipData = results.length === 0 ? null : results.map(friendship => ({
+				id: friendship.friend_id,
+				status: friendship.status
+			}));
+
+			const response = {
+				data: {
+					user: {
+						id: userProfile.id,
+						name: userProfile.name,
+						picture: userProfile.picture,
+						friend_count: userProfile.friend_count,
+						introduction: userProfile.introduction,
+						tags: userProfile.tags,
+						friendship: friendshipData[0]
+					},
 				},
-			},
-		};
-		console.log("Check profile update:",response)
-		return res.status(200).json(response);
+			};
+			console.log("User Profile get success, response=",response)
+			return res.status(200).json(response);
+		})
 	});
 });
 
@@ -144,7 +214,6 @@ app.get('/api/1.0/users/signin', (req, res) => {
 
 app.post('/api/1.0/users/signin', async (req, res) => {
 	const { provider, email, password, access_token } = req.body;
-	console.log("登入帳密：",req.body)
 	if(!provider){
 		return res.status(400).json({ error: 'Provider is required' })
 	}
@@ -189,24 +258,22 @@ app.post('/api/1.0/users/signin', async (req, res) => {
 				return res.status(403).json({ error: 'Email not exist' });
 			} else {
 				const userInfo = resultsCheck[0]
-				bcrypt.compare(password, userInfo.Password).then(function (pwdResult) {
-					console.log("tmp:",pwdResult)
+				bcrypt.compare(password, userInfo.password).then(function (pwdResult) {
 					if(!pwdResult){
 							return res.status(403).json({ error: 'Incorrect Password' });
 					} else {
 						// console.log("登入UserInfo：",userInfo)
 						const user = {
-							id: userInfo.ID,
+							id: userInfo.id,
 							provider: provider,
-							name: userInfo.Name,
-							email: userInfo.Email,
+							name: userInfo.name,
+							email: userInfo.email,
 							picture: userInfo.picture,
 							introduction: userInfo.introduction,
 							tags: userInfo.tags,
-							friend_count: userInfo.friend_count,
-							friendship: userInfo.friendship
+							friend_count: userInfo.friend_count
 						}
-						console.log("登入後的User結果：",user)
+						console.log("Signin success, user info=",user)
 						return res.status(200).json({
 							data: {
 								access_token: generateToken(user),
@@ -228,7 +295,6 @@ app.post('/api/1.0/users/signin', async (req, res) => {
 
 app.post('/api/1.0/users/signup', async (req, res) => {
     // Extract data from request body
-    console.error(req.body);
     const { name, email, password } = req.body;
     // Perform validation
     if (!name || !email || !password) {    
@@ -262,13 +328,12 @@ app.post('/api/1.0/users/signup', async (req, res) => {
 				}
 				try{
 					const hashPwd = bcrypt.hashSync(password, 10);
-					const sqlInsert = 'INSERT INTO users (Name, Email, Password, friend_count, introduction, tags, friendship, picture) VALUES (?,?,?,?,?,?,?,?)'
-					db.query(sqlInsert, [name,email,hashPwd,0,'','',null,''], (errorInsert, resultsInsert) => {
+					const sqlInsert = 'INSERT INTO users (Name, Email, Password, friend_count, introduction, tags, picture) VALUES (?,?,?,?,?,?,?)'
+					db.query(sqlInsert, [name,email,hashPwd,0,'','',''], (errorInsert, resultsInsert) => {
 							if(errorInsert){
 								console.error('Database error:',errorInsert);
 								return res.status(500).json({ error: 'Database error' });
 							}
-							console.log("註冊結果：",resultsInsert)
 							const resultID = resultsInsert.insertId;
 							const user = {
 								id: resultID,
@@ -278,9 +343,9 @@ app.post('/api/1.0/users/signup', async (req, res) => {
 								picture: '',
 								introduction: '',
 								tags: '',
-								friend_count: 0,
-								friendship: null
+								friend_count: 0
 							};
+							console.log("User signup success, info=",user)
 							// Send the success response
 							res.status(200).json({
 								data: {
