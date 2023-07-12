@@ -43,7 +43,7 @@ module.exports = {
                     users: searchList
                 }
             })
-        }
+        })
     },
 
     signin: async(res,email,password,provider) => {
