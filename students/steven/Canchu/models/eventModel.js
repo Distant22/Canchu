@@ -30,21 +30,13 @@ module.exports = {
             // Construct the response object
             const response = {
                 data: {
-                    // events: {
-                    //     id: userEvent.id,
-                    //     type: userEvent.type,
-                    //     is_read: userEvent.is_read == 0 ? false : true,
-                    //     image: userEvent.image,
-                    //     created_at: userEvent.created_at,
-                    //     summary: userEvent.summary
-                    // },
                     events: {
                         id: userEvent.id,
-                        type: "",
-                        is_read: userEvent.is_read == 0 ? false : true,
+                        type: userEvent.type,
+                        is_read: userEvent.is_read,
                         image: userEvent.image,
-                        created_at: "",
-                        summary: ""
+                        created_at: userEvent.created_at,
+                        summary: userEvent.summary
                     },
                 },
             };
