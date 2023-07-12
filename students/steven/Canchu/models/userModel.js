@@ -32,7 +32,7 @@ module.exports = {
                     id: id,
                     name: name,
                     picture: picture,
-                    friendship: friend_id === undefined ? null : {
+                    friendship: friend_id === null ? null : {
                         id: friend_id,
                         status: status
                     }
