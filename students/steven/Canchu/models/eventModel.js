@@ -25,19 +25,22 @@ module.exports = {
                 console.error('Database error:', error);
                 return res.status(500).json({ error: 'Server error' });
             }
-            const userEvent = results[0];
-            console.log("User Event Selected, results=",userEvent)
+            const userEvent = results.map((result) => {
+                const {id, type, is_read, image, created_at, summary} = result
+                console.log("結果：",result)
+                return {
+                    id: id,
+                    type: type,
+                    is_read: is_read == 0 ? false : true,
+                    image: image,
+                    created_at: created_at,
+                    summary: summary
+                };
+            })
             // Construct the response object
             const response = {
                 data: {
-                    events: {
-                        id: userEvent.id,
-                        type: userEvent.type,
-                        is_read: userEvent.is_read == 0 ? false : true,
-                        image: userEvent.image,
-                        created_at: userEvent.created_at,
-                        summary: userEvent.summary
-                    },
+                    events: userEvent
                 },
             };
             console.log("User Event get success, response=",response)
