@@ -115,8 +115,9 @@ module.exports = {
                         console.error('Database error:', error);
                         return res.status(500).json({ error: 'Server error' });
                     } else {
-                        const sql = 'INSERT INTO event (user_id,type,summary) VALUES (?,?,?)'
-                        db.query(sql, [friend_id,'friend_request',`ID ${friend_id} has accepted your friend request.`], (error, results) => {
+                        const sql = 'INSERT INTO event (user_id,type,summary,created_at) VALUES (?,?,?,?)'
+                        const eventTime = new Date().toISOString().slice(0, 19).replace('T', ' ');
+                        db.query(sql, [friend_id,'friend_request',`ID ${friend_id} has accepted your friend request.`,eventTime], (error, results) => {
                             if (error) {
                                 console.error('Database error:', error);
                                 return res.status(500).json({ error: 'Server error' });
