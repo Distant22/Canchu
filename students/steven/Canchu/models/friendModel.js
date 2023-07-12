@@ -156,7 +156,7 @@ module.exports = {
                     }
                 };
             })
-            res.status(200).json({
+            return res.status(200).json({
                 data: {
                     users: pendingList
                 }
