@@ -27,7 +27,6 @@ module.exports = {
             }
             const searchList = results.map((result) => {
                 const {id, name, picture, friend_id, status} = result
-                console.log("結果：",result)
                 return {
                     id: id,
                     name: name,
@@ -38,6 +37,7 @@ module.exports = {
                     }
                 };
             })
+            console.log("結果：",searchList)
             return res.status(200).json({
                 data: {
                     users: searchList
