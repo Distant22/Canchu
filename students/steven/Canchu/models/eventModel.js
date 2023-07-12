@@ -44,12 +44,14 @@ module.exports = {
         })
     },
     readEvent: async(res,userId,eventId) => {
+	console.log("進入readEvent","userId=",userId,"eventId=",eventId)
         const sql_validate = 'SELECT user_id FROM event WHERE id = ?';
         db.query(sql_validate,[eventId], (error, results) => {
             if (error) {
                 console.error('Database error:', error);
                 return res.status(500).json({ error: 'Server error' });
             }
+	    console.log("結果：",results,results[0])
             if (results[0].user_id !== userId){
                 console.error('錯誤！此欄的userId和Token的實際id分別為',results[0].user_id,userId)
                 return res.status(400).json({ error: 'This user has no permission to read event'})
