@@ -72,5 +72,10 @@ module.exports = {
         const { picture } = req.body;
         const id = req.user.id;
         await userModel.updatePicture(res,picture,id);
+    },
+
+    search: async(req,res) => {
+        const keyword = req.query.keyword;
+        await userModel.search(res,keyword)
     }
 }
