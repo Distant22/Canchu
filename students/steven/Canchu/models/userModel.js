@@ -19,7 +19,7 @@ db.connect((err) => {
 module.exports = {
     // 取得User ID, User name, User picture, Friendship 的主鍵id, Friendship 的status
     search: async(res,keyword) => {
-        const sql = 'SELECT users.id, users.name, users.picture, friendship.id, friendship.status FROM users INNER JOIN friendship ON users.id = friendship.user_id WHERE users.name LIKE '+`'%${keyword}%'`
+        const sql = 'SELECT users.id, users.name, users.picture, friend_id AS friendship.id, friendship.status FROM users INNER JOIN friendship ON users.id = friendship.user_id WHERE users.name LIKE '+`'%${keyword}%'`
         db.query(sql,(error, results) => {
             if (error) {
                 console.log('Database error:',error);
