@@ -32,7 +32,7 @@ module.exports = {
                     events: {
                         id: userEvent.id,
                         type: userEvent.type,
-                        is_read: userEvent.is_read,
+                        is_read: userEvent.is_read == 0 ? false : true,
                         image: userEvent.image,
                         created_at: userEvent.created_at,
                         summary: userEvent.summary
