@@ -86,7 +86,7 @@ module.exports = {
         })
     },
     postAgree: async(res,id,self_id) => {
-        const validate_sql = 'SELECT (user_id, friend_id) FROM friendship WHERE id = ?'
+        const validate_sql = 'SELECT user_id, friend_id FROM friendship WHERE id = ?'
         db.query(validate_sql, [id], (error, results) => {
             if (error) {
                 console.error('Database error:', error);
