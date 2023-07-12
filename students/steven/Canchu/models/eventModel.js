@@ -19,6 +19,7 @@ db.connect((err) => {
 module.exports = {
     getEvent: async(res,userId) => {
         const sql = 'SELECT id, type, image, summary, is_read, created_at FROM event WHERE user_id = ?';
+        console.log("進入getEvent")
         db.query(sql, [userId], (error, results) => {
             if (error) {
                 console.error('Database error:', error);
@@ -29,13 +30,21 @@ module.exports = {
             // Construct the response object
             const response = {
                 data: {
+                    // events: {
+                    //     id: userEvent.id,
+                    //     type: userEvent.type,
+                    //     is_read: userEvent.is_read == 0 ? false : true,
+                    //     image: userEvent.image,
+                    //     created_at: userEvent.created_at,
+                    //     summary: userEvent.summary
+                    // },
                     events: {
                         id: userEvent.id,
-                        type: userEvent.type,
+                        type: "",
                         is_read: userEvent.is_read == 0 ? false : true,
                         image: userEvent.image,
-                        created_at: userEvent.created_at,
-                        summary: userEvent.summary
+                        created_at: "",
+                        summary: ""
                     },
                 },
             };
