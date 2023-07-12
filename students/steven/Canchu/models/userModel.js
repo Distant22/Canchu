@@ -27,11 +27,12 @@ module.exports = {
             }
             const searchList = results.map((result) => {
                 const {id, name, picture, friend_id, status} = result
+                console.log(id,name,picture,friend_id,status)
                 return {
                     id: id,
                     name: name,
                     picture: picture,
-                    friendship: {
+                    friendship: friend_id === undefined ? null : {
                         id: friend_id,
                         status: status
                     }
