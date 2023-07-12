@@ -1,8 +1,8 @@
 const mysql = require('mysql');
-const express = require('express')
-const app = express()
+// const express = require('express')
+// const app = express()
 const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
+// const jwt = require('jsonwebtoken');
 const util = require('../utils/util')
 
 const db = mysql.createConnection({
