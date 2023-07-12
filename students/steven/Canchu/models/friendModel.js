@@ -86,13 +86,13 @@ module.exports = {
         })
     },
     postAgree: async(res,id,self_id) => {
-        const validate_sql = 'SELECT user_id, friend_id FROM friendship WHERE id = ?'
+        const validate_sql = 'SELECT (user_id, friend_id) FROM friendship WHERE id = ?'
         db.query(validate_sql, [id], (error, results) => {
             if (error) {
                 console.error('Database error:', error);
                 return res.status(500).json({ error: 'Server error' });
 	    }
-	    console.log("印出來：",results,results[0])
+	    console.log("印出來：",id,results,results[0])
             if(results[0].user_id !== self_id){
                 console.error("要求同意Request的ID為",self_id,"，但能同意的只有ID為",results[0].user_id,"的使用者，id為",id)
 		        return res.status(400).json({ error: 'This user has no permission to agree friend request'})
