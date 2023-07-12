@@ -32,11 +32,18 @@ module.exports = {
             }
             const sql_friend = 'INSERT INTO friendship (user_id, status, friend_id) VALUES (?,?,?)'
             db.query(sql_friend, [my_id,'pending',friend_id], (error, results) => {
-                if (error.code === 'ER_DUP_ENTRY') {
-                    console.error('Duplicate Request Error', error.code);
-                    return res.status(403).json({ error: 'You have already send a request to this person.' });
-                } else if (error) {
-                    return res.status(500).json({ error: 'Server error' });
+                // if (error.code === 'ER_DUP_ENTRY') {
+                //     console.error('Duplicate Request Error', error.code);
+                //     return res.status(403).json({ error: 'You have already send a request to this person.' });
+                // } else 
+                if (error) {
+                    if (error.code === 'ER_DUP_ENTRY') {
+                        console.error('Duplicate Request Error', error.code);
+                        return res.status(403).json({ error: 'You have already send a request to this person.' });
+                    } else {
+                        console.error('Database error:',error.code)
+                        return res.status(500).json({ error: 'Server error' });
+                    }
                 } else {
                     const resultId = results.insertId
 		            const sql_event = 'INSERT INTO event (user_id,type,summary) VALUES (?,?,?)'
