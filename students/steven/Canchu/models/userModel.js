@@ -17,6 +17,34 @@ db.connect((err) => {
 });
 
 module.exports = {
+    // 取得User ID, User name, User picture, Friendship 的主鍵id, Friendship 的status
+    search: async(res,keyword) => {
+        const sql = 'SELECT users.id, users.name, users.picture, friendship.id, friendship.status FROM users INNER JOIN friendship ON users.id = friendship.user_id WHERE users.name LIKE %?%'
+        db.query(sql, [keyword], (error, results) => {
+            if (error) {
+                console.log('Database error:',error);
+                return res.status(500).json({ error: 'Database error' });
+            }
+            const searchList = results.map((result) => {
+                const {id, name, picture, friend_id, status} = result
+                console.log("結果：",result)
+                return {
+                    id: id,
+                    name: name,
+                    picture: picture,
+                    friendship: {
+                        id: friend_id,
+                        status: status
+                    }
+                };
+            })
+            return res.status(200).json({
+                data: {
+                    users: searchList
+                }
+            })
+        }
+    },
 
     signin: async(res,email,password,provider) => {
         const sqlCheck = "SELECT * FROM users WHERE email = ?"
