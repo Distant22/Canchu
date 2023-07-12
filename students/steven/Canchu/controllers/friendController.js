@@ -1,10 +1,4 @@
-const mysql = require('mysql');
-const express = require('express')
-const app = express()
-const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
 const friendModel = require('../models/friendModel')
-const util = require('../utils/util')
 
 module.exports = {
     postRequest: async(req,res) => {
