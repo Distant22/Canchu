@@ -7,6 +7,7 @@ module.exports = {
 
     authorize_bearer: (req, res, next) => {
         const token = req.headers.authorization;
+        console.log("測試authorize：",req.get('content-type'))
         if (!token || !token.startsWith('Bearer ')) {
             return res.status(401).json({ error: 'No token provided' });
         }
@@ -20,6 +21,13 @@ module.exports = {
         } catch (error) {
             return res.status(403).json({ error: 'Invalid token' });
         }
+    },
+
+    authorize_json: (req,res,next) => {
+        const type = req.get('content-type')
+        if (type !== 'application/json'){
+            return res.status(415).json({ error: 'Invalid content type' })
+        } else { next(); }
     },
 
     generateToken: (payload) => {
