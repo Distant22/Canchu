@@ -36,7 +36,9 @@ module.exports = {
                     console.error('Database error:', error);
                     return res.status(500).json({ error: 'Server error' });
                 } else {
-                    const sql_event = 'INSERT INTO event (user_id,type,summary) VALUES (?,?,?)'
+
+                    const resultId = results.insertId
+		    const sql_event = 'INSERT INTO event (user_id,type,summary) VALUES (?,?,?)'
                     db.query(sql_event, [my_id,'friend_request',`ID ${friend_id} invited you to be friends.`], (error, results) => {
                         if (error) {
                             console.error('Database error:', error);
@@ -47,7 +49,7 @@ module.exports = {
                         res.status(200).json({
                             data: {
                                 friendship: {
-                                    id: results.insertId
+                                    id: resultId
                                 }
                             }
                         });
