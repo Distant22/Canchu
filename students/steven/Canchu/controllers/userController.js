@@ -1,8 +1,3 @@
-const mysql = require('mysql');
-const express = require('express')
-const app = express()
-const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
 const userModel = require('../models/userModel')
 const util = require('../utils/util')
 
