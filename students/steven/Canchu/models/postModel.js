@@ -84,6 +84,7 @@ module.exports = {
                 return res.status(500).json({ error: 'Server error' });
             } else {
                 const postSql = 'UPDATE post SET comment_count = comment_count + 1 WHERE id = ?'
+                console.log("測試：",postSql)
                 db.query(postSql, [post_id], (error, results) => {
                     if (error) {
                         console.error('Database error:', error);
