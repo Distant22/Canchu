@@ -16,6 +16,9 @@ app.use('/api/1.0/friends', friend_route);
 const event_route = require('./routes/eventRoutes');
 app.use('/api/1.0/events', event_route);
 
+const post_route = require('./routes/postRoutes');
+app.use('/api/1.0/posts', post_route);
+
 router.get('/', (req, res) => {res.send('Main Page listening! -Dt22')})
 
 app.listen(port, () => {
