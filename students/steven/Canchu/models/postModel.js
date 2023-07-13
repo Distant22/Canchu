@@ -45,6 +45,88 @@ module.exports = {
             })
         })
     },
+    createLike: async(res,id,post_id) => {
+        const sql = 'INSERT INTO postlike (user_id, post_id) VALUES (?,?)';
+        db.query(sql, [id, post_id], (error, results) => {
+            console.log("Insert user_id",id," and post_id ",post_id," into post like table")
+            if (error) {
+                console.error('Database error:', error);
+                return res.status(500).json({ error: 'Server error' });
+            } else {
+                const postSql = 'UPDATE post SET like_count = like_count + 1 WHERE id = ?'
+                db.query(postSql, [post_id], (error, results) => {
+                    if (error) {
+                        console.error('Database error:', error);
+                        return res.status(500).json({ error: 'Server error' });
+                    } else {
+                        const response = {
+                            data: {
+                                post: {
+                                    id: id
+                                }
+                            },
+                        };
+                        return res.status(200).json(response);
+                    }
+                })     
+            }
+        })
+    },
+    createComment: async(res,id,post_id,content) => {
+        const sql = 'INSERT INTO postcomment (user_id, post_id, text) VALUES (?,?,?)'
+        db.query(sql, [id, post_id, content], (error, results) => {
+            console.log("Insert user_id",id," and post_id ",post_id," and comment ",content," into post comment table")
+            if (error) {
+                console.error('Database error:', error);
+                return res.status(500).json({ error: 'Server error' });
+            } else {
+                const postSql = 'UPDATE post SET comment_count = comment_count + 1 WHERE id = ?'
+                db.query(postSql, [post_id], (error, results) => {
+                    if (error) {
+                        console.error('Database error:', error);
+                        return res.status(500).json({ error: 'Server error' });
+                    } else {
+                        const response = {
+                            data: {
+                                post: {
+                                    id: id
+                                }
+                            },
+                        };
+                        return res.status(200).json(response);
+                    }
+                })   
+            }
+        })
+    },
+    deleteLike: async(res,id,post_id) => {
+        const sql = 'DELETE FROM postlike WHERE user_id = ? AND post_id = ?';
+        db.query(sql, [id, post_id], (error, results) => {
+            console.log("Delete user_id",id," and post_id ",post_id," from post table")
+            if (error) {
+                console.error('Database error:', error);
+                return res.status(500).json({ error: 'Server error' });
+            }
+            else {
+                const postSql = 'UPDATE post SET like_count = like_count - 1 WHERE id = ?'
+                db.query(postSql, [id], (error, results) => {
+                    if (error) {
+                        console.error('Database error:', error);
+                        return res.status(500).json({ error: 'Server error' });
+                    } else {
+                        const response = {
+                            data: {
+                                post: {
+                                    id: id
+                                }
+                            },
+                        };
+                        return res.status(200).json(response);
+                    }
+                })     
+            }
+        })
+    },
     updatePost: async(res,id,post_id,context) => {
         const validateSql = 'SELECT user_id FROM post WHERE id = ?'
         db.query(validateSql, [post_id], (error, results) => {
@@ -75,6 +157,34 @@ module.exports = {
             		return res.status(200).json(response);
         	})
 	    }
+        })
+    },
+    getDetail: async(res,id,post_id) => {
+        const sql = "SELECT id, created_at, context, is_liked, like_count, comment_count, picture, name, comments FROM post WHERE id = ?"
+        db.query(sql, [post_id], (error, results) => {
+            if (error) {
+                console.error('Database error:', error);
+                return res.status(500).json({ error: 'Server error' });
+            } else {
+                const { id, created_at, context, is_liked, like_count, comment_count, picture, name, comments } = results[0];
+                console.log(results, id, created_at, context)
+                const response = {
+                    data: {
+                            post: {
+                                id: post_id,
+                                created_at: created_at,
+                                context: context,
+                                is_liked: is_liked,
+                                like_count: like_count,
+                                comment_count: comment_count,
+                                picture: picture,
+                                name: name,
+                                comments: comments
+                            }
+                    },
+                };
+                return res.status(200).json(response);
+            }
         })
     }
 }
