@@ -198,7 +198,7 @@ module.exports = {
                                     const { id, text, comment_created_at, user_id, name, picture } = result
                                     console.log("結果：",result)
                                     return {
-                                        id: parseInt(id,10),
+                                        id: id,
                                         created_at : comment_created_at,
                                         content: text,
                                         user : {
@@ -212,7 +212,7 @@ module.exports = {
                                 const response = {
                                     data: {
                                             post: {
-                                                id: post_id,
+                                                id: parseInt(post_id,10),
                                                 created_at: created_at,
                                                 context: context,
                                                 is_liked: count == 1 ? true : false,
