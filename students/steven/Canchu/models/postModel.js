@@ -83,6 +83,7 @@ module.exports = {
                 console.error('Database error:', error);
                 return res.status(500).json({ error: 'Server error' });
             } else {
+                const comment_id = results.insertId
                 const postSql = 'UPDATE post SET comment_count = comment_count + 1 WHERE id = ?'
                 console.log("測試：",postSql)
                 db.query(postSql, [post_id], (error, results) => {
@@ -94,6 +95,9 @@ module.exports = {
                             data: {
                                 post: {
                                     id: id
+                                },
+                                comment: {
+                                    id: comment_id
                                 }
                             },
                         };
