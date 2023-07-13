@@ -47,7 +47,7 @@ module.exports = {
     },
     updatePost: async(res,id,post_id,context) => {
         const validateSql = 'SELECT user_id FROM post WHERE id = ?'
-        db.query(validateSql, [context, post_id], (error, results) => {
+        db.query(validateSql, [post_id], (error, results) => {
             if (error) {
                 console.error('Database error:', error);
                 return res.status(500).json({ error: 'Server error' });
