@@ -26,18 +26,18 @@ module.exports = {
             }
             const name = results
             const postTime = new Date().toISOString().slice(0, 19).replace('T', ' ');
-            console.log("找到使用者名稱為：",name)
+            console.log("找到使用者名稱為：",name,"；發文內容為",context)
             const sql = 'INSERT INTO post ( user_id, created_at, context, name ) VALUES (?,?,?,?)';
             db.query(sql, [id, postTime, context, name], (error, results) => {
                 if (error) {
                     console.error('Database error:', error);
                     return res.status(500).json({ error: 'Server error' });
                 }
-                console.log("發文id",results.id)
+                console.log("發文id",results.insertId)
                 const response = {
                     data: {
                         post: {
-                            id: results.id
+                            id: results.insertId
                         }
                     },
                 };
@@ -53,7 +53,7 @@ module.exports = {
                 return res.status(500).json({ error: 'Server error' });
             }
             const user_id = results
-            console.log("找到使用者ID為：",user_id, results.user_id)
+            console.log("找到使用者ID為：",user_id, results.user_id,"；發文內容為：",context)
             if(user_id !== id){
                 console.error('Database error:', error);
                 return res.status(400).json({ error: 'This user has no permission to update post' });
@@ -65,11 +65,11 @@ module.exports = {
                 console.error('Database error:', error);
                 return res.status(500).json({ error: 'Server error' });
             }
-            console.log("發文id",results.id)
+            console.log("更新發文id",results.insertId)
             const response = {
                 data: {
                     post: {
-                        id: results.id
+                        id: results.insertId
                     }
                 },
             };
