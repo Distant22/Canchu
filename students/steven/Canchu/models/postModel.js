@@ -65,11 +65,11 @@ module.exports = {
                 console.error('Database error:', error);
                 return res.status(500).json({ error: 'Server error' });
             }
-            console.log("更新發文id",results.insertId)
+            console.log("更新發文id",post_id)
             const response = {
                 data: {
                     post: {
-                        id: results.insertId
+                        id: post_id
                     }
                 },
             };
