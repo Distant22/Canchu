@@ -26,13 +26,22 @@ module.exports = {
             }
             const name = results
             const postTime = new Date().toISOString().slice(0, 19).replace('T', ' ');
-            console.log("找到使用者名稱為：",name, results.name)
+            console.log("找到使用者名稱為：",name)
             const sql = 'INSERT INTO post ( user_id, created_at, context, name ) VALUES (?,?,?,?)';
             db.query(sql, [id, postTime, context, name], (error, results) => {
                 if (error) {
                     console.error('Database error:', error);
                     return res.status(500).json({ error: 'Server error' });
                 }
+                console.log("發文id",results.id)
+                const response = {
+                    data: {
+                        post: {
+                            id: results.id
+                        }
+                    },
+                };
+                return res.status(200).json(response);
             })
         })
     },
@@ -56,6 +65,15 @@ module.exports = {
                 console.error('Database error:', error);
                 return res.status(500).json({ error: 'Server error' });
             }
+            console.log("發文id",results.id)
+            const response = {
+                data: {
+                    post: {
+                        id: results.id
+                    }
+                },
+            };
+            return res.status(200).json(response);
         })
     }
 }
