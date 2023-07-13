@@ -166,14 +166,15 @@ module.exports = {
         })
     },
     getDetail: async(res,user_id,post_id) => {
-        console.error('Function:getDetail')
-        const sql = "SELECT id, created_at, context, is_liked, like_count, comment_count, picture, name FROM post WHERE id = ?"
+        console.log('Function:getDetail')
+        const sql = "SELECT id, created_at, context, like_count, comment_count, picture, name FROM post WHERE id = ?"
         db.query(sql, [post_id], (error, results) => {
             if (error) {
                 console.error('Database error:', error);
                 return res.status(500).json({ error: 'Server error' });
             } else {
                 const { id, created_at, context, like_count, comment_count, picture, name } = results[0];
+                console.log("第一層確認：",results[0],id, created_at, context, like_count, comment_count, picture, name)
                 const likedSql = "SELECT COUNT(*) AS is_liked FROM postlike WHERE user_id = ? AND post_id = ?"
                 db.query(likedSql, [id,post_id], (error, results) => {
                     if (error) {
@@ -181,12 +182,14 @@ module.exports = {
                         return res.status(500).json({ error: 'Server error' });
                     } else {
                         const count = results[0]
+                        console.log("第二層確認：",count,results)
                         const commentSql = "SELECT postcomment.id, postcomment.text, postcomment.created_at AS comment_created_at, users.id AS user_id , users.name, users.picture FROM postcomment LEFT JOIN users ON postcomment.user_id = users.id WHERE user_id = ? AND post_id = ?"
                         db.query(commentSql, [user_id,post_id], (error, results) => {
                             if (error) {
                                 console.error('Database error:', error);
                                 return res.status(500).json({ error: 'Server error' });
                             } else {
+                                console.log("第三層：",results)
                                 const commentList = results.map((result) => {
                                     const { id, text, comment_created_at, user_id, name, picture } = result
                                     console.log("結果：",result)
@@ -201,6 +204,7 @@ module.exports = {
                                         }
                                     };
                                 })
+                                console.log("第四層",commentList)
                                 const response = {
                                     data: {
                                             post: {
