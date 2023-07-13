@@ -18,6 +18,7 @@ db.connect((err) => {
 
 module.exports = {
     createPost: async(res,id,context) => {
+        console.error('Function:createPost')
         const userSql = 'SELECT name FROM users WHERE id = ?'
         db.query(userSql, [id], (error, results) => {
             if (error) {
@@ -46,6 +47,7 @@ module.exports = {
         })
     },
     createLike: async(res,id,post_id) => {
+        console.error('Function:createLike')
         const sql = 'INSERT INTO postlike (user_id, post_id) VALUES (?,?)';
         db.query(sql, [id, post_id], (error, results) => {
             console.log("Insert user_id",id," and post_id ",post_id," into post like table")
@@ -73,6 +75,7 @@ module.exports = {
         })
     },
     createComment: async(res,id,post_id,content) => {
+        console.error('Function:createComment')
         const sql = 'INSERT INTO postcomment (user_id, post_id, text) VALUES (?,?,?)'
         db.query(sql, [id, post_id, content], (error, results) => {
             console.log("Insert user_id",id," and post_id ",post_id," and comment ",content," into post comment table")
@@ -100,6 +103,7 @@ module.exports = {
         })
     },
     deleteLike: async(res,id,post_id) => {
+        console.error('Function:deleteLike')
         const sql = 'DELETE FROM postlike WHERE user_id = ? AND post_id = ?';
         db.query(sql, [id, post_id], (error, results) => {
             console.log("Delete user_id",id," and post_id ",post_id," from post table")
@@ -128,6 +132,7 @@ module.exports = {
         })
     },
     updatePost: async(res,id,post_id,context) => {
+        console.error('Function:updatePost')
         const validateSql = 'SELECT user_id FROM post WHERE id = ?'
         db.query(validateSql, [post_id], (error, results) => {
             if (error) {
@@ -159,7 +164,8 @@ module.exports = {
 	    }
         })
     },
-    getDetail: async(res,id,post_id) => {
+    getDetail: async(res,user_id,post_id) => {
+        console.error('Function:getDetail')
         const sql = "SELECT id, created_at, context, is_liked, like_count, comment_count, picture, name FROM post WHERE id = ?"
         db.query(sql, [post_id], (error, results) => {
             if (error) {
@@ -175,7 +181,7 @@ module.exports = {
                     } else {
                         const count = results[0]
                         const commentSql = "SELECT postcomment.id, postcomment.text, postcomment.created_at AS comment_created_at, users.id AS user_id , users.name, users.picture FROM postcomment LEFT JOIN users ON postcomment.user_id = users.id WHERE user_id = ? AND post_id = ?"
-                        db.query(commentSql, [id,post_id], (error, results) => {
+                        db.query(commentSql, [user_id,post_id], (error, results) => {
                             if (error) {
                                 console.error('Database error:', error);
                                 return res.status(500).json({ error: 'Server error' });
