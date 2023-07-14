@@ -22,6 +22,7 @@ module.exports = {
         try {
           const userSql = 'SELECT name FROM users WHERE id = ?';
           const results = db.query(userSql, [id]);
+	  console.log("Results:",results)
           const name = results[0].name;
           const postTime = new Date().toISOString().slice(0, 19).replace('T', ' ');
           const sql ='INSERT INTO post (user_id, created_at, context, name) VALUES (?, ?, ?, ?)';
