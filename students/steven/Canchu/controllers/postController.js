@@ -34,6 +34,7 @@ module.exports = {
     },
     getSearch: async(req,res) => {
         const { user_id, cursor } = req.query
+        console.log('controller測試：',user_id,cursor)
         await postModel.getSearch(res,user_id, cursor)
     },
 }
