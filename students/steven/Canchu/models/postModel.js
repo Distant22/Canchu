@@ -23,7 +23,7 @@ module.exports = {
             // Get User Name from Token
             const userSql = 'SELECT name FROM users WHERE id = ?';
             const [results] = await db.query(userSql, [id]) ;
-            const name = results[0].name
+          const name = results[0].name
             // Insert Post Details into post table
             const postTime = new Date().toISOString().slice(0, 19).replace('T', ' ');
             const sql ='INSERT INTO post (user_id, created_at, context, name) VALUES (?, ?, ?, ?)';
@@ -181,7 +181,7 @@ module.exports = {
                                 const response = {
                                     data: {
                                             post: {
-                                                id: post_id,
+                                                id: parseInt(post_id,10),
                                                 created_at: created_at,
                                                 context: context,
                                                 is_liked: count == 1 ? true : false,
