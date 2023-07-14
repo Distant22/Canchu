@@ -194,9 +194,8 @@ module.exports = {
     getSearch: async(res,user_id, cursor) =>  {
         console.log('Function:getSearch')
         try {
-            const sql = "SELECT id, created_at, context, like_count, comment_count, picture, name FROM post WHERE user_id = ?"
-            const [results] = await db.query(sql, [user_id])
-            console.log("使用者ID為",user_id)
+            const sql = (user_id === undefined) ? "SELECT id, created_at, context, like_count, comment_count, picture, name FROM post" : "SELECT id, created_at, context, like_count, comment_count, picture, name FROM post WHERE user_id = ?"
+            const [results] = (user_id === undefined) ? await db.query(sql) : await db.query(sql, [user_id])
             const postList = results.map((result) => {
                 const { id, created_at, context, like_count, comment_count, picture, name } = result;
                 console.log("取result:",result)
@@ -216,7 +215,7 @@ module.exports = {
                     next_cursor: cursor == undefined ? null : cursor
                 }
             }
-            return res.status(200).json(response)
+            return res.status(200).json(response);
         } catch (error) {
             return util.databaseError(error,'getSearch',res);
         }
