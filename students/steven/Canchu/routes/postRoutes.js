@@ -9,6 +9,7 @@ router.post('/:id/comment', [util.authorize_bearer], postController.createCommen
 
 router.put('/:id', [util.authorize_bearer], postController.updatePost);
 
+router.get('/search', [util.authorize_bearer], postController.getSearch)
 router.get('/:id', [util.authorize_bearer], postController.getDetail)
 
 router.delete('/:id/like', [util.authorize_bearer], postController.deleteLike);
