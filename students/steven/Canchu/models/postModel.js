@@ -192,11 +192,14 @@ module.exports = {
         }
     },
     getSearch: async(res,user_id, cursor) =>  {
+        console.log('Function:getSearch')
         try {
             const sql = "SELECT id, created_at, context, like_count, comment_count, picture, name FROM post WHERE user_id = ?"
             const [results] = await db.query(sql, [user_id])
+            console.log("使用者ID為",user_id)
             const postList = results.map((result) => {
                 const { id, created_at, context, like_count, comment_count, picture, name } = result;
+                console.log("取result:",result)
                 return {
                     id: id,
                     created_at : created_at,
