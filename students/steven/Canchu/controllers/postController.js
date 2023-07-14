@@ -29,8 +29,11 @@ module.exports = {
         await postModel.updatePost(res,id,post_id,context)
     },
     getDetail: async(req,res) => {
-        const id = req.user.id
         const post_id = req.params.id
-        await postModel.getDetail(res,id,post_id)
-    }
+        await postModel.getDetail(res,post_id)
+    },
+    getSearch: async(req,res) => {
+        const { user_id, cursor } = req.query
+        await postModel.getSearch(res,user_id, cursor)
+    },
 }
