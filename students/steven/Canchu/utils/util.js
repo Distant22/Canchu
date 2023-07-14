@@ -43,5 +43,11 @@ module.exports = {
         } else {
             return false
         }
+    },
+
+    databaseError: (error,fn,res) => {
+        console.error('Error happened at function -',fn)
+        console.error('Database error:', error);
+        return res.status(500).json({ error: 'Server error' });
     }
 }

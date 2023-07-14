@@ -17,157 +17,113 @@ db.connect((err) => {
 });
 
 module.exports = {
-    createPost: async(res,id,context) => {
-        console.error('Function:createPost')
-        const userSql = 'SELECT name FROM users WHERE id = ?'
-        db.query(userSql, [id], (error, results) => {
-            if (error) {
-                console.error('Database error:', error);
-                return res.status(500).json({ error: 'Server error' });
-            }
-            const name = results[0].name
-            const postTime = new Date().toISOString().slice(0, 19).replace('T', ' ');
-            console.log("找到使用者名稱為：",name,"；發文內容為",context)
-            const sql = 'INSERT INTO post ( user_id, created_at, context, name ) VALUES (?,?,?,?)';
-            db.query(sql, [id, postTime, context, name], (error, results) => {
-                if (error) {
-                    console.error('Database error:', error);
-                    return res.status(500).json({ error: 'Server error' });
-                }
-                console.log("發文id",results.insertId)
-                const response = {
-                    data: {
-                        post: {
-                            id: results.insertId
-                        }
-                    },
-                };
-                return res.status(200).json(response);
-            })
-        })
-    },
+    createPost: async (res, id, context) => {
+        console.error('Function: createPost');
+        try {
+          const userSql = 'SELECT name FROM users WHERE id = ?';
+          const results = db.query(userSql, [id]);
+          const name = results[0].name;
+          const postTime = new Date().toISOString().slice(0, 19).replace('T', ' ');
+          const sql ='INSERT INTO post (user_id, created_at, context, name) VALUES (?, ?, ?, ?)';
+          const postResults = db.query(sql, [id, postTime, context, name]);
+    
+          const response = {
+            data: {
+              post: {
+                id: postResults.insertId,
+              },
+            },
+          };
+          return res.status(200).json(response);
+        } catch (error) {
+            return util.databaseError(error,'createPost',res);
+        }
+      },
     createLike: async(res,id,post_id) => {
         console.error('Function:createLike')
-        const sql = 'INSERT INTO postlike (user_id, post_id) VALUES (?,?)';
-        db.query(sql, [id, post_id], (error, results) => {
-            console.log("Insert user_id",id," and post_id ",post_id," into post like table")
-            if (error) {
-                console.error('Database error:', error);
-                return res.status(500).json({ error: 'Server error' });
-            } else {
-                const postSql = 'UPDATE post SET like_count = like_count + 1 WHERE id = ?'
-                db.query(postSql, [post_id], (error, results) => {
-                    if (error) {
-                        console.error('Database error:', error);
-                        return res.status(500).json({ error: 'Server error' });
-                    } else {
-                        const response = {
-                            data: {
-                                post: {
-                                    id: id
-                                }
-                            },
-                        };
-                        return res.status(200).json(response);
+        try {
+            const sql = 'INSERT INTO postlike (user_id, post_id) VALUES (?,?)';
+            db.query(sql, [id, post_id]);
+            const postSql = 'UPDATE post SET like_count = like_count + 1 WHERE id = ?'
+            db.query(postSql, [post_id]);
+            const response = {
+                data: {
+                    post: {
+                        id: id
                     }
-                })     
-            }
-        })
+                },
+            };
+            return res.status(200).json(response);
+        } catch (error) {
+            return util.databaseError(error,'createLike',res);
+        }
     },
     createComment: async(res,id,post_id,content) => {
-        console.error('Function:createComment')
-        const sql = 'INSERT INTO postcomment (user_id, post_id, text) VALUES (?,?,?)'
-        db.query(sql, [id, post_id, content], (error, results) => {
-            console.log("Insert user_id",id," and post_id ",post_id," and comment ",content," into post comment table")
-            if (error) {
-                console.error('Database error:', error);
-                return res.status(500).json({ error: 'Server error' });
-            } else {
-                const comment_id = results.insertId
-                const postSql = 'UPDATE post SET comment_count = comment_count + 1 WHERE id = ?'
-                console.log("測試：",postSql)
-                db.query(postSql, [post_id], (error, results) => {
-                    if (error) {
-                        console.error('Database error:', error);
-                        return res.status(500).json({ error: 'Server error' });
-                    } else {
-                        const response = {
-                            data: {
-                                post: {
-                                    id: id
-                                },
-                                comment: {
-                                    id: comment_id
-                                }
-                            },
-                        };
-                        return res.status(200).json(response);
+        try {
+            const sql = 'INSERT INTO postcomment (user_id, post_id, text, created_at) VALUES (?,?,?,?)'
+            const commentTime = new Date().toISOString().slice(0, 19).replace('T', ' ');
+            const results = db.query(sql, [id, post_id, content, commentTime]);
+            const comment_id = results.insertId
+            const postSql = 'UPDATE post SET comment_count = comment_count + 1 WHERE id = ?'
+            db.query(postSql, [post_id]);
+
+            const response = {
+                data: {
+                    post: {
+                        id: id
+                    },
+                    comment: {
+                        id: comment_id
                     }
-                })   
-            }
-        })
+                },
+            };
+            return res.status(200).json(response);
+        } catch (error) {
+            return util.databaseError(error,'createComment',res);
+        }
     },
     deleteLike: async(res,id,post_id) => {
-        console.error('Function:deleteLike')
-        const sql = 'DELETE FROM postlike WHERE user_id = ? AND post_id = ?';
-        db.query(sql, [id, post_id], (error, results) => {
-            console.log("Delete user_id",id," and post_id ",post_id," from post table")
-            if (error) {
-                console.error('Database error:', error);
-                return res.status(500).json({ error: 'Server error' });
-            }
-            else {
-                const postSql = 'UPDATE post SET like_count = like_count - 1 WHERE id = ?'
-                db.query(postSql, [id], (error, results) => {
-                    if (error) {
-                        console.error('Database error:', error);
-                        return res.status(500).json({ error: 'Server error' });
-                    } else {
-                        const response = {
-                            data: {
-                                post: {
-                                    id: id
-                                }
-                            },
-                        };
-                        return res.status(200).json(response);
+        try {
+            const sql = 'DELETE FROM postlike WHERE user_id = ? AND post_id = ?';
+            db.query(sql, [id, post_id]);
+            const postSql = 'UPDATE post SET like_count = like_count - 1 WHERE id = ?'
+            db.query(postSql, [id]);
+            const response = {
+                data: {
+                    post: {
+                        id: id
                     }
-                })     
-            }
-        })
+                },
+            };
+            return res.status(200).json(response);
+        } catch (error) {
+            return util.databaseError(error,'deleteLike',res);
+        }
     },
     updatePost: async(res,id,post_id,context) => {
-        console.error('Function:updatePost')
-        const validateSql = 'SELECT user_id FROM post WHERE id = ?'
-        db.query(validateSql, [post_id], (error, results) => {
-            if (error) {
-                console.error('Database error:', error);
-                return res.status(500).json({ error: 'Server error' });
-            }
+        try {
+            console.error('Function:updatePost')
+            const validateSql = 'SELECT user_id FROM post WHERE id = ?'
+            const results = db.query(validateSql, [post_id])
             const user_id = results[0].user_id
-            console.log("找到使用者ID為：",user_id, "；發文內容為：",context)
             if(user_id !== id){
                 console.error('Database error:', error);
                 return res.status(400).json({ error: 'This user has no permission to update post' });
             } else {
-	    	const sql = 'UPDATE post SET context = ? WHERE id = ?';
-        	db.query(sql, [context, post_id], (error, results) => {
-            		if (error) {
-                		console.error('Database error:', error);
-                		return res.status(500).json({ error: 'Server error' });
-            		}
-            		console.log("更新發文id",post_id)
-            		const response = {
-                		data: {
-                    			post: {
-                        			id: post_id
-                    			}
-                		},
-            		};
-            		return res.status(200).json(response);
-        	})
-	    }
-        })
+                const sql = 'UPDATE post SET context = ? WHERE id = ?';
+                db.query(sql, [context, post_id])
+                const response = {
+                    data: {
+                            post: {
+                                id: post_id
+                            }
+                    },
+                };
+                return res.status(200).json(response);
+            }
+        } catch (error) {
+            return util.databaseError(error,'updatePost',res);
+        }
     },
     getDetail: async(res,user_id,post_id) => {
         console.log('Function:getDetail')
