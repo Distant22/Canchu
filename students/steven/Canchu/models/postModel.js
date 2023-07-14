@@ -140,67 +140,51 @@ module.exports = {
     },
     getDetail: async(res,user_id,post_id) => {
         console.log('Function:getDetail')
+        // Select required information from post table given post ID
         const sql = "SELECT id, created_at, context, like_count, comment_count, picture, name FROM post WHERE id = ?"
-        db.query(sql, [post_id], (error, results) => {
-            if (error) {
-                console.error('Database error:', error);
-                return res.status(500).json({ error: 'Server error' });
-            } else {
-                const { id, created_at, context, like_count, comment_count, picture, name } = results[0];
-                console.log("第一層確認：",results[0],id, created_at, context, like_count, comment_count, picture, name)
-                const likedSql = "SELECT COUNT(*) AS is_liked FROM postlike WHERE user_id = ? AND post_id = ?"
-                db.query(likedSql, [id,post_id], (error, results) => {
-                    if (error) {
-                        console.error('Database error:', error);
-                        return res.status(500).json({ error: 'Server error' });
-                    } else {
-                        const count = results[0]
-                        console.log("第二層確認：",count,results)
-                        const commentSql = "SELECT postcomment.id, postcomment.text, postcomment.created_at AS comment_created_at, users.id AS user_id , users.name, users.picture FROM postcomment LEFT JOIN users ON postcomment.user_id = users.id WHERE user_id = ? AND post_id = ?"
-                        db.query(commentSql, [user_id,post_id], (error, results) => {
-                            if (error) {
-                                console.error('Database error:', error);
-                                return res.status(500).json({ error: 'Server error' });
-                            } else {
-                                console.log("第三層：",results)
-                                const commentList = results.map((result) => {
-                                    const { id, text, comment_created_at, user_id, name, picture } = result
-                                    console.log("結果：",result)
-                                    return {
-                                        id: id,
-                                        created_at : comment_created_at,
-                                        content: text,
-                                        user : {
-                                            id: user_id,
-                                            name: name,
-                                            picture: picture
-                                        }
-                                    };
-                                })
-                                console.log("第四層",commentList)
-                                const response = {
-                                    data: {
-                                            post: {
-                                                id: parseInt(post_id,10),
-                                                created_at: created_at,
-                                                context: context,
-                                                is_liked: count == 1 ? true : false,
-                                                like_count: like_count,
-                                                comment_count: comment_count,
-                                                picture: picture,
-                                                name: name,
-                                                comments: commentList
-                                            }
-                                    },
-                                };
-                                console.log("取得Detail：",commentList,response)
-                                return res.status(200).json(response);
-                            }
-                        })        
-                        
-                    }
-                })
-            }
+        const [results] = await db.query(sql, [post_id])
+        const { id, created_at, context, like_count, comment_count, picture, name } = results[0];
+        console.log("第一層確認：",results[0],id, created_at, context, like_count, comment_count, picture, name)
+        // Select like count from postlike table given user ID and post ID
+        const likedSql = "SELECT COUNT(*) AS is_liked FROM postlike WHERE user_id = ? AND post_id = ?"
+        const [count] = await db.query(likedSql, [id,post_id])
+        console.log("第二層確認：",count)
+        // Select needed user and comment information from join table given user ID and post ID
+        const commentSql = "SELECT postcomment.id, postcomment.text, postcomment.created_at AS comment_created_at, users.id AS user_id , users.name, users.picture FROM postcomment LEFT JOIN users ON postcomment.user_id = users.id WHERE user_id = ? AND post_id = ?"
+        const [results_join] = await db.query(commentSql, [user_id,post_id])
+        console.log("第三層確認：",results_join)
+        // Map the results
+        const commentList = results.map((result) => {
+            const { id, text, comment_created_at, user_id, name, picture } = results_join
+            console.log("第四層結果：",result)
+            return {
+                id: id,
+                created_at : comment_created_at,
+                content: text,
+                user : {
+                    id: user_id,
+                    name: name,
+                    picture: picture
+                }
+            };
         })
+        // Response the post object containing comments and users information
+        const response = {
+            data: {
+                    post: {
+                        id: parseInt(post_id,10),
+                        created_at: created_at,
+                        context: context,
+                        is_liked: count == 1 ? true : false,
+                        like_count: like_count,
+                        comment_count: comment_count,
+                        picture: picture,
+                        name: name,
+                        comments: commentList
+                    }
+            },
+        };
+        console.log("取得Detail：",commentList,response)
+        return res.status(200).json(response);
     }
 }
