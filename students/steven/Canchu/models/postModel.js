@@ -155,7 +155,7 @@ module.exports = {
         console.log("第三層確認：",results_join)
         // Map the results
         const commentList = results.map((result) => {
-            const { id, text, comment_created_at, user_id, name, picture } = results_join
+            const { id, text, comment_created_at, user_id, name, picture } = result
             console.log("第四層結果：",result)
             return {
                 id: id,
