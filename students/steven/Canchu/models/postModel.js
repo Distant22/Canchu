@@ -1,51 +1,57 @@
-const mysql = require('mysql');
+const mysql = require('mysql2/promise');
 const bcrypt = require('bcrypt');
 const util = require('../utils/util')
 
-const db = mysql.createConnection({
+const db = mysql.createPool({
 	host: process.env.DB_HOST || 'localhost',
 	user: process.env.DB_USERNAME,
 	password: process.env.DB_PASSWORD,
 	database: 'user'
 });
 
-db.connect((err) => {
-	if (err) {
-		throw err;
-	}
-	console.log('Event Model：Connected to MySQL database');
-});
+// db.connect((err) => {
+// 	if (err) {
+// 		throw err;
+// 	}
+// 	console.log('Post Model：Connected to MySQL database');
+// });
 
 module.exports = {
     createPost: async (res, id, context) => {
         console.error('Function: createPost');
         try {
-          const userSql = 'SELECT name FROM users WHERE id = ?';
-          const results = db.query(userSql, [id]);
-          const name = results[0].name;
-          const postTime = new Date().toISOString().slice(0, 19).replace('T', ' ');
-          const sql ='INSERT INTO post (user_id, created_at, context, name) VALUES (?, ?, ?, ?)';
-          const postResults = db.query(sql, [id, postTime, context, name]);
-    
-          const response = {
-            data: {
-              post: {
-                id: postResults.insertId,
-              },
-            },
-          };
-          return res.status(200).json(response);
+            // Get User Name from Token
+            const userSql = 'SELECT name FROM users WHERE id = ?';
+            const [results] = await db.query(userSql, [id]) ;
+            const name = results[0].name
+            // Insert Post Details into post table
+            const postTime = new Date().toISOString().slice(0, 19).replace('T', ' ');
+            const sql ='INSERT INTO post (user_id, created_at, context, name) VALUES (?, ?, ?, ?)';
+            const [postResults] = await db.query(sql, [id, postTime, context, name]);
+            const insertId = postResults.insertId
+            // Response ID
+            const response = {
+                data: {
+                    post: {
+                        id: insertId,
+                    },
+                },
+            };
+            return res.status(200).json(response);
         } catch (error) {
             return util.databaseError(error,'createPost',res);
         }
-      },
+    },
     createLike: async(res,id,post_id) => {
         console.error('Function:createLike')
         try {
+            // Insert userID and postID into postlike table
             const sql = 'INSERT INTO postlike (user_id, post_id) VALUES (?,?)';
-            db.query(sql, [id, post_id]);
+            await db.query(sql, [id, post_id]);
+            // Update like count in post table
             const postSql = 'UPDATE post SET like_count = like_count + 1 WHERE id = ?'
-            db.query(postSql, [post_id]);
+            await db.query(postSql, [post_id]);
+            // Response ID
             const response = {
                 data: {
                     post: {
@@ -60,13 +66,15 @@ module.exports = {
     },
     createComment: async(res,id,post_id,content) => {
         try {
+            // Insert userID, postID, comment and time into postcomment table
             const sql = 'INSERT INTO postcomment (user_id, post_id, text, created_at) VALUES (?,?,?,?)'
             const commentTime = new Date().toISOString().slice(0, 19).replace('T', ' ');
-            const results = db.query(sql, [id, post_id, content, commentTime]);
+            const [results] = await db.query(sql, [id, post_id, content, commentTime]);
+            // Update comment count in post table
             const comment_id = results.insertId
             const postSql = 'UPDATE post SET comment_count = comment_count + 1 WHERE id = ?'
-            db.query(postSql, [post_id]);
-
+            await db.query(postSql, [post_id]);
+            // Response ID and commentID
             const response = {
                 data: {
                     post: {
@@ -84,10 +92,13 @@ module.exports = {
     },
     deleteLike: async(res,id,post_id) => {
         try {
+            // Delete rows that contains given ID in postlike table
             const sql = 'DELETE FROM postlike WHERE user_id = ? AND post_id = ?';
-            db.query(sql, [id, post_id]);
+            await db.query(sql, [id, post_id]);
+            // Update like count in post table
             const postSql = 'UPDATE post SET like_count = like_count - 1 WHERE id = ?'
-            db.query(postSql, [id]);
+            await db.query(postSql, [id]);
+            // Response ID
             const response = {
                 data: {
                     post: {
@@ -102,16 +113,18 @@ module.exports = {
     },
     updatePost: async(res,id,post_id,context) => {
         try {
-            console.error('Function:updatePost')
+            // Get user ID given post ID in post table
             const validateSql = 'SELECT user_id FROM post WHERE id = ?'
-            const results = db.query(validateSql, [post_id])
+            const [results] = await db.query(validateSql, [post_id])
             const user_id = results[0].user_id
-            if(user_id !== id){
-                console.error('Database error:', error);
+            // Validate Permission
+            if(user_id !== id){ 
                 return res.status(400).json({ error: 'This user has no permission to update post' });
             } else {
+                // Update post to given content on specified post ID
                 const sql = 'UPDATE post SET context = ? WHERE id = ?';
-                db.query(sql, [context, post_id])
+                await db.query(sql, [context, post_id])
+                // Response post ID
                 const response = {
                     data: {
                             post: {
