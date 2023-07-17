@@ -204,7 +204,7 @@ module.exports = {
                 ON
                     p.user_id = f.user_id
                 WHERE
-                    f.status = 'friend' OR p.user_id = f.friend_id AND f.status = 'friend'
+                    (f.status = 'friend' AND f.user_id = ?) OR (f.friend_id = ? AND f.status = 'friend')
             )
             SELECT
                 mp.id, mp.created_at, mp.context, mp.like_count, mp.comment_count, mp.picture, mp.name
@@ -217,7 +217,7 @@ module.exports = {
             LIMIT 10 OFFSET ?`
              : 
             "SELECT (SELECT COUNT(*) FROM post WHERE user_id = ?) AS count, id, created_at, context, like_count, comment_count, picture, name FROM post WHERE user_id = ? LIMIT 10 OFFSET ?"
-            var [results] = (user_id === undefined) ? await db.query(sql,[token_id,token_id,token_id,decode_cursor]) : await db.query(sql, [user_id,user_id,decode_cursor])
+            var [results] = (user_id === undefined) ? await db.query(sql,[token_id,token_id,token_id,token_id,token_id,decode_cursor]) : await db.query(sql, [user_id,user_id,decode_cursor])
             console.log("結果樣子：",results)
             const count = results[0] === undefined ? 0 : results[0].count
             var next_cursor = null
