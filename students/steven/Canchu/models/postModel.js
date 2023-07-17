@@ -238,13 +238,8 @@ module.exports = {
             var [results] = (user_id === undefined) ? await db.query(sql,[token_id,token_id,token_id,token_id,token_id,decode_cursor]) : await db.query(sql, [user_id,user_id,decode_cursor])
             console.log("結果樣子：",results,"長度：",results.length)
             const count = results.length
-            var next_cursor = null
-            if(count - decode_cursor > 10){
-                next_cursor = Buffer.from((decode_cursor+10).toString(), 'ascii').toString('base64');
-                console.log("我要看！",next)
-            }
             const postList = results[0] === undefined ? [] : results.map((result) => {
-                const { count, id, created_at, context, like_count, comment_count, picture, name } = result;
+                const { id, created_at, context, like_count, comment_count, picture, name } = result;
                 console.log("取result:",result)
                 return {
                     id: id,
@@ -259,7 +254,7 @@ module.exports = {
             const response = {
                 data: {
                     posts: postList,
-                    next_cursor: next_cursor
+                    next_cursor: (count - decode_cursor > 10) ? Buffer.from((decode_cursor+10).toString(), 'ascii').toString('base64') : null
                 }
             }
             return res.status(200).json(response);
