@@ -21,7 +21,6 @@ module.exports = {
                 .get(`https://graph.facebook.com/v17.0/me?fields=id,name,email&access_token=${access_token}`)
                 .then((response) => { 
                     const {id, name, email} = response.data;
-                    // console.log("Facebook success!Data is:",response.data)
                     const user = {
                         id,
                         provider,
