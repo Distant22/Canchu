@@ -188,7 +188,6 @@ module.exports = {
             const sql = (user_id === undefined) ? 
             `WITH my_post AS (
                 SELECT
-                    (SELECT COUNT(*) FROM post WHERE user_id = ?) AS count,
                     id, created_at, context, like_count, comment_count, picture, name
                 FROM
                     post
@@ -204,7 +203,6 @@ module.exports = {
             ),
             friend_post AS (
                 SELECT
-                    (SELECT COUNT(*) FROM post WHERE user_id = ?) AS count,
                     p.id, p.created_at, p.context, p.like_count, p.comment_count, p.picture, p.name
                 FROM
                     post AS p
@@ -216,6 +214,7 @@ module.exports = {
                     )
             )
             SELECT
+                COUNT(*) AS count,
                 mp.id, mp.created_at, mp.context, mp.like_count, mp.comment_count, mp.picture, mp.name
             FROM
                 my_post AS mp UNION
