@@ -195,6 +195,13 @@ module.exports = {
                 WHERE
                     user_id = ?
             ),
+            WITH friend_search AS (
+                SELECT 
+                    f.user_id, f.friend_id 
+                FROM 
+                    friendship AS f
+                WHERE (f.user_id = ? AND f.status = friend) OR (f.status = friend AND f.friend_id = ?) 
+            ),
             friend_post AS (
                 SELECT
                     (SELECT COUNT(*) FROM post WHERE user_id = ?) AS count,
@@ -204,7 +211,7 @@ module.exports = {
                 ON
                     p.user_id = f.user_id
                 WHERE
-                    (f.status = 'friend' AND f.user_id = ?) OR (f.friend_id = ? AND f.status = 'friend')
+                    p.user_id = friend_search.user_id OR p.user_id = friend_search.friend_id
             )
             SELECT
                 mp.id, mp.created_at, mp.context, mp.like_count, mp.comment_count, mp.picture, mp.name
