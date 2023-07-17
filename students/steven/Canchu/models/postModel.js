@@ -195,7 +195,7 @@ module.exports = {
                 WHERE
                     user_id = ?
             ),
-            WITH friend_search AS (
+            friend_search AS (
                 SELECT 
                     f.user_id, f.friend_id 
                 FROM 
