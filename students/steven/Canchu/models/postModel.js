@@ -186,15 +186,40 @@ module.exports = {
             console.log("解碼後的Cursor：",decode_cursor,"傳入的User_ID和Token_ID：",user_id,token_id)
             // 如果有沒有ID：回傳自己的文章
             const sql = (user_id === undefined) ? 
-            "SELECT (SELECT COUNT(*) FROM post WHERE user_id = ?) AS count, id, created_at, context, like_count, comment_count, picture, name FROM post WHERE user_id = ? LIMIT 10 OFFSET ?" : 
+            `WITH my_post AS (
+                SELECT
+                    (SELECT COUNT(*) FROM post WHERE user_id = ?) AS count,
+                    id, created_at, context, like_count, comment_count, picture, name
+                FROM
+                    post
+                WHERE
+                    user_id = ?
+            ),
+            friend_post AS (
+                SELECT
+                    (SELECT COUNT(*) FROM post WHERE user_id = ?) AS count,
+                    p.id, p.created_at, p.context, p.like_count, p.comment_count, p.picture, p.name
+                FROM
+                    post AS p LEFT JOIN friendship AS f
+                ON
+                    p.user_id = f.user_id
+                WHERE
+                    f.status = 'friend' OR p.user_id = f.friend_id AND f.status = 'friend'
+            )
+            SELECT
+                mp.id, mp.created_at, mp.context, mp.like_count, mp.comment_count, mp.picture, mp.name
+            FROM
+                my_post AS mp UNION
+            SELECT
+                fp.id, fp.created_at, fp.context, fp.like_count, fp.comment_count, fp.picture, fp.name
+            FROM
+                friend_post AS fp
+            LIMIT 10 OFFSET ?`
+             : 
             "SELECT (SELECT COUNT(*) FROM post WHERE user_id = ?) AS count, id, created_at, context, like_count, comment_count, picture, name FROM post WHERE user_id = ? LIMIT 10 OFFSET ?"
-            var [results] = (user_id === undefined) ? await db.query(sql,[token_id,token_id,decode_cursor]) : await db.query(sql, [user_id,user_id,decode_cursor])
-            console.log("結果樣子：",results[0])
+            var [results] = (user_id === undefined) ? await db.query(sql,[token_id,token_id,token_id,decode_cursor]) : await db.query(sql, [user_id,user_id,decode_cursor])
+            console.log("結果樣子：",results)
             const count = results[0] === undefined ? 0 : results[0].count
-            var random_sql = "SELECT id, created_at, context, like_count, comment_count, picture, name FROM post LIMIT 1 OFFSET 0"
-            if (count === 0){
-                [results] = await db.query(random_sql)
-            }
             var next_cursor = null
             if(count - decode_cursor > 10){
                 next_cursor = Buffer.from((decode_cursor+10).toString(), 'ascii').toString('base64');
