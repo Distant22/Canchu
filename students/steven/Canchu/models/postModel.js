@@ -207,11 +207,13 @@ module.exports = {
                     (SELECT COUNT(*) FROM post WHERE user_id = ?) AS count,
                     p.id, p.created_at, p.context, p.like_count, p.comment_count, p.picture, p.name
                 FROM
-                    post AS p LEFT JOIN friend_search
-                ON
-                    p.user_id = friend_search.user_id
-                OR 
-                    p.user_id = friend_search.friend_id
+                    post AS p
+                WHERE
+                    p.user_id IN (
+                        SELECT user_id FROM friend_search
+                        UNION
+                        SELECT friend_id FROM friend_search
+                    )
             )
             SELECT
                 mp.id, mp.created_at, mp.context, mp.like_count, mp.comment_count, mp.picture, mp.name
