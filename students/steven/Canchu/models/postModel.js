@@ -189,7 +189,7 @@ module.exports = {
             "SELECT (SELECT COUNT(*) FROM post WHERE user_id = ?) AS count, id, created_at, context, like_count, comment_count, picture, name FROM post WHERE user_id = ? LIMIT 10 OFFSET ?" : 
             "SELECT (SELECT COUNT(*) FROM post WHERE user_id = ?) AS count, id, created_at, context, like_count, comment_count, picture, name FROM post WHERE user_id = ? LIMIT 10 OFFSET ?"
             const [results] = (user_id === undefined) ? await db.query(sql,[token_id,token_id,decode_cursor]) : await db.query(sql, [user_id,user_id,decode_cursor])
-            console.log("結果樣子：",results[0].count)
+            console.log("結果樣子：",results[0])
             const count = results[0].count
             var next_cursor = null
             if(count - decode_cursor > 10){
