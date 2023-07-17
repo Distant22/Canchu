@@ -219,9 +219,12 @@ module.exports = {
             FROM
                 my_post AS mp UNION
             SELECT
+                COUNT(*) AS count,
                 fp.id, fp.created_at, fp.context, fp.like_count, fp.comment_count, fp.picture, fp.name
             FROM
                 friend_post AS fp
+            GROUP BY
+                count
             LIMIT 10 OFFSET ?`
              : 
             "SELECT (SELECT COUNT(*) FROM post WHERE user_id = ?) AS count, id, created_at, context, like_count, comment_count, picture, name FROM post WHERE user_id = ? LIMIT 10 OFFSET ?"
