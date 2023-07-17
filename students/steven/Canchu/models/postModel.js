@@ -183,7 +183,7 @@ module.exports = {
         console.log('Function:getSearch')
         try {
             const decode_cursor = cursor === undefined ? 1 : Number(Buffer.from(cursor, 'base64').toString('ascii'))
-            console.log("解碼後的Cursor：",decode_cursor,"傳入的User_ID：",user_id)
+            console.log("解碼後的Cursor：",decode_cursor,"傳入的User_ID和Token_ID：",user_id,token_id)
             // 如果有沒有ID：回傳自己的文章
             const sql = (user_id === undefined) ? 
             "SELECT (SELECT COUNT(*) FROM post WHERE user_id = ?) AS count, id, created_at, context, like_count, comment_count, picture, name FROM post WHERE user_id = ? LIMIT 10 OFFSET ?" : 
