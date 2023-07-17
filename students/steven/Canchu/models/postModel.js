@@ -191,9 +191,8 @@ module.exports = {
             var [results] = (user_id === undefined) ? await db.query(sql,[token_id,token_id,decode_cursor]) : await db.query(sql, [user_id,user_id,decode_cursor])
             console.log("結果樣子：",results[0])
             const count = results[0] === undefined ? 0 : results[0].count
-            var random_sql = ''
+            var random_sql = "SELECT count, id, created_at, context, like_count, comment_count, picture, name FROM post LIMIT 1 OFFSET 0"
             if (count === 0){
-                random_sql = "SELECT count, id, created_at, context, like_count, comment_count, picture, name FROM post LIMIT 1 OFFSET 0"
                 [results] = await db.query(random_sql)
             }
             var next_cursor = null
