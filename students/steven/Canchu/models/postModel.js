@@ -188,6 +188,7 @@ module.exports = {
             const sql = (user_id === undefined) ? 
             `WITH my_post AS (
                 SELECT
+                    (SELECT COUNT(*) FROM post WHERE user_id = ?) AS count,
                     id, created_at, context, like_count, comment_count, picture, name
                 FROM
                     post
@@ -203,35 +204,44 @@ module.exports = {
             ),
             friend_post AS (
                 SELECT
+                    (SELECT COUNT(*) FROM post WHERE user_id = ?) AS count,
                     p.id, p.created_at, p.context, p.like_count, p.comment_count, p.picture, p.name
                 FROM
                     post AS p
                 WHERE
                     p.user_id IN (
-                        SELECT user_id FROM friend_search
-                        UNION
-                        SELECT friend_id FROM friend_search
-                    )
+                    SELECT user_id FROM friend_search
+                    UNION
+                    SELECT friend_id FROM friend_search
+                )
             )
             SELECT
+                COUNT(*) AS count,
                 mp.id, mp.created_at, mp.context, mp.like_count, mp.comment_count, mp.picture, mp.name
             FROM
                 my_post AS mp 
+            GROUP BY
+                mp.count, mp.id, mp.created_at, mp.context, mp.like_count, mp.comment_count, mp.picture, mp.name
             UNION
             SELECT
+                COUNT(*) AS count,
                 fp.id, fp.created_at, fp.context, fp.like_count, fp.comment_count, fp.picture, fp.name
             FROM
                 friend_post AS fp
-            LIMIT 10 OFFSET ?`
+            GROUP BY
+                fp.count, fp.id, fp.created_at, fp.context, fp.like_count, fp.comment_count, fp.picture, fp.name
+            LIMIT
+                10 OFFSET ?;
+            `
              : 
             "SELECT (SELECT COUNT(*) FROM post WHERE user_id = ?) AS count, id, created_at, context, like_count, comment_count, picture, name FROM post WHERE user_id = ? LIMIT 10 OFFSET ?"
             var [results] = (user_id === undefined) ? await db.query(sql,[token_id,token_id,token_id,token_id,token_id,decode_cursor]) : await db.query(sql, [user_id,user_id,decode_cursor])
-            console.log("結果樣子：",results)
+            console.log("結果樣子：",results,"長度：",results.length)
             const count = results.length
             var next_cursor = null
             if(count - decode_cursor > 10){
                 next_cursor = Buffer.from((decode_cursor+10).toString(), 'ascii').toString('base64');
-                console.log("我要看！",next_cursor)
+                console.log("我要看！",next)
             }
             const postList = results[0] === undefined ? [] : results.map((result) => {
                 const { count, id, created_at, context, like_count, comment_count, picture, name } = result;
