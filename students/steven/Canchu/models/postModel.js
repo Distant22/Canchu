@@ -9,13 +9,6 @@ const db = mysql.createPool({
 	database: 'user'
 });
 
-// db.connect((err) => {
-// 	if (err) {
-// 		throw err;
-// 	}
-// 	console.log('Post Model：Connected to MySQL database');
-// });
-
 module.exports = {
     createPost: async (res, id, context) => {
         console.error('Function: createPost');
@@ -23,7 +16,7 @@ module.exports = {
             // Get User Name from Token
             const userSql = 'SELECT name FROM users WHERE id = ?';
             const [results] = await db.query(userSql, [id]) ;
-          const name = results[0].name
+            const name = results[0].name
             // Insert Post Details into post table
             const postTime = new Date().toISOString().slice(0, 19).replace('T', ' ');
             const sql ='INSERT INTO post (user_id, created_at, context, name) VALUES (?, ?, ?, ?)';
@@ -145,19 +138,15 @@ module.exports = {
             const sql = "SELECT id, created_at, context, like_count, comment_count, picture, name FROM post WHERE id = ?"
             const [results] = await db.query(sql, [post_id])
             const { id, created_at, context, like_count, comment_count, picture, name } = results[0];
-            console.log("第一層確認：",results,id, created_at, context, like_count, comment_count, picture, name)
             // Select like count from postlike table given user ID and post ID
             const likedSql = "SELECT COUNT(*) AS is_liked FROM postlike WHERE user_id = ? AND post_id = ?"
             const [count] = await db.query(likedSql, [id,post_id])
-            console.log("第二層確認：",count)
             // Select needed user and comment information from join table given user ID and post ID
             const commentSql = "SELECT postcomment.id, postcomment.text, postcomment.created_at AS comment_created_at, users.id AS user_id , users.name, users.picture FROM postcomment LEFT JOIN users ON postcomment.user_id = users.id WHERE post_id = ?"
             const [results_join] = await db.query(commentSql, [post_id])
-            console.log("第三層確認：",results_join)
             // Map the results
             const commentList = results_join.map((result) => {
                 const { id, text, comment_created_at, user_id, name, picture } = result
-                console.log("第四層結果：",result)
                 return {
                     id: id,
                     created_at : comment_created_at,
@@ -185,7 +174,6 @@ module.exports = {
                         }
                 },
             };
-            console.log("取得Detail：",commentList,response)
             return res.status(200).json(response);
         } catch (error) {
             return util.databaseError(error,'getDetail',res);
