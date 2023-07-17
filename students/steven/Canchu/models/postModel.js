@@ -233,7 +233,7 @@ module.exports = {
             "SELECT (SELECT COUNT(*) FROM post WHERE user_id = ?) AS count, id, created_at, context, like_count, comment_count, picture, name FROM post WHERE user_id = ? LIMIT 10 OFFSET ?"
             var [results] = (user_id === undefined) ? await db.query(sql,[token_id,token_id,token_id,token_id,token_id,decode_cursor]) : await db.query(sql, [user_id,user_id,decode_cursor])
             console.log("結果樣子：",results,"長度：",results.length,"Decode Cursor為：",decode_cursor,"Count為：",results.length)
-            const count = results[0].count
+            const count = 0
             const postList = results[0] === undefined ? [] : results.map((result) => {
                 const { id, created_at, context, like_count, comment_count, picture, name } = result;
                 console.log("取result:",result)
