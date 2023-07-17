@@ -210,33 +210,26 @@ module.exports = {
                     post AS p
                 WHERE
                     p.user_id IN (
-                        SELECT user_id FROM friend_search
-                        UNION
-                        SELECT friend_id FROM friend_search
-                    )
+                    SELECT user_id FROM friend_search
+                    UNION
+                    SELECT friend_id FROM friend_search
+                )
             )
             SELECT
-                my_post_count,
-                friend_post_count,
-                id, created_at, context, like_count, comment_count, picture, name
+                COUNT(*) AS count,
+                mp.id, mp.created_at, mp.context, mp.like_count, mp.comment_count, mp.picture, mp.name
             FROM
-                (
-                    SELECT
-                        (SELECT COUNT(*) FROM my_post) AS my_post_count,
-                        null AS friend_post_count,
-                        id, created_at, context, like_count, comment_count, picture, name
-                    FROM
-                        my_post
-                    UNION
-                    SELECT
-                        null AS my_post_count,
-                        (SELECT COUNT(*) FROM friend_post) AS friend_post_count,
-                        id, created_at, context, like_count, comment_count, picture, name
-                    FROM
-                        friend_post
-                ) AS subquery
+                my_post AS mp 
             GROUP BY
-                my_post_count, friend_post_count, id, created_at, context, like_count, comment_count, picture, name
+                mp.count, mp.id, mp.created_at, mp.context, mp.like_count, mp.comment_count, mp.picture, mp.name
+            UNION
+            SELECT
+                COUNT(*) AS count,
+                fp.id, fp.created_at, fp.context, fp.like_count, fp.comment_count, fp.picture, fp.name
+            FROM
+                friend_post AS fp
+            GROUP BY
+                fp.count, fp.id, fp.created_at, fp.context, fp.like_count, fp.comment_count, fp.picture, fp.name
             LIMIT
                 10 OFFSET ?;
             `
