@@ -200,7 +200,7 @@ module.exports = {
                     f.user_id, f.friend_id 
                 FROM 
                     friendship AS f
-                WHERE (f.user_id = ? AND f.status = friend) OR (f.status = friend AND f.friend_id = ?) 
+                WHERE (f.user_id = ? AND f.status = 'friend') OR (f.status = 'friend' AND f.friend_id = ?) 
             ),
             friend_post AS (
                 SELECT
