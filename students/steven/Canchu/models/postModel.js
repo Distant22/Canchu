@@ -229,16 +229,14 @@ module.exports = {
             FROM
                 friend_post AS fp
             GROUP BY
-                fp.count, fp.id, fp.created_at, fp.context, fp.like_count, fp.comment_count, fp.picture, fp.name
-            LIMIT
-                10 OFFSET ?;
+                fp.count, fp.id, fp.created_at, fp.context, fp.like_count, fp.comment_count, fp.picture, fp.name;
             `
              : 
-            "SELECT (SELECT COUNT(*) FROM post WHERE user_id = ?) AS count, id, created_at, context, like_count, comment_count, picture, name FROM post WHERE user_id = ? LIMIT 10 OFFSET ?"
-            var [results] = (user_id === undefined) ? await db.query(sql,[token_id,token_id,token_id,token_id,token_id,decode_cursor]) : await db.query(sql, [user_id,user_id,decode_cursor])
+            "SELECT (SELECT COUNT(*) FROM post WHERE user_id = ?) AS count, id, created_at, context, like_count, comment_count, picture, name FROM post WHERE user_id = ?"
+            var [results] = (user_id === undefined) ? await db.query(sql,[token_id,token_id,token_id,token_id,token_id]) : await db.query(sql, [user_id,user_id])
             console.log("結果樣子：",results,"長度：",results.length,"Decode Cursor為：",decode_cursor,"Count為：",results.length)
-            const count = results
-            const postList = results[0] === undefined ? [] : results.map((result) => {
+            const limitResults = results[0] === undefined ? [] : results.slice(decode_cursor, decode_cursor+10);
+            const postList = limitResults.map((result) => {
                 const { id, created_at, context, like_count, comment_count, picture, name } = result;
                 console.log("取result:",result)
                 return {
