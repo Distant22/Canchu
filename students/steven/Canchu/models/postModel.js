@@ -188,9 +188,13 @@ module.exports = {
             const sql = (user_id === undefined) ? 
             "SELECT (SELECT COUNT(*) FROM post WHERE user_id = ?) AS count, id, created_at, context, like_count, comment_count, picture, name FROM post WHERE user_id = ? LIMIT 10 OFFSET ?" : 
             "SELECT (SELECT COUNT(*) FROM post WHERE user_id = ?) AS count, id, created_at, context, like_count, comment_count, picture, name FROM post WHERE user_id = ? LIMIT 10 OFFSET ?"
-            const [results] = (user_id === undefined) ? await db.query(sql,[token_id,token_id,decode_cursor]) : await db.query(sql, [user_id,user_id,decode_cursor])
+            var [results] = (user_id === undefined) ? await db.query(sql,[token_id,token_id,decode_cursor]) : await db.query(sql, [user_id,user_id,decode_cursor])
             console.log("結果樣子：",results[0])
             const count = results[0] === undefined ? 0 : results[0].count
+            if (count === 0){
+                const random_sql = "SELECT count, id, created_at, context, like_count, comment_count, picture, name FROM post LIMIT 1 OFFSET 0"
+                [results] = await db.query(random_sql)
+            }
             var next_cursor = null
             if(count - decode_cursor > 10){
                 next_cursor = Buffer.from((decode_cursor+10).toString(), 'ascii').toString('base64');
