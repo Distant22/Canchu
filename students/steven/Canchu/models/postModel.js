@@ -179,13 +179,23 @@ module.exports = {
             return util.databaseError(error,'getDetail',res);
         }
     },
-    getSearch: async(res,user_id, cursor) =>  {
+    getSearch: async(res,token_id,user_id, cursor) =>  {
         console.log('Function:getSearch')
         try {
-            const sql = (user_id === undefined) ? "SELECT id, created_at, context, like_count, comment_count, picture, name FROM post" : "SELECT id, created_at, context, like_count, comment_count, picture, name FROM post WHERE user_id = ?"
-            const [results] = (user_id === undefined) ? await db.query(sql) : await db.query(sql, [user_id])
+            const decode_cursor = cursor === undefined ? 1 : Number(Buffer.from(cursor, 'base64').toString('ascii'))
+            console.log("解碼後的Cursor：",decode_cursor,"傳入的User_ID：",user_id)
+            // 如果有沒有ID：回傳自己的文章
+            const sql = (user_id === undefined) ? 
+            "SELECT (SELECT COUNT(*) FROM post WHERE user_id = ?) AS count, id, created_at, context, like_count, comment_count, picture, name FROM post LIMIT 10 OFFSET ?" : 
+            "SELECT (SELECT COUNT(*) FROM post WHERE user_id = ?) AS count, id, created_at, context, like_count, comment_count, picture, name FROM post WHERE user_id = ? LIMIT 10 OFFSET ?"
+            const [results] = (user_id === undefined) ? await db.query(sql,[token_id,decode_cursor]) : await db.query(sql, [user_id,user_id,decode_cursor])
+            const count = results[0].count
+            var next_cursor = null
+            if(count - decode_cursor > 10){
+                next_cursor = Buffer.from((decode_cursor+10).toString(), 'ascii').toString('base64');
+            }
             const postList = results.map((result) => {
-                const { id, created_at, context, like_count, comment_count, picture, name } = result;
+                const { count, id, created_at, context, like_count, comment_count, picture, name } = result;
                 console.log("取result:",result)
                 return {
                     id: id,
@@ -200,7 +210,7 @@ module.exports = {
             const response = {
                 data: {
                     posts: postList,
-                    next_cursor: cursor == undefined ? null : cursor
+                    next_cursor: next_cursor
                 }
             }
             return res.status(200).json(response);
