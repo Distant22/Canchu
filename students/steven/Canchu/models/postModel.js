@@ -183,7 +183,6 @@ module.exports = {
         console.log('Function:getSearch')
         try {
             const decode_cursor = cursor === undefined ? 0 : Number(Buffer.from(cursor, 'base64').toString('ascii'))
-            console.log("解碼後的Cursor：",decode_cursor,"傳入的User_ID和Token_ID：",user_id,token_id)
             // 如果有沒有ID：回傳自己的文章
             const sql = (user_id === undefined) ? 
             `WITH my_post AS (
@@ -234,11 +233,9 @@ module.exports = {
              : 
             "SELECT (SELECT COUNT(*) FROM post WHERE user_id = ?) AS count, id, created_at, context, like_count, comment_count, picture, name FROM post WHERE user_id = ?"
             var [results] = (user_id === undefined) ? await db.query(sql,[token_id,token_id,token_id,token_id,token_id]) : await db.query(sql, [user_id,user_id])
-            console.log("結果樣子：",results,"長度：",results.length,"Decode Cursor為：",decode_cursor,"Count為：",results.length)
             const limitResults = results[0] === undefined ? [] : results.slice(decode_cursor, decode_cursor+10);
             const postList = limitResults.map((result) => {
                 const { id, created_at, context, like_count, comment_count, picture, name } = result;
-                console.log("取result:",result)
                 return {
                     id: id,
                     created_at : created_at,
