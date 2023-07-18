@@ -37,6 +37,7 @@ module.exports = {
                     });
                 })
         } else {
+            console.log("現在操作signin｜Token & 參數：",access_token,email,password,provider)
             await userModel.signin(res,email,password,provider)
         }
     },
@@ -52,29 +53,34 @@ module.exports = {
             if(!emailResult){
                 return res.status(400).json({ error: 'Email format is incorrect' });
             }
+            console.log("現在操作signup｜參數：",name,email,password)
             await userModel.signup(res,name,email,password)
         }
     },
 
     getProfile: async(req,res) => {
         const userId = req.params.id;
+        console.log("現在操作getProfile｜參數：",userId)
         await userModel.getProfile(res,userId)
     },
 
     updateProfile: async(req,res) => {
         const { name, introduction, tags } = req.body;
         const id = req.user.id;
+        console.log("現在操作updateProfile｜參數：",name,introduction,tags,id);
         await userModel.updateProfile(res,name,introduction,tags,id);
     },
 
     updatePicture: async(req,res) => {
         const { picture } = req.body;
         const id = req.user.id;
+        console.log("現在操作updatePicture｜參數：",picture,id);
         await userModel.updatePicture(res,picture,id);
     },
 
     search: async(req,res) => {
         const keyword = req.query.keyword;
+        console.log("現在操作search｜參數：",keyword);
         await userModel.search(res,keyword)
     }
 }
