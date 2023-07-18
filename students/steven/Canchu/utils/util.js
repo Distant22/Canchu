@@ -25,6 +25,13 @@ module.exports = {
         } else { next(); }
     },
 
+    authorize_multipart: (req,res,next) => {
+        const type = req.get('content-type')
+        if (type !== 'multipart/form-data'){
+            return res.status(415).json({ error: 'Invalid content type' })
+        } else { next(); }
+    },
+
     generateToken: (payload) => {
         // Replace 'your_secret_key' with your own secret key for signing the token
         const token = jwt.sign(payload, process.env.JWT_SIGN, { expiresIn: '1h' });
