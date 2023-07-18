@@ -188,7 +188,7 @@ module.exports = {
             `WITH my_post AS (
                 SELECT
                     (SELECT COUNT(*) FROM post WHERE user_id = ?) AS count,
-                    id, created_at, context, like_count, comment_count, picture, name
+                    id, user_id, created_at, context, like_count, comment_count, picture, name
                 FROM
                     post
                 WHERE
@@ -204,7 +204,7 @@ module.exports = {
             friend_post AS (
                 SELECT
                     (SELECT COUNT(*) FROM post WHERE user_id = ?) AS count,
-                    p.id, p.created_at, p.context, p.like_count, p.comment_count, p.picture, p.name
+                    p.id, p.user_id, p.created_at, p.context, p.like_count, p.comment_count, p.picture, p.name
                 FROM
                     post AS p
                 WHERE
@@ -216,29 +216,30 @@ module.exports = {
             )
             SELECT
                 COUNT(*) AS count,
-                mp.id, mp.created_at, mp.context, mp.like_count, mp.comment_count, mp.picture, mp.name
+                mp.id, mp.user_id, mp.created_at, mp.context, mp.like_count, mp.comment_count, mp.picture, mp.name
             FROM
                 my_post AS mp 
             GROUP BY
-                mp.count, mp.id, mp.created_at, mp.context, mp.like_count, mp.comment_count, mp.picture, mp.name
+                mp.count, mp.id, mp.user_id, mp.created_at, mp.context, mp.like_count, mp.comment_count, mp.picture, mp.name
             UNION
             SELECT
                 COUNT(*) AS count,
-                fp.id, fp.created_at, fp.context, fp.like_count, fp.comment_count, fp.picture, fp.name
+                fp.id, fp.user_id, fp.created_at, fp.context, fp.like_count, fp.comment_count, fp.picture, fp.name
             FROM
                 friend_post AS fp
             GROUP BY
-                fp.count, fp.id, fp.created_at, fp.context, fp.like_count, fp.comment_count, fp.picture, fp.name;
+                fp.count, fp.id, fp.user_id, fp.created_at, fp.context, fp.like_count, fp.comment_count, fp.picture, fp.name;
             `
              : 
             "SELECT (SELECT COUNT(*) FROM post WHERE user_id = ?) AS count, id, created_at, context, like_count, comment_count, picture, name FROM post WHERE user_id = ?"
             var [results] = (user_id === undefined) ? await db.query(sql,[token_id,token_id,token_id,token_id,token_id]) : await db.query(sql, [user_id,user_id])
             const limitResults = results[0] === undefined ? [] : results.slice(decode_cursor, decode_cursor+10);
             const postList = limitResults.map((result) => {
-                const { id, created_at, context, like_count, comment_count, picture, name } = result;
+                const { id, user_id, created_at, context, like_count, comment_count, picture, name } = result;
                 return {
                     id: id,
-                    created_at : created_at,
+                    user_id: user_id,
+                    created_at: created_at,
                     content: context,
                     like_count: like_count,
                     comment_count: comment_count,
