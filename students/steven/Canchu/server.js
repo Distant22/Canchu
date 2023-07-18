@@ -4,6 +4,10 @@ const router = express.Router();
 const port = 80
 const bodyParser = require('body-parser');
 const path = require('path');
+const cors = require('cors');
+
+app.use(cors());
+
 require('dotenv').config();
 
 app.use(bodyParser.json());
