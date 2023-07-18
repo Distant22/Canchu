@@ -22,7 +22,7 @@ app.use('/api/1.0/posts', post_route);
 
 router.get('/', (req, res) => {res.send('Main Page listening! -Dt22')})
 
-app.get('/.well-known/pki-validation/', (req, res) => {
+app.get('/.well-known/pki-validation/AD335B614CF30912AE7C22F2D222450F.txt', (req, res) => {
   const filePath = path.join(__dirname, 'public', 'AD335B614CF30912AE7C22F2D222450F.txt');
   res.sendFile(filePath);
 });
