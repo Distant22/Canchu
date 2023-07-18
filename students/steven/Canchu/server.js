@@ -3,6 +3,7 @@ const app = express()
 const router = express.Router();
 const port = 80
 const bodyParser = require('body-parser');
+const path = require('path');
 require('dotenv').config();
 
 app.use(bodyParser.json());
@@ -20,6 +21,11 @@ const post_route = require('./routes/postRoutes');
 app.use('/api/1.0/posts', post_route);
 
 router.get('/', (req, res) => {res.send('Main Page listening! -Dt22')})
+
+app.get('/.well-known/pki-validation/', (req, res) => {
+  const filePath = path.join(__dirname, 'public', 'AD335B614CF30912AE7C22F2D222450F.txt');
+  res.sendFile(filePath);
+});
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`)
