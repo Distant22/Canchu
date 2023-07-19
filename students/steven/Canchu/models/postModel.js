@@ -239,7 +239,7 @@ module.exports = {
             const limitResults = results[0] === undefined ? [] : results.slice(decode_cursor, decode_cursor+10);
             const postList = limitResults.map((result) => {
                 const { id, user_id, created_at, context, like_count, comment_count, picture, name } = result;
-                console.log("Get Search 的 result",result)
+                console.log("Get Search 的 result",id, user_id, created_at, context, like_count, comment_count, picture, name)
                 // Format the date as "YYYY-MM-DD HH:mm:ss"
                 const formatted_created_at = new Date(created_at).toLocaleString('en-US', {
                 year: 'numeric',
