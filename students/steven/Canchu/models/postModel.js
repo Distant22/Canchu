@@ -233,12 +233,12 @@ module.exports = {
             "SELECT id, created_at, context, like_count, comment_count, picture, name FROM post WHERE user_id = ?"
             var [results] = (user_id === undefined) ? await db.query(sql,[token_id,token_id,token_id,token_id,token_id]) : await db.query(sql, [user_id,user_id])
             const limitResults = results[0] === undefined ? [] : results.slice(decode_cursor, decode_cursor+10);
-            const postList = limitResults.map(async (result) => {
+            const postList = limitResults.map((result) => {
 
                 const { id, user_id, created_at, context, like_count, comment_count, picture, name } = result;
 
                 const sql_like =  "SELECT COUNT(*) AS is_liked FROM postlike WHERE user_id = ? AND post_id = ?"
-                const [count] = await db.query(sql_like, [user_id,id])
+                const [count] = db.query(sql_like, [user_id,id])
 
                 console.log("Get Search 的 result",id, user_id, created_at, context, like_count, comment_count, picture, name)
                 // Format the date as "YYYY-MM-DD HH:mm:ss"
