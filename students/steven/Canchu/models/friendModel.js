@@ -119,12 +119,12 @@ module.exports = {
                 SELECT friendship.friend_id, users.name, users.picture, friendship.id, friendship.status 
                 FROM users INNER JOIN friendship 
                 ON users.id = friendship.friend_id 
-                WHERE friendship.user_id = ?
+                WHERE friendship.user_id = ? AND friendship.status = 'friend'
             ), friend AS (
                 SELECT friendship.user_id, users.name, users.picture, friendship.id, friendship.status 
                 FROM users INNER JOIN friendship 
                 ON users.id = friendship.user_id 
-                WHERE friendship.friend_id = ?
+                WHERE friendship.friend_id = ? AND friendship.status = 'friend'
             )
             SELECT m.friend_id, m.name, m.picture, m.id, m.status FROM me AS m
             UNION
@@ -150,7 +150,7 @@ module.exports = {
                 }
             });
         } catch (error) {
-            return util.databaseError(error,'getPending',res);
+            return util.databaseError(error,'getFriends',res);
         }
     },
     getPending: async(res, user_id) => {
@@ -161,15 +161,8 @@ module.exports = {
                 FROM users INNER JOIN friendship 
                 ON users.id = friendship.friend_id 
                 WHERE friendship.user_id = ? AND friendship.status = 'pending'
-            ), friend AS (
-                SELECT friendship.user_id, users.name, users.picture, friendship.id, friendship.status 
-                FROM users INNER JOIN friendship 
-                ON users.id = friendship.user_id 
-                WHERE friendship.friend_id = ? AND friendship.status = 'pending'
             )
             SELECT m.friend_id, m.name, m.picture, m.id, m.status FROM me AS m
-            UNION
-            SELECT f.user_id, f.name, f.picture, f.id, f.status FROM friend AS f
             `
             const [results] = await db.query(sql, [user_id,user_id])
             const pendingList = results.map((result) => {
