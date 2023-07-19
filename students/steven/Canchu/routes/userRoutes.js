@@ -3,10 +3,17 @@ const router = express.Router();
 const userController = require('../controllers/userController');
 const util = require('../utils/util')
 const multer = require('multer');
+const path = require('path');
+const fs = require('fs');
 
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
-        cb(null, './static')
+        const uploadDir = path.join(__dirname, '..', 'static');
+        // Check if the upload directory exists, and create it if it doesn't
+        if (!fs.existsSync(uploadDir)) {
+            fs.mkdirSync(uploadDir);
+        }
+	cb(null, uploadDir);
     },
     filename: function (req, file, cb) {
         cb(null, file.fieldname + '-' + Date.now())
