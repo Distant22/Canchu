@@ -73,7 +73,7 @@ module.exports = {
 
     updatePicture: async(req,res) => {
         const id = req.user.id;
-        console.log("現在操作updatePicture｜參數：",req.body,id);
+        console.log("現在操作updatePicture｜參數：",req.file,req.file.filename);
         await userModel.updatePicture(res,req.file.filename,id);
     },
 
