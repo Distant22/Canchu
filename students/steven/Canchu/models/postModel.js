@@ -262,7 +262,7 @@ module.exports = {
             ON 
                 p.id = check_islike.post_id 
             WHERE 
-                user_id = ? 
+                p.user_id = ? 
             `
             var [results] = (user_id === undefined) ? await db.query(sql,[token_id,token_id,token_id]) : await db.query(sql, [user_id,user_id,user_id])
             const limitResults = results[0] === undefined ? [] : results.slice(decode_cursor, decode_cursor+10);
