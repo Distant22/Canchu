@@ -254,7 +254,7 @@ module.exports = {
                     id: id,
                     user_id: user_id,
                     created_at: formatted_created_at,
-                    content: context,
+                    context: context,
                     like_count: like_count,
                     comment_count: comment_count,
                     picture: picture,
