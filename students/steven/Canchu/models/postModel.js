@@ -19,8 +19,8 @@ module.exports = {
             const name = results[0].name
             // Insert Post Details into post table
             const postTime = new Date().toISOString().slice(0, 19).replace('T', ' ');
-            const sql ='INSERT INTO post (user_id, created_at, context, name) VALUES (?, ?, ?, ?)';
-            const [postResults] = await db.query(sql, [id, postTime, context, name]);
+            const sql ='INSERT INTO post (user_id, created_at, context, summary, name) VALUES (?, ?, ?, ?, ?)';
+            const [postResults] = await db.query(sql, [id, postTime, context, summary, name]);
             const insertId = postResults.insertId
             // Response ID
             const response = {
