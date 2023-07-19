@@ -90,7 +90,7 @@ module.exports = {
             await db.query(sql, [id, post_id]);
             // Update like count in post table
             const postSql = 'UPDATE post SET like_count = like_count - 1 WHERE id = ?'
-            await db.query(postSql, [id]);
+            await db.query(postSql, [post_id]);
             // Response ID
             const response = {
                 data: {
