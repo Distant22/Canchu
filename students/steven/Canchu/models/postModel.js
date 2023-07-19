@@ -229,7 +229,8 @@ module.exports = {
             FROM
                 friend_post AS fp
             GROUP BY
-                fp.count, fp.id, fp.user_id, fp.created_at, fp.context, fp.like_count, fp.comment_count, fp.picture, fp.name;
+                fp.count, fp.id, fp.user_id, fp.created_at, fp.context, fp.like_count, fp.comment_count, fp.picture, fp.name
+            ORDER BY created_at DESC
             `
              : 
             "SELECT (SELECT COUNT(*) FROM post WHERE user_id = ?) AS count, id, created_at, context, like_count, comment_count, picture, name FROM post WHERE user_id = ?"
@@ -237,6 +238,7 @@ module.exports = {
             const limitResults = results[0] === undefined ? [] : results.slice(decode_cursor, decode_cursor+10);
             const postList = limitResults.map((result) => {
                 const { id, user_id, created_at, context, like_count, comment_count, picture, name } = result;
+                console.log("Get Search 的 result",result)
                 // Format the date as "YYYY-MM-DD HH:mm:ss"
                 const formatted_created_at = new Date(created_at).toLocaleString('en-US', {
                 year: 'numeric',
@@ -264,6 +266,7 @@ module.exports = {
                     next_cursor: (results.length - parseInt(decode_cursor) > 10) ? Buffer.from((decode_cursor+10).toString(), 'ascii').toString('base64') : null
                 }
             }
+            console.log("Get Search 的 Response：",response)
             return res.status(200).json(response);
         } catch (error) {
             return util.databaseError(error,'getSearch',res);
