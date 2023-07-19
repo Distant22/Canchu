@@ -213,36 +213,30 @@ module.exports = {
                     UNION
                     SELECT friend_id FROM friend_search
                 )
-            ),
-            my_like AS (
-                SELECT
-                    user_id, post_id
-                FROM 
-                    postlike
-                WHERE 
-                    user_id IN ( SELECT user_id FROM my_post ) AND post_id IN ( SELECT id FROM my_post )
-            ),
-            friend_like AS (
-                SELECT
-                    user_id, post_id
-                FROM 
-                    postlike
-                WHERE 
-                    user_id IN ( SELECT user_id FROM my_post ) AND post_id IN ( SELECT id FROM friend_post )
             )
             SELECT
                 mp.id, mp.user_id, mp.created_at, mp.context, mp.like_count, mp.comment_count, mp.picture, mp.name, 
-                (SELECT COUNT(*) FROM my_like) AS is_liked
+                CASE 
+                    WHEN EXISTS (
+                        SELECT 1 FROM postlike AS pl WHERE pl.user_id = ? AND pl.post_id = mp.id
+                    ) THEN 1
+                    ELSE 0
+                END AS is_liked
             FROM
-                my_post AS mp LEFT JOIN my_like AS ml ON mp.user_id = ml.user_id
+                my_post AS mp LEFT JOIN postlike AS pl ON mp.user_id = pl.user_id
             GROUP BY
                 mp.id, mp.user_id, mp.created_at, mp.context, mp.like_count, mp.comment_count, mp.picture, mp.name, is_liked
             UNION
             SELECT
                 fp.id, fp.user_id, fp.created_at, fp.context, fp.like_count, fp.comment_count, fp.picture, fp.name,
-                (SELECT COUNT(*) FROM friend_like) AS is_liked
+                CASE 
+                    WHEN EXISTS (
+                        SELECT 1 FROM postlike AS pl WHERE pl.user_id = ? AND pl.post_id = fp.id
+                    ) THEN 1
+                    ELSE 0
+                END AS is_liked
             FROM
-                friend_post AS fp LEFT JOIN friend_like AS fl ON fp.user_id = fl.user_id
+                friend_post AS fp LEFT JOIN postlike AS pl ON fp.user_id = pl.user_id
             GROUP BY
                 fp.id, fp.user_id, fp.created_at, fp.context, fp.like_count, fp.comment_count, fp.picture, fp.name, is_liked
             ORDER BY created_at DESC
@@ -264,7 +258,7 @@ module.exports = {
             WHERE 
                 p.user_id = ? 
             `
-            var [results] = (user_id === undefined) ? await db.query(sql,[token_id,token_id,token_id]) : await db.query(sql, [user_id,user_id,user_id])
+            var [results] = (user_id === undefined) ? await db.query(sql,[token_id,token_id,token_id,token_id,token_id]) : await db.query(sql, [user_id,user_id,user_id])
             const limitResults = results[0] === undefined ? [] : results.slice(decode_cursor, decode_cursor+10);
             const postList = limitResults.map((result) => {
 
