@@ -12,6 +12,8 @@ require('dotenv').config();
 
 app.use(bodyParser.json());
 
+app.use('/static', express.static(path.join(__dirname, 'static')));
+
 const user_route = require('./routes/userRoutes');
 app.use('/api/1.0/users', user_route);
 
