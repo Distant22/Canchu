@@ -132,8 +132,8 @@ module.exports = {
             `
             const [results] = await db.query(sql, [user_id,user_id])
             const friendList = results.map((result) => {
-                console.log("測試getFriends取資料：",result)
                 const {friend_id, name, picture, id, status} = result
+                console.log("測試getFriends取資料：",friend_id, name, picture, id, status)
                 return {
                     id: friend_id,
                     name,
