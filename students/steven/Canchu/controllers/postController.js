@@ -36,7 +36,7 @@ module.exports = {
     getDetail: async(req,res) => {
         const post_id = req.params.id
         console.log("現在操作getDetail｜參數：",post_id);
-        await postModel.getDetail(res,post_id)
+        await postModel.getDetail(res,post_id,req.user.id)
     },
     getSearch: async(req,res) => {
         const { user_id, cursor } = req.query

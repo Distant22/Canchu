@@ -132,8 +132,8 @@ module.exports = {
             return util.databaseError(error,'updatePost',res);
         }
     },
-    getDetail: async(res,post_id) => {
-        console.log('Function:getDetail')
+    getDetail: async(res,post_id,my_id) => {
+        console.log('Function:getDetail,參數：',my_id,post_id)
         try {
             // Select required information from post table given post ID
             const sql = "SELECT user_id, created_at, context, like_count, comment_count, picture, name FROM post WHERE id = ?"
@@ -141,7 +141,7 @@ module.exports = {
             const { user_id, created_at, context, like_count, comment_count, picture, name } = results[0];
             // Select like count from postlike table given user ID and post ID
             const likedSql = "SELECT COUNT(*) AS is_liked FROM postlike WHERE user_id = ? AND post_id = ?"
-            const [count] = await db.query(likedSql, [user_id,post_id])
+            const [count] = await db.query(likedSql, [my_id,post_id])
             // Select needed user and comment information from join table given user ID and post ID
             const commentSql = "SELECT postcomment.id, postcomment.text, DATE_FORMAT(postcomment.created_at, '%Y-%m-%d %H:%i:%s') AS comment_created_at, users.id AS user_id , users.name, users.picture FROM postcomment LEFT JOIN users ON postcomment.user_id = users.id WHERE post_id = ?"
             const [results_join] = await db.query(commentSql, [post_id])
