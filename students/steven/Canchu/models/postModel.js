@@ -175,7 +175,7 @@ module.exports = {
                         }
                 },
             };
-            console.log("測試getDetail的Response：",response,"而count為：",count)
+            console.log("測試getDetail的Response：",response,"而count為：",count[0].is_liked)
             return res.status(200).json(response);
         } catch (error) {
             return util.databaseError(error,'getDetail',res);
