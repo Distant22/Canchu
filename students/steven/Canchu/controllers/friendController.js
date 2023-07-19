@@ -19,6 +19,6 @@ module.exports = {
     },
     deleteFriend: async(req,res) => {
         const id = req.params.friendship_id
-        await friendModel.deleteFriend(res,id,req.user.id,req.user.id)
+        await friendModel.deleteFriend(res,id,req.user.id)
     }
 }

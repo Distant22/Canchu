@@ -52,14 +52,14 @@ module.exports = {
         }
     },
     deleteFriend: async(res,id,self_id) => {
-        console.log("測試deleteFriend：朋友id為",self_id,"我的id為",id)
+        console.log("測試deleteFriend：朋友id為",id,"我的id為",self_id)
         try {
             const validate_sql = 'SELECT user_id, friend_id FROM friendship WHERE user_id = ? OR friend_id = ?'
-            const [results] = await db.query(validate_sql, [id,id])
+            const [results] = await db.query(validate_sql, [self_id,self_id])
             if(results[0] === undefined){
                 return res.status(403).json({ error: 'User ID not existed' });
-            } else if(results[0].user_id !== self_id && results[0].friend_id !== self_id){
-                console.error("要求刪除Request的ID為",self_id,"，但能同意的只有ID為",results[0].user_id,"或ID為",results[0].friend_id,"的使用者，id為",id)
+            } else if(results[0].user_id !== id && results[0].friend_id !== id && results[0].user_id !== self_id && results[0].friend_id !== self_id ){
+                console.error("要求刪除Request的朋友ID為",id,"自己的ID為",self_id,"，但能同意的只有ID為",results[0].user_id,"或ID為",results[0].friend_id,"的使用者，id為")
                 return res.status(400).json({ error: 'This user has no permission to delete friend request'})
             } else {
                 const sql = 'DELETE FROM friendship WHERE id = ?'
