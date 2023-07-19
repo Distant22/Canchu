@@ -20,7 +20,7 @@ module.exports = {
             const picture = results[0].picture
             // Insert Post Details into post table
             const postTime = new Date().toISOString().slice(0, 19).replace('T', ' ');
-            const sql ='INSERT INTO post (user_id, created_at, context, picture, name) VALUES (?, ?, ?, ?, ?, ?)';
+            const sql ='INSERT INTO post (user_id, created_at, context, picture, name) VALUES (?, ?, ?, ?, ?)';
             const [postResults] = await db.query(sql, [id, postTime, context, picture, name]);
             const insertId = postResults.insertId
             // Response ID
