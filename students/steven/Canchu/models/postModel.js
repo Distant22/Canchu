@@ -244,17 +244,19 @@ module.exports = {
              : 
             `WITH post_id AS (
                 SELECT id FROM post WHERE user_id = ?
-            ),
-            check_islike AS (
-                SELECT post_id, user_id FROM postlike WHERE user_id = ? AND post_id IN (SELECT id FROM post_id)
             )
             SELECT 
                 p.id, p.created_at, p.context, p.like_count, p.comment_count, p.picture, p.name, 
-                (SELECT COUNT(*) FROM check_islike) AS is_liked
+                CASE 
+                    WHEN EXISTS (
+                        SELECT 1 FROM postlike AS pl WHERE pl.user_id = ? AND pl.post_id = p.id
+                    ) THEN 1
+                    ELSE 0
+                END AS is_liked
             FROM 
-                post AS p LEFT JOIN check_islike 
+                post AS p LEFT JOIN postlike AS pl 
             ON 
-                p.id = check_islike.post_id 
+                p.id = pl.post_id 
             WHERE 
                 p.user_id = ? 
             `
