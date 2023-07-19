@@ -10,6 +10,7 @@ const db = mysql.createPool({
 
 module.exports = {
     postRequest: async(res,friend_id,my_id) => {
+        console.log("測試postRequest：朋友id為",friend_id,"我的id為",my_id)
         if(parseInt(my_id) === parseInt(friend_id)){ return res.status(403).json({ error: `You can't send friend request to yourself.` }); }
         try {
             const searchsql = 'SELECT * FROM users WHERE id = ?'
@@ -62,6 +63,9 @@ module.exports = {
             } else {
                 const sql = 'DELETE FROM friendship WHERE id = ?'
                 await db.query(sql, [id])
+
+                const sqlMinusCount = 'UPDATE users SET friend_count = friend_count - 1 WHERE id = ?'
+                await db.query(sqlMinusCount, [id])
                 res.status(200).json({
                     data: {
                         friendship: {
@@ -92,6 +96,9 @@ module.exports = {
                 const eventTime = new Date().toISOString().slice(0, 19).replace('T', ' ');
                 await db.query(sqlInsert, [friend_id,'friend_request',`ID ${friend_id} has accepted your friend request.`,eventTime])
 
+                const sqlAddCount = 'UPDATE users SET friend_count = friend_count + 1 WHERE id = ?'
+                await db.query(sqlAddCount, [id])
+
                 res.status(200).json({
                     data: {
                         friendship: {
@@ -106,8 +113,23 @@ module.exports = {
     },
     getFriends: async(res, user_id) => {
         try {
-            const sql = 'SELECT friendship.friend_id, users.name, users.picture, friendship.id, friendship.status FROM users INNER JOIN friendship ON users.id = friendship.friend_id WHERE friendship.user_id = ?'
-            const [results] = await db.query(sql, [user_id])
+            const sql = `
+            WITH me AS (
+                SELECT friendship.friend_id, users.name, users.picture, friendship.id, friendship.status 
+                FROM users INNER JOIN friendship 
+                ON users.id = friendship.friend_id 
+                WHERE friendship.user_id = ?
+            ), friend AS (
+                SELECT friendship.user_id, users.name, users.picture, friendship.id, friendship.status 
+                FROM users INNER JOIN friendship 
+                ON users.id = friendship.user_id 
+                WHERE friendship.friend_id = ?
+            )
+            SELECT m.friend_id, m.name, m.picture, m.id, m.status FROM me AS m
+            UNION
+            SELECT f.user_id, f.name, f.picture, f.id, f.status FROM friend AS f
+            `
+            const [results] = await db.query(sql, [user_id,user_id])
             const friendList = results.map((result) => {
                 console.log("測試getFriends取資料：",result)
                 const {friend_id, name, picture, id, status} = result
@@ -132,8 +154,23 @@ module.exports = {
     },
     getPending: async(res, user_id) => {
         try {
-            const sql = 'SELECT friendship.friend_id, users.name, users.picture, friendship.id, friendship.status FROM users INNER JOIN friendship ON users.id = friendship.friend_id WHERE friendship.user_id = ? AND friendship.status = ?'
-            const [results] = await db.query(sql, [user_id,'pending'])
+            const sql = `
+            WITH me AS (
+                SELECT friendship.friend_id, users.name, users.picture, friendship.id, friendship.status 
+                FROM users INNER JOIN friendship 
+                ON users.id = friendship.friend_id 
+                WHERE friendship.user_id = ? AND friendship.status = 'pending'
+            ), friend AS (
+                SELECT friendship.user_id, users.name, users.picture, friendship.id, friendship.status 
+                FROM users INNER JOIN friendship 
+                ON users.id = friendship.user_id 
+                WHERE friendship.friend_id = ? AND friendship.status = 'pending'
+            )
+            SELECT m.friend_id, m.name, m.picture, m.id, m.status FROM me AS m
+            UNION
+            SELECT f.user_id, f.name, f.picture, f.id, f.status FROM friend AS f
+            `
+            const [results] = await db.query(sql, [user_id,user_id])
             const pendingList = results.map((result) => {
                 console.log("測試getPending取資料：",result)
                 const {friend_id, name, picture, id, status} = result

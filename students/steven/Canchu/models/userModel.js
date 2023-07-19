@@ -128,8 +128,17 @@ module.exports = {
                 return res.status(400).json({ error: 'User not found' });
             }
             const userProfile = results[0];
-            const friendsql =  'SELECT friend_id, status FROM friendship WHERE user_id = ?'
-            const [resultFriend] = await db.query(friendsql, [userId])
+            const friendsql =  
+            `WITH me AS (
+                SELECT friend_id AS my_id, status FROM friendship WHERE user_id = ?
+            ), friend AS (
+                SELECT user_id AS my_id, status FROM friendship WHERE friend_id = ?
+            )
+            SELECT m.my_id, m.status FROM me AS m
+            UNION
+            SELECT f.my_id, f.status FROM friend AS f
+            `
+            const [resultFriend] = await db.query(friendsql, [userId,userId])
             const friendshipData = resultFriend.length === 0 ? null : resultFriend.map(friendship => ({
                 id: friendship.friend_id,
                 status: friendship.status
