@@ -14,13 +14,14 @@ module.exports = {
         console.error('Function: createPost');
         try {
             // Get User Name from Token
-            const userSql = 'SELECT name FROM users WHERE id = ?';
+            const userSql = 'SELECT name, picture FROM users WHERE id = ?';
             const [results] = await db.query(userSql, [id]) ;
             const name = results[0].name
+            const picture = results[0].picture
             // Insert Post Details into post table
             const postTime = new Date().toISOString().slice(0, 19).replace('T', ' ');
-            const sql ='INSERT INTO post (user_id, created_at, context, summary, name) VALUES (?, ?, ?, ?, ?)';
-            const [postResults] = await db.query(sql, [id, postTime, context, summary, name]);
+            const sql ='INSERT INTO post (user_id, created_at, context, picture, name) VALUES (?, ?, ?, ?, ?, ?)';
+            const [postResults] = await db.query(sql, [id, postTime, context, picture, name]);
             const insertId = postResults.insertId
             // Response ID
             const response = {
