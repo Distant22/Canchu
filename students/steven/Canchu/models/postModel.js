@@ -166,7 +166,7 @@ module.exports = {
                             id: parseInt(post_id,10),
                             created_at: created_at,
                             context: context,
-                            is_liked: count == 1 ? true : false,
+                            is_liked: parseInt(count) === 1 ? true : false,
                             like_count: like_count,
                             comment_count: comment_count,
                             picture: picture,
@@ -175,6 +175,7 @@ module.exports = {
                         }
                 },
             };
+            console.log("測試getDetail的Response：",response)
             return res.status(200).json(response);
         } catch (error) {
             return util.databaseError(error,'getDetail',res);
