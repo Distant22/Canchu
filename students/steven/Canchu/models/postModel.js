@@ -189,7 +189,6 @@ module.exports = {
             const sql = (user_id === undefined) ? 
             `WITH my_post AS (
                 SELECT
-                    (SELECT COUNT(*) FROM post WHERE user_id = ?) AS count,
                     id, user_id, created_at, context, like_count, comment_count, picture, name
                 FROM
                     post
@@ -205,10 +204,9 @@ module.exports = {
             ),
             friend_post AS (
                 SELECT
-                    (SELECT COUNT(*) FROM post WHERE user_id = ?) AS count,
                     p.id, p.user_id, p.created_at, p.context, p.like_count, p.comment_count, p.picture, p.name
                 FROM
-                    post AS p
+                    post AS p 
                 WHERE
                     p.user_id IN (
                     SELECT user_id FROM friend_search
@@ -217,7 +215,6 @@ module.exports = {
                 )
             )
             SELECT
-                COUNT(*) AS count,
                 mp.id, mp.user_id, mp.created_at, mp.context, mp.like_count, mp.comment_count, mp.picture, mp.name
             FROM
                 my_post AS mp 
@@ -225,7 +222,6 @@ module.exports = {
                 mp.count, mp.id, mp.user_id, mp.created_at, mp.context, mp.like_count, mp.comment_count, mp.picture, mp.name
             UNION
             SELECT
-                COUNT(*) AS count,
                 fp.id, fp.user_id, fp.created_at, fp.context, fp.like_count, fp.comment_count, fp.picture, fp.name
             FROM
                 friend_post AS fp
@@ -234,11 +230,16 @@ module.exports = {
             ORDER BY created_at DESC
             `
              : 
-            "SELECT (SELECT COUNT(*) FROM post WHERE user_id = ?) AS count, id, created_at, context, like_count, comment_count, picture, name FROM post WHERE user_id = ?"
+            "SELECT id, created_at, context, like_count, comment_count, picture, name FROM post WHERE user_id = ?"
             var [results] = (user_id === undefined) ? await db.query(sql,[token_id,token_id,token_id,token_id,token_id]) : await db.query(sql, [user_id,user_id])
             const limitResults = results[0] === undefined ? [] : results.slice(decode_cursor, decode_cursor+10);
-            const postList = limitResults.map((result) => {
+            const postList = limitResults.map(async (result) => {
+
                 const { id, user_id, created_at, context, like_count, comment_count, picture, name } = result;
+
+                const sql_like =  "SELECT COUNT(*) AS is_liked FROM postlike WHERE user_id = ? AND post_id = ?"
+                const [count] = await db.query(sql_like, [user_id,id])
+
                 console.log("Get Search 的 result",id, user_id, created_at, context, like_count, comment_count, picture, name)
                 // Format the date as "YYYY-MM-DD HH:mm:ss"
                 const formatted_created_at = new Date(created_at).toLocaleString('en-US', {
@@ -255,6 +256,7 @@ module.exports = {
                     user_id: user_id,
                     created_at: formatted_created_at,
                     context: context,
+                    is_liked: count[0].is_liked === 1 ? true : false,
                     like_count: like_count,
                     comment_count: comment_count,
                     picture: picture,
