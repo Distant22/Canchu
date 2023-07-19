@@ -136,12 +136,12 @@ module.exports = {
         console.log('Function:getDetail')
         try {
             // Select required information from post table given post ID
-            const sql = "SELECT id, created_at, context, like_count, comment_count, picture, name FROM post WHERE id = ?"
+            const sql = "SELECT user_id, created_at, context, like_count, comment_count, picture, name FROM post WHERE id = ?"
             const [results] = await db.query(sql, [post_id])
-            const { id, created_at, context, like_count, comment_count, picture, name } = results[0];
+            const { user_id, created_at, context, like_count, comment_count, picture, name } = results[0];
             // Select like count from postlike table given user ID and post ID
             const likedSql = "SELECT COUNT(*) AS is_liked FROM postlike WHERE user_id = ? AND post_id = ?"
-            const [count] = await db.query(likedSql, [id,post_id])
+            const [count] = await db.query(likedSql, [user_id,post_id])
             // Select needed user and comment information from join table given user ID and post ID
             const commentSql = "SELECT postcomment.id, postcomment.text, DATE_FORMAT(postcomment.created_at, '%Y-%m-%d %H:%i:%s') AS comment_created_at, users.id AS user_id , users.name, users.picture FROM postcomment LEFT JOIN users ON postcomment.user_id = users.id WHERE post_id = ?"
             const [results_join] = await db.query(commentSql, [post_id])
