@@ -268,9 +268,9 @@ module.exports = {
             const limitResults = results[0] === undefined ? [] : results.slice(decode_cursor, decode_cursor+10);
             const postList = limitResults.map((result) => {
 
-                const { id, user_id, created_at, context, like_count, comment_count, picture, name } = result;
+                const { id, user_id, created_at, context, like_count, comment_count, picture, name, is_liked } = result;
 
-                console.log("Get Search 的 result",id, user_id, created_at, context, like_count, comment_count, picture, name)
+                console.log("Get Search 的 result",id, user_id, created_at, context, like_count, comment_count, picture, name, is_liked)
                 // Format the date as "YYYY-MM-DD HH:mm:ss"
                 const formatted_created_at = new Date(created_at).toLocaleString('en-US', {
                 year: 'numeric',
@@ -286,7 +286,7 @@ module.exports = {
                     user_id: user_id,
                     created_at: formatted_created_at,
                     context: context,
-                    is_liked: count[0].is_liked === 1 ? true : false,
+                    is_liked: is_liked === 1 ? true : false,
                     like_count: like_count,
                     comment_count: comment_count,
                     picture: picture,
