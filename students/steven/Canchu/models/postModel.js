@@ -143,7 +143,7 @@ module.exports = {
             const likedSql = "SELECT COUNT(*) AS is_liked FROM postlike WHERE user_id = ? AND post_id = ?"
             const [count] = await db.query(likedSql, [id,post_id])
             // Select needed user and comment information from join table given user ID and post ID
-            const commentSql = "SELECT postcomment.id, postcomment.text, postcomment.created_at AS comment_created_at, users.id AS user_id , users.name, users.picture FROM postcomment LEFT JOIN users ON postcomment.user_id = users.id WHERE post_id = ?"
+            const commentSql = "SELECT postcomment.id, postcomment.text, DATE_FORMAT(postcomment.created_at, '%Y-%m-%d %H:%i:%s') AS comment_created_at, users.id AS user_id , users.name, users.picture FROM postcomment LEFT JOIN users ON postcomment.user_id = users.id WHERE post_id = ?"
             const [results_join] = await db.query(commentSql, [post_id])
             // Map the results
             const commentList = results_join.map((result) => {
@@ -237,10 +237,20 @@ module.exports = {
             const limitResults = results[0] === undefined ? [] : results.slice(decode_cursor, decode_cursor+10);
             const postList = limitResults.map((result) => {
                 const { id, user_id, created_at, context, like_count, comment_count, picture, name } = result;
+                // Format the date as "YYYY-MM-DD HH:mm:ss"
+                const formatted_created_at = new Date(created_at).toLocaleString('en-US', {
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit',
+                timeZone: 'UTC',
+                });
                 return {
                     id: id,
                     user_id: user_id,
-                    created_at: created_at,
+                    created_at: formatted_created_at,
                     content: context,
                     like_count: like_count,
                     comment_count: comment_count,
