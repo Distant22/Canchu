@@ -52,9 +52,10 @@ module.exports = {
         }
     },
     deleteFriend: async(res,id,self_id) => {
+        console.log("測試deleteFriend：朋友id為",self_id,"我的id為",id)
         try {
-            const validate_sql = 'SELECT user_id, friend_id FROM friendship WHERE id = ?'
-            const [results] = await db.query(validate_sql, [id])
+            const validate_sql = 'SELECT user_id, friend_id FROM friendship WHERE user_id = ? OR friend_id = ?'
+            const [results] = await db.query(validate_sql, [id,id])
             if(results[0] === undefined){
                 return res.status(403).json({ error: 'User ID not existed' });
             } else if(results[0].user_id !== self_id && results[0].friend_id !== self_id){
