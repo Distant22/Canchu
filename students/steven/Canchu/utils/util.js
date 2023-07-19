@@ -27,7 +27,8 @@ module.exports = {
 
     authorize_multipart: (req,res,next) => {
         const type = req.get('content-type')
-        if (type !== 'multipart/form-data'){
+	console.log("截斷的內容型態：",type.substring(0, 19))    
+        if (type.substring(0, 19) !== 'multipart/form-data'){
             console.log("現在的type為",type)
             return res.status(415).json({ error: 'Invalid content type' })
         } else { next(); }
