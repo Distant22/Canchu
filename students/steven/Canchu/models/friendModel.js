@@ -104,10 +104,36 @@ module.exports = {
             return util.databaseError(error,'postAgree',res);
         }
     },
-    getPending: async(res, user_id) => {
+    getFriends: async(res, user_id) => {
         try {
             const sql = 'SELECT friendship.friend_id, users.name, users.picture, friendship.id, friendship.status FROM users INNER JOIN friendship ON users.id = friendship.friend_id WHERE friendship.user_id = ?'
             const [results] = await db.query(sql, [user_id])
+            const friendList = results.map((result) => {
+                console.log("測試getFriends取資料：",result)
+                const {friend_id, name, picture, id, status} = result
+                return {
+                    id: friend_id,
+                    name,
+                    picture,
+                    friendship:  { 
+                        id: id, 
+                        status: status
+                    }
+                };
+            })
+            return res.status(200).json({
+                data: {
+                    users: friendList
+                }
+            });
+        } catch (error) {
+            return util.databaseError(error,'getPending',res);
+        }
+    },
+    getPending: async(res, user_id) => {
+        try {
+            const sql = 'SELECT friendship.friend_id, users.name, users.picture, friendship.id, friendship.status FROM users INNER JOIN friendship ON users.id = friendship.friend_id WHERE friendship.user_id = ? AND friendship.status = ?'
+            const [results] = await db.query(sql, [user_id,'pending'])
             const pendingList = results.map((result) => {
                 console.log("測試getPending取資料：",result)
                 const {friend_id, name, picture, id, status} = result
