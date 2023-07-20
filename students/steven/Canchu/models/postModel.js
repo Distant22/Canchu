@@ -245,16 +245,16 @@ module.exports = {
             `
             SELECT 
                 p.id, p.user_id, p.created_at, p.context, p.like_count, p.comment_count, p.picture, p.name, 
-                CASE 
+                (CASE 
                     WHEN EXISTS (
-                        SELECT * FROM postlike AS pl WHERE pl.user_id = ? AND pl.post_id = p.id
+                        SELECT 1 FROM postlike AS pl WHERE pl.user_id = ? AND pl.post_id = p.id
                     ) THEN 1
                     ELSE 0
-                END AS is_liked
+                END) AS is_liked
             FROM 
                 post AS p 
             WHERE 
-                p.user_id = ? 
+                p.user_id = ?
             `
             var [results] = (user_id === undefined) ? await db.query(sql,[token_id,token_id,token_id,token_id,token_id]) : await db.query(sql, [token_id,user_id])
             const limitResults = results[0] === undefined ? [] : results.slice(decode_cursor, decode_cursor+10);
