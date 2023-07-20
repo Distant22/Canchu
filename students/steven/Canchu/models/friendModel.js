@@ -64,17 +64,15 @@ module.exports = {
             } else if (results[0].user_id !== self_id && results[0].user_id !== results[0].friend_id) {
                 return res.status(403).json({ error: 'No Permission' }); 
             } else {
-                const database_id = results[0].id
-
                 const sql = 'DELETE FROM friendship WHERE id = ?'
-                await db.query(sql, [database_id])
+                await db.query(sql, [id])
 
-                const sqlMinusCount = 'UPDATE users SET friend_count = friend_count - 1 WHERE id = ? AND id = ?'
+                const sqlMinusCount = 'UPDATE users SET friend_count = friend_count - 1 WHERE id = ? OR id = ?'
                 await db.query(sqlMinusCount, [id,self_id])
                 res.status(200).json({
                     data: {
                         friendship: {
-                            id: database_id
+                            id: id
                         }
                     }
                 });
@@ -104,7 +102,7 @@ module.exports = {
                 const eventTime = new Date().toISOString().slice(0, 19).replace('T', ' ');
                 await db.query(sqlInsert, [friend_id,'friend_request',`ID ${friend_id} has accepted your friend request.`,eventTime])
 
-                const sqlAddCount = 'UPDATE users SET friend_count = friend_count + 1 WHERE id = ? AND id = ?'
+                const sqlAddCount = 'UPDATE users SET friend_count = friend_count + 1 WHERE id = ? OR id = ?'
                 await db.query(sqlAddCount, [self_id,friend_id])
 
                 res.status(200).json({
