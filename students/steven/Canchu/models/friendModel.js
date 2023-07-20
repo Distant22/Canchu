@@ -65,8 +65,8 @@ module.exports = {
                 const sql = 'DELETE FROM friendship WHERE id = ?'
                 await db.query(sql, [id])
 
-                const sqlMinusCount = 'UPDATE users SET friend_count = friend_count - 1 WHERE id = ?'
-                await db.query(sqlMinusCount, [id])
+                const sqlMinusCount = 'UPDATE users SET friend_count = friend_count - 1 WHERE id = ? AND id = ?'
+                await db.query(sqlMinusCount, [id,se])
                 res.status(200).json({
                     data: {
                         friendship: {
@@ -80,8 +80,10 @@ module.exports = {
         }
     },
     postAgree: async(res,id,self_id) => {
+        // id：朋友表id；self_id：Token ID
+        console.log("測試答應好友邀請：資料表PK id為",id,"，我自己的ID為",self_id)
         try {
-            const validate_sql = 'SELECT user_id, friend_id FROM friendship WHERE id = ?'
+            const validate_sql = 'SELECT user_id, friend_id FROM friendship WHERE friend_id = ?'
             const [results] = await db.query(validate_sql, [id])
             if(results[0] === undefined){
                 return res.status(403).json({ error: 'User ID not existed' });
