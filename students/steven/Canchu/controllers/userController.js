@@ -58,7 +58,8 @@ module.exports = {
 
     getProfile: async(req,res) => {
         const userId = req.params.id;
-        await userModel.getProfile(res,userId,req.user.id)
+        const cache_result = await util.get_redis('/:id/profile')
+        (!cache_result) ? await userModel.getProfile(res,userId,req.user.id) : null
     },
 
     updateProfile: async(req,res) => {
