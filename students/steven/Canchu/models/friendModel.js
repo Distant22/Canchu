@@ -30,6 +30,7 @@ module.exports = {
                 const sql_friend = 'INSERT INTO friendship (user_id, status, friend_id) VALUES (?,?,?)'
                 const [friend_results] = await db.query(sql_friend, [friend_id,'pending',my_id])
                 const resultId = friend_results.insertId
+                console.log("Result 的 ID 為",resultId)
                 const sql_event = 'INSERT INTO event (user_id,type,summary) VALUES (?,?,?)'
                 await db.query(sql_event, [friend_id,'friend_request',`ID ${my_id} invited you to be friends.`])
                 res.status(200).json({
@@ -57,19 +58,22 @@ module.exports = {
         try {
             const validate_sql = 'SELECT id, user_id, friend_id FROM friendship WHERE (user_id = ? AND friend_id = ?) OR (user_id = ? AND friend_id = ?)'
             const [results] = await db.query(validate_sql, [self_id,id,id,self_id])
+            
             console.log("測試deleteFriend的結果：",results[0])
             if(results[0] === undefined){
                 return res.status(403).json({ error: 'User ID not existed' });
             } else {
+                const database_id = results[0].id
+
                 const sql = 'DELETE FROM friendship WHERE id = ?'
-                await db.query(sql, [results[0].id])
+                await db.query(sql, [database_id])
 
                 const sqlMinusCount = 'UPDATE users SET friend_count = friend_count - 1 WHERE id = ? AND id = ?'
                 await db.query(sqlMinusCount, [id,self_id])
                 res.status(200).json({
                     data: {
                         friendship: {
-                            id: id
+                            id: database_id
                         }
                     }
                 });
