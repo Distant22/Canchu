@@ -40,7 +40,7 @@ module.exports = {
     signin: async(res,email,password,provider) => {
         const sql = "SELECT * FROM users WHERE email = ?"
         const [resultsCheck] = await db.query(sql, [email]) ;
-        if(resultsCheck[0].length == 0){
+        if(resultsCheck.length == 0){
             return res.status(403).json({ error: 'Email not exist' });
         } else {
             const userInfo = resultsCheck[0]
