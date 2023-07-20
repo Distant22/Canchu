@@ -61,7 +61,7 @@ module.exports = {
             console.log("測試deleteFriend的結果：",results[0])
             if(results[0] === undefined){
                 return res.status(403).json({ error: 'User ID not existed' });
-            } else if (results[0].user_id !== self_id && results[0].user_id !== results[0].friend_id) {
+            } else if (results[0].user_id !== self_id && self_id !== results[0].friend_id) {
                 return res.status(403).json({ error: 'No Permission' }); 
             } else {
                 const sql = 'DELETE FROM friendship WHERE id = ?'
