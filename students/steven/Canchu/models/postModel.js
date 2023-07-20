@@ -246,7 +246,7 @@ module.exports = {
                 SELECT id FROM post WHERE user_id = ?
             )
             SELECT 
-                p.id, p.created_at, p.context, p.like_count, p.comment_count, p.picture, p.name, 
+                p.id, p.user_id, p.created_at, p.context, p.like_count, p.comment_count, p.picture, p.name, 
                 CASE 
                     WHEN EXISTS (
                         SELECT 1 FROM postlike AS pl WHERE pl.user_id = ? AND pl.post_id = p.id
