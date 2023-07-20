@@ -69,6 +69,7 @@ module.exports = {
                     if (results[0].status === 'friend'){
                         const sqlMinusCount = 'UPDATE users SET friend_count = friend_count - 1 WHERE id = ? OR id = ?'
                         await db.query(sqlMinusCount, [results[0].friend_id,results[0].user_id])
+                        console.log("測試朋友ID抓得對不對：",results[0].friend_id,results[0].user_id)
                     }
                     const sql = 'DELETE FROM friendship WHERE id = ?'
                     await db.query(sql, [id])
