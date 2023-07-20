@@ -10,7 +10,6 @@ const db = mysql.createPool({
 
 module.exports = {
     postRequest: async(res,friend_id,my_id) => {
-        console.log("測試postRequest：朋友id為",friend_id,"我的id為",my_id)
         if(parseInt(my_id) === parseInt(friend_id)){ return res.status(403).json({ error: `You can't send friend request to yourself.` }); }
         try {
             const searchsql = 'SELECT * FROM users WHERE id = ?'
@@ -20,7 +19,6 @@ module.exports = {
             }
             const sql_check = 'SELECT status FROM friendship WHERE user_id = ? AND friend_id = ?'
             const [resultsCheck] = await db.query(sql_check,[my_id,friend_id])
-            console.log("結果長度：",resultsCheck.length,my_id,friend_id)
             if(resultsCheck.length > 0) { 
                 return resultsCheck[0].status === "friend" ? 
                 res.status(403).json({  error: `You have already be a friend with this person.` }) : 
@@ -30,7 +28,6 @@ module.exports = {
                 const sql_friend = 'INSERT INTO friendship (user_id, status, friend_id) VALUES (?,?,?)'
                 const [friend_results] = await db.query(sql_friend, [friend_id,'pending',my_id])
                 const resultId = friend_results.insertId
-                console.log("Result 的 ID 為",resultId)
                 const sql_event = 'INSERT INTO event (user_id,type,summary,created_at) VALUES (?,?,?,?)'
                 const eventTime = new Date().toISOString().slice(0, 19).replace('T', ' ');
                 await db.query(sql_event, [friend_id,'friend_request',`${results[0].name} invited you to be friends.`,eventTime])
@@ -55,11 +52,9 @@ module.exports = {
     },
     deleteFriend: async(res,id,self_id) => {
         // 只能去id那裏刪除朋友；不能刪除自己
-        console.log("測試deleteFriend：PK為",id,"我的id為",self_id)
         try {
             const validate_sql = 'SELECT user_id, status, friend_id FROM friendship WHERE id = ?'
             const [results] = await db.query(validate_sql, [id])
-            console.log("測試deleteFriend的結果：",results)
             if(results === undefined){
                 return res.status(403).json({ error: 'User ID not existed' });
             } else if (results[0].user_id !== self_id && self_id !== results[0].friend_id) {
@@ -69,7 +64,6 @@ module.exports = {
                     if (results[0].status === 'friend'){
                         const sqlMinusCount = 'UPDATE users SET friend_count = friend_count - 1 WHERE id = ? OR id = ?'
                         await db.query(sqlMinusCount, [results[0].friend_id,results[0].user_id])
-                        console.log("測試朋友ID抓得對不對：",results[0].friend_id,results[0].user_id)
                     }
                     const sql = 'DELETE FROM friendship WHERE id = ?'
                     await db.query(sql, [id])
@@ -91,15 +85,12 @@ module.exports = {
     },
     postAgree: async(res,id,self_id) => {
         // id：朋友表id；self_id：Token ID
-        console.log("測試答應好友邀請：資料表PK id為",id,"，我自己的ID為",self_id)
         try {
             const validate_sql = 'SELECT f.user_id, f.friend_id, u.name FROM friendship AS f LEFT JOIN users AS u ON f.user_id = u.id WHERE f.id = ?'
             const [results] = await db.query(validate_sql, [id])
-            console.log("測試答應好友，回傳結果：",results,results[0])
             if(results[0] === undefined){
                 return res.status(403).json({ error: 'User ID not existed' });
             } else if(results[0].user_id !== self_id){
-                console.error("要求同意Request的ID為",self_id,"，但能同意的只有ID為",results[0].user_id,"的使用者，id為",id)
                 return res.status(400).json({ error: 'This user has no permission to agree friend request'})
             } else {
                 const friend_id = results[0].friend_id
@@ -146,7 +137,6 @@ module.exports = {
             const [results] = await db.query(sql, [user_id,user_id])
             const friendList = results.map((result) => {
                 const {friend_id, name, picture, id, status} = result
-                console.log("測試getFriends取資料：",friend_id, name, picture, id, status)
                 return {
                     id: friend_id,
                     name,
@@ -179,7 +169,6 @@ module.exports = {
             `
             const [results] = await db.query(sql, [user_id,user_id])
             const pendingList = results.map((result) => {
-                console.log("測試getPending取資料：",result)
                 const {friend_id, name, picture, id, status} = result
                 return {
                     id: friend_id,
