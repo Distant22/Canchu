@@ -130,10 +130,11 @@ module.exports = {
             const userProfile = results[0];
             const friendsql =  
             `WITH me AS (
-                SELECT friend_id AS my_id, status FROM friendship WHERE user_id = ?
+                SELECT friend_id AS my_id,
+                CASE WHEN friend_id = ? AND status = 'pending' THEN 'requested' ELSE status END AS status
+                FROM friendship WHERE user_id = ?
             ), friend AS (
                 SELECT user_id AS my_id,
-                       CASE WHEN friend_id = ? AND status = 'pending' THEN 'requested' ELSE status END AS status
                 FROM friendship
                 WHERE friend_id = ?
             )
