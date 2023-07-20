@@ -1,5 +1,4 @@
 const mysql = require('mysql2/promise');
-const bcrypt = require('bcrypt');
 const util = require('../utils/util')
 
 const db = mysql.createPool({
@@ -176,14 +175,12 @@ module.exports = {
                         }
                 },
             };
-            console.log("測試getDetail的Response：",response,"而count為：",count[0].is_liked)
             return res.status(200).json(response);
         } catch (error) {
             return util.databaseError(error,'getDetail',res);
         }
     },
     getSearch: async(res,token_id,user_id, cursor) =>  {
-        console.log('Function:getSearch')
         try {
             const decode_cursor = cursor === undefined ? 0 : Number(Buffer.from(cursor, 'base64').toString('ascii'))
             // 如果有沒有ID：回傳自己的文章
@@ -261,10 +258,7 @@ module.exports = {
             var [results] = (user_id === undefined) ? await db.query(sql,[token_id,token_id,token_id,token_id,token_id]) : await db.query(sql, [token_id,user_id])
             const limitResults = results[0] === undefined ? [] : results.slice(decode_cursor, decode_cursor+10);
             const postList = limitResults.map((result) => {
-
                 const { id, user_id, created_at, context, like_count, comment_count, picture, name, is_liked } = result;
-
-                console.log("Get Search 的 result",id, user_id, created_at, context, like_count, comment_count, picture, name, is_liked)
                 // Format the date as "YYYY-MM-DD HH:mm:ss"
                 const formatted_created_at = new Date(created_at).toLocaleString('en-US', {
                 year: 'numeric',
@@ -293,7 +287,6 @@ module.exports = {
                     next_cursor: (results.length - parseInt(decode_cursor) > 10) ? Buffer.from((decode_cursor+10).toString(), 'ascii').toString('base64') : null
                 }
             }
-            console.log("Get Search 的 Response：",response)
             return res.status(200).json(response);
         } catch (error) {
             return util.databaseError(error,'getSearch',res);
