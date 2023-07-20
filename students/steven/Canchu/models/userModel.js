@@ -120,7 +120,8 @@ module.exports = {
         }
     },
 
-    getProfile: async(res,userId) => {
+    getProfile: async(res,userId,id) => {
+        // userId：要看的人的ID，ID：Token ID
         try {
             const sql = 'SELECT id, name, picture, friend_count, introduction, tags FROM users WHERE id = ?';
             const [results] = await db.query(sql, [userId])
@@ -132,19 +133,18 @@ module.exports = {
             const friendsql =  
             `WITH me AS (
                 SELECT friend_id AS my_id,
-                CASE WHEN friend_id = ? AND status = 'requested' THEN 'pending' ELSE status END AS status
-                FROM friendship WHERE user_id = ?
+                CASE WHEN status = 'requested' THEN 'pending' ELSE status END AS status
+                FROM friendship WHERE user_id = ? AND friend_id = ?
             ), friend AS (
                 SELECT user_id AS my_id,
-                CASE WHEN friend_id = ? AND status = 'pending' THEN 'requested' ELSE status END AS status
-                FROM friendship
-                WHERE friend_id = ?
+                CASE WHEN status = 'pending' THEN 'requested' ELSE status END AS status
+                FROM friendship WHERE friend_id = ? AND user_id = ?
             )
             SELECT m.my_id, m.status FROM me AS m
             UNION
             SELECT f.my_id, f.status FROM friend AS f;            
             `
-            const [resultFriend] = await db.query(friendsql, [userId,userId,userId])
+            const [resultFriend] = await db.query(friendsql, [userId,id,userId,id])
             console.log("Response from get profile:",resultFriend)
             const friendshipData = resultFriend.length === 0 ? null : resultFriend.map(friendship => ({
                 id: friendship.my_id,

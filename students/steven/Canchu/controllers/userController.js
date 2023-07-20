@@ -61,7 +61,7 @@ module.exports = {
     getProfile: async(req,res) => {
         const userId = req.params.id;
         console.log("現在操作getProfile｜參數：",userId)
-        await userModel.getProfile(res,userId)
+        await userModel.getProfile(res,userId,req.user.id)
     },
 
     updateProfile: async(req,res) => {
