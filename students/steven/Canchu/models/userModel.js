@@ -133,11 +133,11 @@ module.exports = {
             const friendsql =  
             `WITH me AS (
                 SELECT friend_id AS my_id,
-                CASE WHEN status = 'requested' THEN 'pending' ELSE status END AS status
+                CASE WHEN status = 'pending' THEN 'requested' ELSE status END AS status
                 FROM friendship WHERE user_id = ? AND friend_id = ?
             ), friend AS (
                 SELECT user_id AS my_id,
-                CASE WHEN status = 'pending' THEN 'requested' ELSE status END AS status
+                CASE WHEN status = 'requested' THEN 'pending' ELSE status END AS status
                 FROM friendship WHERE friend_id = ? AND user_id = ?
             )
             SELECT m.my_id, m.status FROM me AS m
