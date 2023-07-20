@@ -128,13 +128,15 @@ module.exports = {
                 return res.status(400).json({ error: 'User not found' });
             }
             const userProfile = results[0];
+            // Pending：等我接受；若我去的人邀請是我發的，對方應該為friendship friend_id是我，狀態pending；我這邊才是requested
             const friendsql =  
             `WITH me AS (
                 SELECT friend_id AS my_id,
-                CASE WHEN friend_id = ? AND status = 'pending' THEN 'requested' ELSE status END AS status
+                CASE WHEN friend_id = ? AND status = 'requested' THEN 'pending' ELSE status END AS status
                 FROM friendship WHERE user_id = ?
             ), friend AS (
-                SELECT user_id AS my_id, status
+                SELECT user_id AS my_id,
+                CASE WHEN friend_id = ? AND status = 'pending' THEN 'requested' ELSE status END AS status
                 FROM friendship
                 WHERE friend_id = ?
             )
@@ -205,6 +207,12 @@ module.exports = {
                 await db.query(sql, [
                     `https://${process.env.DB_HOST}/static/${picture}`
                 , id])
+
+                const sql_postUpdate = 'UPDATE post SET picture = ? WHERE user_id = ?'
+                await db.query(sql_postUpdate,[
+                    `https://${process.env.DB_HOST}/static/${picture}`
+                , id])
+
                 const response = {
                     data: {
                         picture: picture
