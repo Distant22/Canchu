@@ -31,8 +31,9 @@ module.exports = {
                 const [friend_results] = await db.query(sql_friend, [friend_id,'pending',my_id])
                 const resultId = friend_results.insertId
                 console.log("Result 的 ID 為",resultId)
-                const sql_event = 'INSERT INTO event (user_id,type,summary) VALUES (?,?,?)'
-                await db.query(sql_event, [friend_id,'friend_request',`ID ${my_id} invited you to be friends.`])
+                const sql_event = 'INSERT INTO event (user_id,type,summary,created_at) VALUES (?,?,?,?)'
+                const eventTime = new Date().toISOString().slice(0, 19).replace('T', ' ');
+                await db.query(sql_event, [friend_id,'friend_request',`${results[0].name} invited you to be friends.`,eventTime])
                 res.status(200).json({
                     data: {
                         friendship: {
@@ -88,7 +89,7 @@ module.exports = {
         // id：朋友表id；self_id：Token ID
         console.log("測試答應好友邀請：資料表PK id為",id,"，我自己的ID為",self_id)
         try {
-            const validate_sql = 'SELECT user_id, friend_id FROM friendship WHERE id = ?'
+            const validate_sql = 'SELECT f.user_id, f.friend_id, u.name FROM friendship AS f LEFT JOIN users AS u ON f.user_id = u.id WHERE f.id = ?'
             const [results] = await db.query(validate_sql, [id])
             console.log("測試答應好友，回傳結果：",results,results[0])
             if(results[0] === undefined){
@@ -103,7 +104,7 @@ module.exports = {
 
                 const sqlInsert = 'INSERT INTO event (user_id,type,summary,created_at) VALUES (?,?,?,?)'
                 const eventTime = new Date().toISOString().slice(0, 19).replace('T', ' ');
-                await db.query(sqlInsert, [friend_id,'friend_request',`ID ${friend_id} has accepted your friend request.`,eventTime])
+                await db.query(sqlInsert, [friend_id,'friend_request',`${results[0].name} has accepted your friend request.`,eventTime])
 
                 const sqlAddCount = 'UPDATE users SET friend_count = friend_count + 1 WHERE id = ? OR id = ?'
                 await db.query(sqlAddCount, [self_id,friend_id])
