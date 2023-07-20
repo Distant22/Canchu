@@ -52,21 +52,20 @@ module.exports = {
         }
     },
     deleteFriend: async(res,id,self_id) => {
+        // 只能去id那裏刪除朋友；不能刪除自己
         console.log("測試deleteFriend：朋友id為",id,"我的id為",self_id)
         try {
-            const validate_sql = 'SELECT user_id, friend_id FROM friendship WHERE user_id = ? OR friend_id = ?'
-            const [results] = await db.query(validate_sql, [self_id,self_id])
+            const validate_sql = 'SELECT id, user_id, friend_id FROM friendship WHERE (user_id = ? AND friend_id = ?) OR (user_id = ? AND friend_id = ?)'
+            const [results] = await db.query(validate_sql, [self_id,id,id,self_id])
+            console.log("測試deleteFriend的結果：",results[0])
             if(results[0] === undefined){
                 return res.status(403).json({ error: 'User ID not existed' });
-            } else if(results[0].user_id !== id && results[0].friend_id !== id && results[0].user_id !== self_id && results[0].friend_id !== self_id ){
-                console.error("要求刪除Request的朋友ID為",id,"自己的ID為",self_id,"，但能同意的只有ID為",results[0].user_id,"或ID為",results[0].friend_id,"的使用者，id為")
-                return res.status(400).json({ error: 'This user has no permission to delete friend request'})
             } else {
                 const sql = 'DELETE FROM friendship WHERE id = ?'
-                await db.query(sql, [id])
+                await db.query(sql, [results[0].id])
 
                 const sqlMinusCount = 'UPDATE users SET friend_count = friend_count - 1 WHERE id = ? AND id = ?'
-                await db.query(sqlMinusCount, [id,se])
+                await db.query(sqlMinusCount, [id,self_id])
                 res.status(200).json({
                     data: {
                         friendship: {
@@ -100,8 +99,8 @@ module.exports = {
                 const eventTime = new Date().toISOString().slice(0, 19).replace('T', ' ');
                 await db.query(sqlInsert, [friend_id,'friend_request',`ID ${friend_id} has accepted your friend request.`,eventTime])
 
-                const sqlAddCount = 'UPDATE users SET friend_count = friend_count + 1 WHERE id = ?'
-                await db.query(sqlAddCount, [id])
+                const sqlAddCount = 'UPDATE users SET friend_count = friend_count + 1 WHERE id = ? AND id = ?'
+                await db.query(sqlAddCount, [self_id,friend_id])
 
                 res.status(200).json({
                     data: {

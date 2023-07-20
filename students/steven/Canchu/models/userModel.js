@@ -132,13 +132,16 @@ module.exports = {
             `WITH me AS (
                 SELECT friend_id AS my_id, status FROM friendship WHERE user_id = ?
             ), friend AS (
-                SELECT user_id AS my_id, status FROM friendship WHERE friend_id = ?
+                SELECT user_id AS my_id,
+                       CASE WHEN friend_id = ? AND status = 'pending' THEN 'requested' ELSE status END AS status
+                FROM friendship
+                WHERE friend_id = ?
             )
             SELECT m.my_id, m.status FROM me AS m
             UNION
-            SELECT f.my_id, f.status FROM friend AS f
+            SELECT f.my_id, f.status FROM friend AS f;            
             `
-            const [resultFriend] = await db.query(friendsql, [userId,userId])
+            const [resultFriend] = await db.query(friendsql, [userId,userId,userId])
             console.log("Response from get profile:",resultFriend)
             const friendshipData = resultFriend.length === 0 ? null : resultFriend.map(friendship => ({
                 id: friendship.my_id,
