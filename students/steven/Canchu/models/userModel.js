@@ -200,7 +200,6 @@ module.exports = {
             if (userCount === 0) {
                 return res.status(400).json({ error: 'User not found' });
             } else {
-                console.log("測試圖片路徑：",picture)
                 const sql = 'UPDATE users SET picture = ? WHERE id = ?'
                 await db.query(sql, [
                     `https://${process.env.DB_HOST}/static/${picture}`
