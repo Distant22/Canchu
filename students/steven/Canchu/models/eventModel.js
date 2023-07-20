@@ -8,13 +8,6 @@ const db = mysql.createPool({
 	database: 'user'
 });
 
-db.connect((err) => {
-	if (err) {
-		throw err;
-	}
-	console.log('Event Model：Connected to MySQL database');
-});
-
 module.exports = {
     getEvent: async(res,userId) => {
         try {
