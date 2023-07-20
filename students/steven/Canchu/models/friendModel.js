@@ -83,8 +83,9 @@ module.exports = {
         // id：朋友表id；self_id：Token ID
         console.log("測試答應好友邀請：資料表PK id為",id,"，我自己的ID為",self_id)
         try {
-            const validate_sql = 'SELECT user_id, friend_id FROM friendship WHERE friend_id = ?'
+            const validate_sql = 'SELECT user_id, friend_id FROM friendship WHERE id = ?'
             const [results] = await db.query(validate_sql, [id])
+            console.log("測試答應好友，回傳結果：",results,results[0])
             if(results[0] === undefined){
                 return res.status(403).json({ error: 'User ID not existed' });
             } else if(results[0].user_id !== self_id){
