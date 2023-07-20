@@ -59,8 +59,8 @@ module.exports = {
         try {
             const validate_sql = 'SELECT user_id, status, friend_id FROM friendship WHERE id = ?'
             const [results] = await db.query(validate_sql, [id])
-            console.log("測試deleteFriend的結果：",results[0])
-            if(results[0] === undefined){
+            console.log("測試deleteFriend的結果：",results)
+            if(results === undefined){
                 return res.status(403).json({ error: 'User ID not existed' });
             } else if (results[0].user_id !== self_id && self_id !== results[0].friend_id) {
                 return res.status(403).json({ error: 'No Permission' }); 
