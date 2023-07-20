@@ -19,6 +19,7 @@ module.exports = {
     },
     deleteFriend: async(req,res) => {
         const id = req.params.friendship_id
+	console.log(req.params,"為刪朋友的參數")
         await friendModel.deleteFriend(res,id,req.user.id)
     }
 }
