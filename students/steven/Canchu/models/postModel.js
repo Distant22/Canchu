@@ -256,6 +256,7 @@ module.exports = {
                 post AS p 
             WHERE 
                 p.user_id = ?
+            ORDER BY created_at DESC
             `
             var [results] = (user_id === undefined) ? await db.query(sql,[token_id,token_id,token_id,token_id,token_id]) : await db.query(sql, [token_id,user_id])
             const limitResults = results[0] === undefined ? [] : results.slice(decode_cursor, decode_cursor+10);

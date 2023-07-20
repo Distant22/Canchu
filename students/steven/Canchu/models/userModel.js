@@ -145,7 +145,6 @@ module.exports = {
             SELECT f.id, f.status FROM friend AS f;            
             `
             const [resultFriend] = await db.query(friendsql, [userId,id,userId,id])
-            console.log("Response from get profile:",resultFriend)
             const friendshipData = resultFriend.length === 0 ? null : resultFriend.map(friendship => ({
                 id: friendship.id,
                 status: friendship.status
@@ -163,7 +162,6 @@ module.exports = {
                     },
                 },
             };
-            console.log("User Profile get success, response=",response)
             return res.status(200).json(response);
         } catch (error) {
             return util.databaseError(error,'getProfile',res);

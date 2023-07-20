@@ -18,7 +18,7 @@ db.connect((err) => {
 
 module.exports = {
     getEvent: async(res,userId) => {
-        const sql = 'SELECT id, type, image, summary, is_read, created_at FROM event WHERE user_id = ?';
+        const sql = 'SELECT id, type, image, summary, is_read, created_at FROM event WHERE user_id = ? ORDER BY created_at DESC';
         console.log("進入getEvent")
         db.query(sql, [userId], (error, results) => {
             if (error) {
@@ -27,7 +27,6 @@ module.exports = {
             }
             const userEvent = results.map((result) => {
                 const {id, type, is_read, image, created_at, summary} = result
-                console.log("結果：",result)
                 return {
                     id: id,
                     type: type,
@@ -43,7 +42,6 @@ module.exports = {
                     events: userEvent
                 },
             };
-            console.log("User Event get success, response=",response)
             return res.status(200).json(response);
         })
     },
@@ -75,7 +73,6 @@ module.exports = {
                             },
                         },
                     };
-                    console.log("User Event get success, response=",response)
                     return res.status(200).json(response);
                 })
             }
