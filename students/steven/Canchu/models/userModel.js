@@ -132,22 +132,22 @@ module.exports = {
             // Pending：等我接受；若我去的人邀請是我發的，對方應該為friendship friend_id是我，狀態pending；我這邊才是requested
             const friendsql =  
             `WITH me AS (
-                SELECT friend_id AS my_id,
+                SELECT id,
                 CASE WHEN status = 'pending' THEN 'requested' ELSE status END AS status
                 FROM friendship WHERE user_id = ? AND friend_id = ?
             ), friend AS (
-                SELECT user_id AS my_id,
+                SELECT id,
                 CASE WHEN status = 'requested' THEN 'pending' ELSE status END AS status
                 FROM friendship WHERE friend_id = ? AND user_id = ?
             )
-            SELECT m.my_id, m.status FROM me AS m
+            SELECT m.id, m.status FROM me AS m
             UNION
-            SELECT f.my_id, f.status FROM friend AS f;            
+            SELECT f.id, f.status FROM friend AS f;            
             `
             const [resultFriend] = await db.query(friendsql, [userId,id,userId,id])
             console.log("Response from get profile:",resultFriend)
             const friendshipData = resultFriend.length === 0 ? null : resultFriend.map(friendship => ({
-                id: friendship.my_id,
+                id: friendship.id,
                 status: friendship.status
             }));
             const response = {
