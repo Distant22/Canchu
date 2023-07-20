@@ -54,14 +54,15 @@ module.exports = {
     },
     deleteFriend: async(res,id,self_id) => {
         // 只能去id那裏刪除朋友；不能刪除自己
-        console.log("測試deleteFriend：朋友id為",id,"我的id為",self_id)
+        console.log("測試deleteFriend：PK為",id,"我的id為",self_id)
         try {
-            const validate_sql = 'SELECT id, user_id, friend_id FROM friendship WHERE (user_id = ? AND friend_id = ?) OR (user_id = ? AND friend_id = ?)'
-            const [results] = await db.query(validate_sql, [self_id,id,id,self_id])
-            
+            const validate_sql = 'SELECT user_id, friend_id FROM friendship WHERE id = ?'
+            const [results] = await db.query(validate_sql, [id])
             console.log("測試deleteFriend的結果：",results[0])
             if(results[0] === undefined){
                 return res.status(403).json({ error: 'User ID not existed' });
+            } else if (results[0].user_id !== self_id && results[0].user_id !== results[0].friend_id) {
+                return res.status(403).json({ error: 'No Permission' }); 
             } else {
                 const database_id = results[0].id
 
