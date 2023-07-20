@@ -164,6 +164,7 @@ module.exports = {
                 data: {
                         post: {
                             id: parseInt(post_id,10),
+                            user_id: user_id,
                             created_at: created_at,
                             context: context,
                             is_liked: parseInt(count[0].is_liked) === 1 ? true : false,
