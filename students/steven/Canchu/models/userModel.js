@@ -155,13 +155,18 @@ module.exports = {
 
             var userProfile = null
             if (!redis_result) { 
+                
                 const sql = 'SELECT id, name, picture, friend_count, introduction, tags FROM users WHERE id = ?';
                 const [results] = await db.query(sql, [userId])
                 if (results.length === 0) {
                     return res.status(400).json({ error: 'User not found' });
                 }
                 userProfile = results[0];
+                console.log("Redis 沒東西，直接去資料庫拿，ID為",userId,"Result回傳：",userProfile)
+
+                // 去 Redis 新增資料
                 redis.set_redis(`/${userId}/profile`,JSON.stringify(userProfile),res)
+
             } 
 
             const response = {
@@ -197,12 +202,16 @@ module.exports = {
         try {
             const sql_validate = 'SELECT COUNT(*) as count FROM users WHERE id = ?'
             const [resultsCheck] = await db.query(sql_validate, [id])
-            const userCount = resultsCheck[0].count
-            if (userCount === 0) {
+            if (resultsCheck[0].count === 0) {
                 return res.status(400).json({ error: 'User not found' });
             } else {
                 const sql = 'UPDATE users SET name = ? , introduction = ? , tags = ? WHERE id = ?'
                 await db.query(sql, [name, introduction, tags, id])
+
+                // 去Redis刪資料 
+                redis.delete_redis(`/${id}/profile`)
+                // 去Redis刪資料 
+
                 const response = {
                     data: {
                         user: {
