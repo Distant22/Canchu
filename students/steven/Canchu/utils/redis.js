@@ -2,13 +2,13 @@ const Redis = require("ioredis");
 
 module.exports = {
 
-    get_redis: async (path,res) => {
+    get_redis: async (path) => {
         const redis = new Redis();
-        const result = await redis.get(path,res)
+        const result = await redis.get(path)
         return result
     },
 
-    set_redis: (path,data,res) => {
+    set_redis: (path,data) => {
         try {
             const redis = new Redis();
             redis.set(path, data, 'EX', 3600)

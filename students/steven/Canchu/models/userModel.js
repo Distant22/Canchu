@@ -130,7 +130,7 @@ module.exports = {
                 return res.status(400).json({ error: 'User not found' });
             }
 
-            const redis_result = await redis.get_redis('/:id/profile',res)
+            const redis_result = await redis.get_redis('/:id/profile')
             if(redis_result){ return res.status(200).json(redis_result) }
 
             const userProfile = results[0];
