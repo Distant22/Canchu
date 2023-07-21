@@ -12,11 +12,13 @@ module.exports = {
         }
     },
 
-    set_redis: async (path,data,res) => {
+    set_redis: (path,data,res) => {
         try {
             const redis = new Redis();
-            await redis.set(path, data, 'EX', 3600)
-            console.log(await redis.get(path,res))
+            redis.set(path, data, 'EX', 3600)
+            redis.get(path).then((result) => {
+                console.log(result); // Prints "value"
+            });
         } catch (err) { console.log("Error in redis! msg：", err ) }
     }
 
