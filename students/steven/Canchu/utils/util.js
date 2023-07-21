@@ -1,12 +1,7 @@
 const jwt = require('jsonwebtoken');
-const Redis = require("ioredis");
+
 
 module.exports = {
-
-    get_redis: (req,res,next) => {
-        const redis = new Redis();
-        console.log(req)
-    },
 
     authorize_bearer: (req, res, next) => {
         const token = req.headers.authorization;
