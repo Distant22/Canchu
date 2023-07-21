@@ -16,7 +16,7 @@ module.exports = {
             const redis = new Redis();
             redis.set(path, data, 'EX', 3600)
             redis.get(path).then((result) => {
-                console.log("Redis 設置成功，paht：",path,"result：",result); // Prints "value"
+                console.log("Redis 設置成功，path：",path,"result：",result); // Prints "value"
             });
         } catch (err) { console.log("Error in redis! msg：", err ) }
     },

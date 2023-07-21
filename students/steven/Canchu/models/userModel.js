@@ -166,7 +166,7 @@ module.exports = {
 
                 // 去 Redis 新增資料
                 redis.set_redis(`/${userId}/profile`,JSON.stringify(userProfile),res)
-
+                // 去 Redis 新增資料
             } 
 
             const response = {
@@ -234,6 +234,7 @@ module.exports = {
             if (userCount === 0) {
                 return res.status(400).json({ error: 'User not found' });
             } else {
+
                 const sql = 'UPDATE users SET picture = ? WHERE id = ?'
                 await db.query(sql, [
                     `https://${process.env.DB_HOST}/static/${picture}`
@@ -243,6 +244,10 @@ module.exports = {
                 await db.query(sql_postUpdate,[
                     `https://${process.env.DB_HOST}/static/${picture}`
                 , id])
+
+                // 去Redis刪資料 
+                redis.delete_redis(`/${id}/profile`)
+                // 去Redis刪資料 
 
                 const response = {
                     data: {
