@@ -129,6 +129,10 @@ module.exports = {
             if (results.length === 0) {
                 return res.status(400).json({ error: 'User not found' });
             }
+
+            const redis_result = await redis.get_redis('/:id/profile',res)
+            if(redis_result){ return res.status(200).json(redis_result) }
+
             const userProfile = results[0];
             const friendsql =  
             `WITH me AS (
@@ -162,9 +166,7 @@ module.exports = {
                     },
                 },
             };
-            
             redis.set_redis('/:id/profile',JSON.stringify(response),res)
-
             return res.status(200).json(response);
         } catch (error) {
             return util.databaseError(error,'getProfile',res);
