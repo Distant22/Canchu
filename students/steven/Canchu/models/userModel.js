@@ -133,7 +133,7 @@ module.exports = {
             const redis_result = await redis.get_redis('/:id/profile')
             if(redis_result){ 
                 console.log("Get success, result is:",redis_result)
-                return res.status(200).json(redis_result) 
+                return res.status(200).json(JSON.parse(redis_result)) 
             }
 
             const userProfile = results[0];
@@ -169,7 +169,7 @@ module.exports = {
                     },
                 },
             };
-            redis.set_redis('/:id/profile',response,res)
+            redis.set_redis('/:id/profile',JSON.stringify(response),res)
             return res.status(200).json(response);
         } catch (error) {
             return util.databaseError(error,'getProfile',res);
