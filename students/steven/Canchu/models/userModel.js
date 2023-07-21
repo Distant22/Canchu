@@ -1,6 +1,7 @@
 const mysql = require('mysql2/promise');
 const bcrypt = require('bcrypt');
 const util = require('../utils/util')
+const redis = require('../utils/redis')
 
 const db = mysql.createPool({
 	host: process.env.DB_HOST || 'localhost',
@@ -129,7 +130,6 @@ module.exports = {
                 return res.status(400).json({ error: 'User not found' });
             }
             const userProfile = results[0];
-            // Pending：等我接受；若我去的人邀請是我發的，對方應該為friendship friend_id是我，狀態pending；我這邊才是requested
             const friendsql =  
             `WITH me AS (
                 SELECT id,
@@ -162,6 +162,9 @@ module.exports = {
                     },
                 },
             };
+            
+            redis.set_redis('/:id/profile',response)
+
             return res.status(200).json(response);
         } catch (error) {
             return util.databaseError(error,'getProfile',res);
