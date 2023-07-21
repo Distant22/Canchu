@@ -17,7 +17,7 @@ module.exports = {
             const redis = new Redis();
             await redis.set(path, data, 'EX', 3600)
             console.log(await redis.hGetAll(path))
-        } catch (err) { return res.status(500).json({ error: 'Failed Caching' }); }
+        } catch (err) { console.log("Error in redis! msg：", err ) }
     }
 
 }
