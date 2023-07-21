@@ -129,7 +129,7 @@ module.exports = {
             var redis_result = await redis.get_redis(`/${userId}/profile`)
             redis_result = JSON.parse(redis_result)
             if(redis_result){ 
-                console.log("Redis 取得成功, path is:",path,"result is:",redis_result)
+                console.log("Redis 取得成功, result is:",redis_result)
             }
             // 進Redis拿東西
 
@@ -153,13 +153,14 @@ module.exports = {
                 status: friendship.status
             }));
 
+            var userProfile = null
             if (!redis_result) { 
                 const sql = 'SELECT id, name, picture, friend_count, introduction, tags FROM users WHERE id = ?';
                 const [results] = await db.query(sql, [userId])
                 if (results.length === 0) {
                     return res.status(400).json({ error: 'User not found' });
                 }
-                const userProfile = results[0];
+                userProfile = results[0];
                 redis.set_redis(`/${userId}/profile`,JSON.stringify(userProfile),res)
             } 
 
