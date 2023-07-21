@@ -1,5 +1,6 @@
 const mysql = require('mysql2/promise');
 const util = require('../utils/util')
+const redis = require('../utils/redis')
 
 const db = mysql.createPool({
 	host: process.env.DB_HOST || 'localhost',
@@ -68,6 +69,11 @@ module.exports = {
                     const sql = 'DELETE FROM friendship WHERE id = ?'
                     await db.query(sql, [id])
 
+                    // 去Redis刪資料 
+                    redis.delete_redis(`/${results[0].friend_id}/profile`)
+                    redis.delete_redis(`/${results[0].user_id}/profile`)
+                    // 去Redis刪資料 
+
                     res.status(200).json({
                         data: {
                             friendship: {
@@ -103,6 +109,11 @@ module.exports = {
 
                 const sqlAddCount = 'UPDATE users SET friend_count = friend_count + 1 WHERE id = ? OR id = ?'
                 await db.query(sqlAddCount, [self_id,friend_id])
+
+                // 去Redis刪資料 
+                redis.delete_redis(`/${self_id}/profile`)
+                redis.delete_redis(`/${friend_id}/profile`)
+                // 去Redis刪資料 
 
                 res.status(200).json({
                     data: {
