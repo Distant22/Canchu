@@ -25,9 +25,9 @@ module.exports = {
             const insertId = postResults.insertId
 
             // 去Redis刪資料 
-            redis.delete_redis(`/posts/${id}/profile`)
+            redis.delete_redis(`/posts/${post_id}`)
             // 去Redis刪資料 
-            
+
             // Response ID
             const response = {
                 data: {
@@ -52,7 +52,7 @@ module.exports = {
             await db.query(postSql, [post_id]);
 
             // 去Redis刪資料 
-            redis.delete_redis(`/posts/${id}/profile`)
+            redis.delete_redis(`/posts/${post_id}`)
             // 去Redis刪資料 
 
             // Response ID
@@ -80,7 +80,7 @@ module.exports = {
             await db.query(postSql, [post_id]);
             
             // 去Redis刪資料 
-            redis.delete_redis(`/posts/${id}/profile`)
+            redis.delete_redis(`/posts/${post_id}`)
             // 去Redis刪資料 
 
             // Response ID and commentID
@@ -109,7 +109,7 @@ module.exports = {
             await db.query(postSql, [post_id]);
 
             // 去Redis刪資料 
-            redis.delete_redis(`/posts/${id}/profile`)
+            redis.delete_redis(`/posts/${post_id}`)
             // 去Redis刪資料 
 
             // Response ID
@@ -142,7 +142,7 @@ module.exports = {
                 // Response post ID
 
                 // 去Redis刪資料 
-                redis.delete_redis(`/posts/${id}/profile`)
+                redis.delete_redis(`/posts/${post_id}`)
                 // 去Redis刪資料 
 
                 const response = {
@@ -163,7 +163,7 @@ module.exports = {
         try {
 
             // 進Redis拿東西
-            var redis_result = await redis.get_redis(`/posts/${userId}/profile`)
+            var redis_result = await redis.get_redis(`/posts/${post_id}`)
             redis_result = JSON.parse(redis_result)
             // 進Redis拿東西
 
@@ -212,7 +212,7 @@ module.exports = {
                     },
                 };
                 // 去 Redis 新增資料
-                redis.set_redis(`/posts/${userId}/profile`,JSON.stringify(response),res)
+                redis.set_redis(`/posts/${post_id}`,JSON.stringify(response),res)
                 // 去 Redis 新增資料
                 return res.status(200).json(response);
             }
