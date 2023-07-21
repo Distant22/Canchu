@@ -5,8 +5,8 @@ module.exports = {
     get_redis: async (path) => {
         try {
             const redis = new Redis();
-            console.log("Redis 新增路徑：",path)
             const result = await redis.get(path)
+            console.log("Redis 取得成功，path：",path,"result：",result)
             return result
         } catch (err) { console.log("Error in redis! msg：", err ) }
     },

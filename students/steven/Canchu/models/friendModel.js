@@ -70,8 +70,8 @@ module.exports = {
                     await db.query(sql, [id])
 
                     // 去Redis刪資料 
-                    redis.delete_redis(`/${results[0].friend_id}/profile`)
-                    redis.delete_redis(`/${results[0].user_id}/profile`)
+                    redis.delete_redis(`/users/${results[0].friend_id}/profile`)
+                    redis.delete_redis(`/users/${results[0].user_id}/profile`)
                     // 去Redis刪資料 
 
                     res.status(200).json({
@@ -111,8 +111,8 @@ module.exports = {
                 await db.query(sqlAddCount, [self_id,friend_id])
 
                 // 去Redis刪資料 
-                redis.delete_redis(`/${self_id}/profile`)
-                redis.delete_redis(`/${friend_id}/profile`)
+                redis.delete_redis(`/users/${self_id}/profile`)
+                redis.delete_redis(`/users/${friend_id}/profile`)
                 // 去Redis刪資料 
 
                 res.status(200).json({

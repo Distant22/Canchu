@@ -1,5 +1,6 @@
 const mysql = require('mysql2/promise');
 const util = require('../utils/util')
+const redis = require('../utils/redis')
 
 const db = mysql.createPool({
 	host: process.env.DB_HOST || 'localhost',
@@ -22,6 +23,11 @@ module.exports = {
             const sql ='INSERT INTO post (user_id, created_at, context, picture, name) VALUES (?, ?, ?, ?, ?)';
             const [postResults] = await db.query(sql, [id, postTime, context, picture, name]);
             const insertId = postResults.insertId
+
+            // 去Redis刪資料 
+            redis.delete_redis(`/posts/${id}/profile`)
+            // 去Redis刪資料 
+            
             // Response ID
             const response = {
                 data: {
@@ -44,6 +50,11 @@ module.exports = {
             // Update like count in post table
             const postSql = 'UPDATE post SET like_count = like_count + 1 WHERE id = ?'
             await db.query(postSql, [post_id]);
+
+            // 去Redis刪資料 
+            redis.delete_redis(`/posts/${id}/profile`)
+            // 去Redis刪資料 
+
             // Response ID
             const response = {
                 data: {
@@ -67,6 +78,11 @@ module.exports = {
             const comment_id = results.insertId
             const postSql = 'UPDATE post SET comment_count = comment_count + 1 WHERE id = ?'
             await db.query(postSql, [post_id]);
+            
+            // 去Redis刪資料 
+            redis.delete_redis(`/posts/${id}/profile`)
+            // 去Redis刪資料 
+
             // Response ID and commentID
             const response = {
                 data: {
@@ -91,6 +107,11 @@ module.exports = {
             // Update like count in post table
             const postSql = 'UPDATE post SET like_count = like_count - 1 WHERE id = ?'
             await db.query(postSql, [post_id]);
+
+            // 去Redis刪資料 
+            redis.delete_redis(`/posts/${id}/profile`)
+            // 去Redis刪資料 
+
             // Response ID
             const response = {
                 data: {
@@ -114,10 +135,16 @@ module.exports = {
             if(user_id !== id){ 
                 return res.status(400).json({ error: 'This user has no permission to update post' });
             } else {
+
                 // Update post to given content on specified post ID
                 const sql = 'UPDATE post SET context = ? WHERE id = ?';
                 await db.query(sql, [context, post_id])
                 // Response post ID
+
+                // 去Redis刪資料 
+                redis.delete_redis(`/posts/${id}/profile`)
+                // 去Redis刪資料 
+
                 const response = {
                     data: {
                             post: {
@@ -134,48 +161,63 @@ module.exports = {
     getDetail: async(res,post_id,my_id) => {
         console.log('Function:getDetail,參數：',my_id,post_id)
         try {
-            // Select required information from post table given post ID
-            const sql = "SELECT user_id, created_at, context, like_count, comment_count, picture, name FROM post WHERE id = ?"
-            const [results] = await db.query(sql, [post_id])
-            const { user_id, created_at, context, like_count, comment_count, picture, name } = results[0];
-            // Select like count from postlike table given user ID and post ID
-            const likedSql = "SELECT COUNT(*) AS is_liked FROM postlike WHERE user_id = ? AND post_id = ?"
-            const [count] = await db.query(likedSql, [my_id,post_id])
-            // Select needed user and comment information from join table given user ID and post ID
-            const commentSql = "SELECT postcomment.id, postcomment.text, DATE_FORMAT(postcomment.created_at, '%Y-%m-%d %H:%i:%s') AS comment_created_at, users.id AS user_id , users.name, users.picture FROM postcomment LEFT JOIN users ON postcomment.user_id = users.id WHERE post_id = ?"
-            const [results_join] = await db.query(commentSql, [post_id])
-            // Map the results
-            const commentList = results_join.map((result) => {
-                const { id, text, comment_created_at, user_id, name, picture } = result
-                return {
-                    id: id,
-                    created_at : comment_created_at,
-                    content: text,
-                    user : {
-                        id: user_id,
-                        name: name,
-                        picture: picture
-                    }
-                };
-            })
-            // Response the post object containing comments and users information
-            const response = {
-                data: {
-                        post: {
-                            id: parseInt(post_id,10),
-                            user_id: user_id,
-                            created_at: created_at,
-                            context: context,
-                            is_liked: parseInt(count[0].is_liked) === 1 ? true : false,
-                            like_count: like_count,
-                            comment_count: comment_count,
-                            picture: picture,
+
+            // 進Redis拿東西
+            var redis_result = await redis.get_redis(`/posts/${userId}/profile`)
+            redis_result = JSON.parse(redis_result)
+            // 進Redis拿東西
+
+            var response = null
+
+            if (!redis_result){
+                // Select required information from post table given post ID
+                const sql = "SELECT user_id, created_at, context, like_count, comment_count, picture, name FROM post WHERE id = ?"
+                const [results] = await db.query(sql, [post_id])
+                const { user_id, created_at, context, like_count, comment_count, picture, name } = results[0];
+                // Select like count from postlike table given user ID and post ID
+                const likedSql = "SELECT COUNT(*) AS is_liked FROM postlike WHERE user_id = ? AND post_id = ?"
+                const [count] = await db.query(likedSql, [my_id,post_id])
+                // Select needed user and comment information from join table given user ID and post ID
+                const commentSql = "SELECT postcomment.id, postcomment.text, DATE_FORMAT(postcomment.created_at, '%Y-%m-%d %H:%i:%s') AS comment_created_at, users.id AS user_id , users.name, users.picture FROM postcomment LEFT JOIN users ON postcomment.user_id = users.id WHERE post_id = ?"
+                const [results_join] = await db.query(commentSql, [post_id])
+                // Map the results
+                const commentList = results_join.map((result) => {
+                    const { id, text, comment_created_at, user_id, name, picture } = result
+                    return {
+                        id: id,
+                        created_at : comment_created_at,
+                        content: text,
+                        user : {
+                            id: user_id,
                             name: name,
-                            comments: commentList
+                            picture: picture
                         }
-                },
-            };
-            return res.status(200).json(response);
+                    };
+                })
+                 // Response the post object containing comments and users information
+                response = {
+                    data: {
+                            post: {
+                                id: parseInt(post_id,10),
+                                user_id: user_id,
+                                created_at: created_at,
+                                context: context,
+                                is_liked: parseInt(count[0].is_liked) === 1 ? true : false,
+                                like_count: like_count,
+                                comment_count: comment_count,
+                                picture: picture,
+                                name: name,
+                                comments: commentList
+                            }
+                    },
+                };
+                // 去 Redis 新增資料
+                redis.set_redis(`/posts/${userId}/profile`,JSON.stringify(response),res)
+                // 去 Redis 新增資料
+                return res.status(200).json(response);
+            }
+            return res.status(200).json(redis_result);
+
         } catch (error) {
             return util.databaseError(error,'getDetail',res);
         }

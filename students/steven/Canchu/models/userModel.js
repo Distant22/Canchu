@@ -126,11 +126,8 @@ module.exports = {
         try {
             
             // 進Redis拿東西
-            var redis_result = await redis.get_redis(`/${userId}/profile`)
+            var redis_result = await redis.get_redis(`/users/${userId}/profile`)
             redis_result = JSON.parse(redis_result)
-            if(redis_result){ 
-                console.log("Redis 取得成功, result is:",redis_result)
-            }
             // 進Redis拿東西
 
             const friendsql =  
@@ -165,7 +162,7 @@ module.exports = {
                 console.log("Redis 沒東西，直接去資料庫拿，ID為",userId,"Result回傳：",userProfile)
 
                 // 去 Redis 新增資料
-                redis.set_redis(`/${userId}/profile`,JSON.stringify(userProfile),res)
+                redis.set_redis(`/users/${userId}/profile`,JSON.stringify(userProfile),res)
                 // 去 Redis 新增資料
             } 
 
@@ -209,7 +206,7 @@ module.exports = {
                 await db.query(sql, [name, introduction, tags, id])
 
                 // 去Redis刪資料 
-                redis.delete_redis(`/${id}/profile`)
+                redis.delete_redis(`/users/${id}/profile`)
                 // 去Redis刪資料 
 
                 const response = {
@@ -246,7 +243,7 @@ module.exports = {
                 , id])
 
                 // 去Redis刪資料 
-                redis.delete_redis(`/${id}/profile`)
+                redis.delete_redis(`/users/${id}/profile`)
                 // 去Redis刪資料 
 
                 const response = {
