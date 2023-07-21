@@ -124,19 +124,15 @@ module.exports = {
     getProfile: async(res,userId,id) => {
         // userId：要看的人的ID，ID：Token ID
         try {
-            const sql = 'SELECT id, name, picture, friend_count, introduction, tags FROM users WHERE id = ?';
-            const [results] = await db.query(sql, [userId])
-            if (results.length === 0) {
-                return res.status(400).json({ error: 'User not found' });
-            }
-
-            const redis_result = await redis.get_redis('/:id/profile')
+            
+            // 進Redis拿東西
+            var redis_result = await redis.get_redis(`/${userId}/profile`)
+            redis_result = JSON.parse(redis_result)
             if(redis_result){ 
-                console.log("Get success, result is:",redis_result)
-                return res.status(200).json(JSON.parse(redis_result)) 
+                console.log("Redis 取得成功, path is:",path,"result is:",redis_result)
             }
+            // 進Redis拿東西
 
-            const userProfile = results[0];
             const friendsql =  
             `WITH me AS (
                 SELECT id,
@@ -156,9 +152,30 @@ module.exports = {
                 id: friendship.id,
                 status: friendship.status
             }));
+
+            if (!redis_result) { 
+                const sql = 'SELECT id, name, picture, friend_count, introduction, tags FROM users WHERE id = ?';
+                const [results] = await db.query(sql, [userId])
+                if (results.length === 0) {
+                    return res.status(400).json({ error: 'User not found' });
+                }
+                const userProfile = results[0];
+                redis.set_redis(`/${userId}/profile`,JSON.stringify(userProfile),res)
+            } 
+
             const response = {
                 data: {
-                    user: {
+                    user: redis_result ? 
+                    {
+                        id: redis_result.id,
+                        name: redis_result.name,
+                        picture: redis_result.picture,
+                        friend_count: redis_result.friend_count,
+                        introduction: redis_result.introduction,
+                        tags: redis_result.tags,
+                        friendship: friendshipData === null ? friendshipData : friendshipData[0]
+                    } :
+                    {
                         id: userProfile.id,
                         name: userProfile.name,
                         picture: userProfile.picture,
@@ -169,7 +186,6 @@ module.exports = {
                     },
                 },
             };
-            redis.set_redis('/:id/profile',JSON.stringify(response),res)
             return res.status(200).json(response);
         } catch (error) {
             return util.databaseError(error,'getProfile',res);
