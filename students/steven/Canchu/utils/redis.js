@@ -3,10 +3,12 @@ const Redis = require("ioredis");
 module.exports = {
 
     get_redis: async (path) => {
-        const redis = new Redis();
-        console.log("Redis讀取路徑：",path)
-        const result = await redis.get(path)
-        return result
+        try {
+            const redis = new Redis();
+            console.log("Redis 新增路徑：",path)
+            const result = await redis.get(path)
+            return result
+        } catch (err) { console.log("Error in redis! msg：", err ) }
     },
 
     set_redis: (path,data) => {
@@ -16,6 +18,15 @@ module.exports = {
             redis.get(path).then((result) => {
                 console.log("Redis 設置成功，paht：",path,"result：",result); // Prints "value"
             });
+        } catch (err) { console.log("Error in redis! msg：", err ) }
+    },
+
+    delete_redis: (path) => {
+        try {
+            const redis = new Redis();
+            redis.del(path).then((result) => {
+                console.log("Redis 刪除成功，paht：",path); 
+            })
         } catch (err) { console.log("Error in redis! msg：", err ) }
     }
 
