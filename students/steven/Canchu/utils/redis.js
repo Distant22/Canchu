@@ -4,6 +4,7 @@ module.exports = {
 
     get_redis: async (path) => {
         const redis = new Redis();
+        console.log("Redis讀取路徑：",path)
         const result = await redis.get(path)
         return result
     },
