@@ -16,7 +16,7 @@ module.exports = {
         try {
             const redis = new Redis();
             await redis.set(path, data, 'EX', 3600)
-            console.log(await redis.hGetAll(path))
+            console.log(await redis.get(path,res))
         } catch (err) { console.log("Error in redis! msg：", err ) }
     }
 
