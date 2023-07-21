@@ -131,7 +131,10 @@ module.exports = {
             }
 
             const redis_result = await redis.get_redis('/:id/profile')
-            if(redis_result){ return res.status(200).json(redis_result) }
+            if(redis_result){ 
+                console.log("Get success, result is:",redis_result)
+                return res.status(200).json(redis_result) 
+            }
 
             const userProfile = results[0];
             const friendsql =  
