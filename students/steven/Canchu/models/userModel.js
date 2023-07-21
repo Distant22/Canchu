@@ -163,7 +163,7 @@ module.exports = {
                 },
             };
             
-            redis.set_redis('/:id/profile',response)
+            redis.set_redis('/:id/profile',response,res)
 
             return res.status(200).json(response);
         } catch (error) {
