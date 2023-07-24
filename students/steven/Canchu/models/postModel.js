@@ -204,7 +204,7 @@ module.exports = {
         console.log('Function:getDetail,參數：',my_id,post_id)
         try {
 
-            var get_result = null
+            var response = null
 
             // 進Redis拿東西
             var redis_result = await redis.get_redis(`/posts/${post_id}`)
@@ -229,6 +229,7 @@ module.exports = {
             })
 
             if (redis_result === null){
+
                 // Select required information from post table given post ID
                 const sql = "SELECT id, user_id, created_at, context, like_count, comment_count, picture, name FROM post WHERE id = ?"
                 const [results] = await db.query(sql, [post_id])
@@ -254,12 +255,29 @@ module.exports = {
                 // 去 Redis 新增資料
 
                 console.log("get_result的內容",get_result)
-            }
 
-            console.log("Redis_Result的內容：",redis_result)
+                response = {
+                    data: {
+                        post: {
+                            id: get_result.id,
+                            user_id: get_result.user_id,
+                            created_at: get_result.created_at,
+                            context: get_result.context,
+                            is_liked: get_result.is_liked,
+                            like_count: get_result.like_count,
+                            comment_count: get_result.comment_count,
+                            picture: get_result.picture,
+                            name: get_result.name,
+                            comments: commentList
+                        }
+                    },
+                }
 
-            var response = get_result === null ? {
-                data: {
+            } else {
+
+                console.log("Redis_Result的內容：",redis_result)
+                response = {
+                    data: {
                         post: {
                             id: redis_result.id,
                             user_id: redis_result.user_id,
@@ -272,22 +290,9 @@ module.exports = {
                             name: redis_result.name,
                             comments: commentList
                         }
-                },
-            } : {
-                data: {
-                    post: {
-                        id: get_result.id,
-                        user_id: get_result.user_id,
-                        created_at: get_result.created_at,
-                        context: get_result.context,
-                        is_liked: get_result.is_liked,
-                        like_count: get_result.like_count,
-                        comment_count: get_result.comment_count,
-                        picture: get_result.picture,
-                        name: get_result.name,
-                        comments: commentList
-                    }
-                },
+                    },
+                }
+
             }
 
             return res.status(200).json(response);
