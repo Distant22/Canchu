@@ -1,108 +1,49 @@
 const express = require('express')
 const app = express()
-const port = 80
+const port = 3000
 const bodyParser = require('body-parser');
-const jwt = require('jsonwebtoken');
-const mysql = require('mysql');
+const path = require('path');
+const cors = require('cors');
+const rateLimit = require('express-rate-limit');
+
+// Use Limiter
+const limiter = rateLimit({
+  windowMs: 1000,   // 1 second
+  max: 10,          // 10 requests per windowMs
+  message: 'Too many requests from this IP, please try again later.',
+});
+app.use(limiter);
+
+// Use CORS
+app.use(cors());
+
+// Use dotenv
 require('dotenv').config();
 
-// Generate a JWT token
-function generateToken(payload) {
-  // Replace 'your_secret_key' with your own secret key for signing the token
-  const token = jwt.sign(payload, 'dt22', { expiresIn: '1h' });
-  return token;
-}
-
-const db = mysql.createConnection({
-  host: 'localhost',
-  user: process.env.DB_USERNAME,
-  password: process.env.DB_PASSWORD,
-  database: 'user'
-});
-
-db.connect((err) => {
-  if (err) {
-    throw err;
-  }
-  console.log('Week 1 Assignment Part 1：Connected to MySQL database');
-});
-
+// Use bodyparser
 app.use(bodyParser.json());
 
-app.get('/', (req, res) => {
-  res.send('Week 1 Assignment Part 1 is listening! -Dt22')
-})
+// Use static
+app.use('/static', express.static(path.join(__dirname, 'static')));
+app.get('/.well-known/pki-validation/AD335B614CF30912AE7C22F2D222450F.txt', (req, res) => {
+  const filePath = path.join(__dirname, 'public', 'AD335B614CF30912AE7C22F2D222450F.txt');
+  res.sendFile(filePath);
+});
 
-app.get('/api/1.0/users/signup', (req, res) => {
-  res.send('This is the signup page for Week1 Assignment. -Dt22')
-})
+// Define all routes
+const user_route = require('./routes/userRoutes');
+app.use('/api/1.0/users', user_route);
 
-app.post('/api/1.0/users/signup', (req, res) => {
-    // Extract data from request body
-    console.error(req.body);
-    const { name, email, password } = req.body;
-  
-    // Perform validation
-    if (!name || !email || !password) {
-    
-      console.error(!name,!email,!password)
-      return res.status(400).json({ error: 'Missing required fields' });
-    
-    } else {
-	const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (emailRegex.test(email)) {
-		console.log(emailRegex.test(email))
-        } else {
-        	// Email format is incorrect
-        	return res.status(400).json({ error: 'Email format is incorrect' });
-        }
-	const sqlCheck = 'SELECT COUNT(*) as count FROM users WHERE Email = ?'
-	db.query(sqlCheck, [email], (errorCheck, resultsCheck) => {
-		if (errorCheck) {
-			console.log('Database error:',errorCheck);
-        		return res.status(500).json({ error: 'Database error' });
-      		}
-		const userCount = resultsCheck[0].count
-      		if (userCount > 0) {
-        		// A user with the same email already exists
-			console.log('Email Fail!',name,email,password)
-        		return res.status(403).json({ error: 'Email already exists' });
-      		} else {
-			const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-                        if (emailRegex.test(email)) {
-                        
-			} else {
-                        	// Email format is incorrect
-                                return res.status(400).json({ error: 'Email format is incorrect' });
-                        }
-			const sqlInsert = 'INSERT INTO users (Name, Email, Password) VALUES (?,?,?)'
-			db.query(sqlInsert, [name,email,password], (errorInsert, resultsInsert) => {
-				if(errorInsert){
-					console.log('Database error:',errorCheck);
-                        		return res.status(500).json({ error: 'Database error' });
-				}
-				const resultID = resultsInsert.insertId;
-				const user = {
-      					id: resultID,
-      					provider: 'native',
-      					name: name,
-      					email: email,
-      					picture: 'https://schoolvoyage.ga/images/123498.png'
-    				};
-    				// Send the success response
-    				res.status(200).json({
-      					data: {
-        					access_token: generateToken(user),
-        					user: user
-      					}
-    				});
-				console.log('Email Success!',name,email,password)	
-			})	
-		}
-	})
-    }
-  
-  });
+const friend_route = require('./routes/friendRoutes');
+app.use('/api/1.0/friends', friend_route);
+
+const event_route = require('./routes/eventRoutes');
+app.use('/api/1.0/events', event_route);
+
+const post_route = require('./routes/postRoutes');
+app.use('/api/1.0/posts', post_route);
+
+app.get('/', (req, res) => {res.send('Main Page listening! -Dt22')})
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`)
