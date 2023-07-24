@@ -35,11 +35,6 @@ module.exports = {
                 },
             };
 
-            // 去Redis建立資料 
-            redis.set_redis(`/posts/${insertId}`,response)
-            // 去Redis建立資料 
-
-
             // 重整一次和朋友的貼文資訊
             var cursor = 0 //0 10 20 30...
             var searchArray = []
