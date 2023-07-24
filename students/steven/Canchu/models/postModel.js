@@ -36,7 +36,7 @@ module.exports = {
             };
 
             // 去Redis建立資料 
-            redis.set_redis(`/posts/${post_id}`,response)
+            redis.set_redis(`/posts/${insertId}`,response)
             // 去Redis建立資料 
 
 
