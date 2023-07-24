@@ -228,7 +228,7 @@ module.exports = {
                 };
             })
 
-            if (!redis_result){
+            if (redis_result === null){
                 // Select required information from post table given post ID
                 const sql = "SELECT id, user_id, created_at, context, like_count, comment_count, picture, name FROM post WHERE id = ?"
                 const [results] = await db.query(sql, [post_id])
