@@ -41,7 +41,6 @@ module.exports = {
 
 
             // 重整一次和朋友的貼文資訊
-
             var cursor = 0 //0 10 20 30...
             var searchArray = []
             var previousLength = null
@@ -51,18 +50,18 @@ module.exports = {
                 searchArray = [].concat(searchArray, next_list)
                 previousLength = searchArray.length
                 console.log("Redis取得的/posts/",user_id,"/",cursor,"為",next_list,"，searchArray為",searchArray)
+                redis.delete_redis(`/posts/${user_id}/${cursor}`)
                 cursor += 10
             }
 
             cursor = 0
             while (cursor < searchArray.length) {
-                redis.set_redis(`/posts/${user_id}/${cursor}`,searchArray.slice(cursor,cursor+4))
-                console.log("設置：Cursor為",cursor,"Set Redis的Sub array為",searchArray.slice(cursor,cursor+4))
-                index += 4
+                redis.set_redis(`/posts/${user_id}/${cursor}`,searchArray.slice(cursor,cursor+10))
+                console.log("設置：Cursor為",cursor,"Set Redis的Sub array為",searchArray.slice(cursor,cursor+10))
+                cursor += 10
             }
 
             // 重整
-
             var cursor = 0 //0 10 20 30...
             var searchArray = []
             var previousLength = null
@@ -77,9 +76,9 @@ module.exports = {
 
             cursor = 0
             while (cursor < searchArray.length) {
-                redis.set_redis(`/posts/self/${user_id}/${decode_cursor}`,searchArray.slice(cursor,cursor+4))
-                console.log("設置：Cursor為",cursor,"Set Redis的Sub array為",searchArray.slice(cursor,cursor+4))
-                index += 4
+                redis.set_redis(`/posts/self/${user_id}/${decode_cursor}`,searchArray.slice(cursor,cursor+10))
+                console.log("設置：Cursor為",cursor,"Set Redis的Sub array為",searchArray.slice(cursor,cursor+10))
+                cursor += 10
             }
 
             return res.status(200).json(response);
@@ -316,7 +315,10 @@ module.exports = {
                         FROM post AS p 
                         WHERE p.id = ?
                         `
-                        const [results] = await db.query(sql, [redis_Array[i]])
+                        const [results] = await db.query(sql, [
+                            user_id === undefined ? token_id : user_id,
+                            redis_Array[i]
+                        ])
                         const post = results[0] 
                         const formatted_created_at = new Date(post.created_at).toLocaleString('en-US', {
                             year: 'numeric',
