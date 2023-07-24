@@ -77,7 +77,7 @@ module.exports = {
 
             cursor = 0
             while (cursor < searchArray.length) {
-                redis.set_redis(`/posts/self/${id}/${decode_cursor}`,searchArray.slice(cursor,cursor+10))
+                redis.set_redis(`/posts/self/${id}/${cursor}`,searchArray.slice(cursor,cursor+10))
                 console.log("設置：Cursor為",cursor,"Set Redis的Sub array為",searchArray.slice(cursor,cursor+10))
                 cursor += 10
             }
