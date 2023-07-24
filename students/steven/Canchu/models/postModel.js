@@ -38,6 +38,7 @@ module.exports = {
             // 重整一次和朋友的貼文資訊
             var cursor = 0 //0 10 20 30...
             var searchArray = []
+            searchArray.push(insertId)
             
             while (true){
                 var next_list = JSON.parse(await redis.get_redis(`/posts/${id}/${cursor}`))
@@ -58,7 +59,8 @@ module.exports = {
             // 重整
             var cursor = 0 //0 10 20 30...
             var searchArray = []
-
+            searchArray.push(insertId)
+            
             while (true){
                 var next_list = JSON.parse(await redis.get_redis(`/posts/self/${id}/${cursor}`))
                 if(next_list === null) { break }
