@@ -14,8 +14,6 @@ module.exports = {
         console.error('Function: createPost');
         try {
 
-            if (redis_post) { return res.status(200).json(redis_post); }
-
             // Get User Name from Token
             const userSql = 'SELECT name, picture FROM users WHERE id = ?';
             const [results] = await db.query(userSql, [id]) ;
@@ -84,8 +82,8 @@ module.exports = {
                 index += 4
             }
 
-
             return res.status(200).json(response);
+
         } catch (error) {
             return util.databaseError(error,'createPost',res);
         }
