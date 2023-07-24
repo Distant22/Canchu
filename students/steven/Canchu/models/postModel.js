@@ -436,7 +436,7 @@ module.exports = {
                 return res.status(200).json({
                     data: {
                         posts: posts,
-                        next_cursor: (results.length - parseInt(decode_cursor) > 10) ? Buffer.from((decode_cursor+10).toString(), 'ascii').toString('base64') : null
+                        next_cursor: (redis_Array.length - parseInt(decode_cursor) > 10) ? Buffer.from((decode_cursor+10).toString(), 'ascii').toString('base64') : null
                     }
                 });
 
