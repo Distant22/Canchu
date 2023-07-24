@@ -403,8 +403,6 @@ module.exports = {
                 redis.set_redis(`/posts/self/${user_id}/${decode_cursor}`,postList.map(post => post.id))
                 // 去 Redis 新增資料
 
-                console.log("Redis設置完成，使用者",user_id,"的cursor為",cursor,"文章id為",postList.map(post => post.id))
-
                 return res.status(200).json({
                     data: {
                         posts: postList,
