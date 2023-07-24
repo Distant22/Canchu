@@ -1,12 +1,5 @@
 const userModel = require('../models/userModel');
-const mysql = require('mysql2/promise');
-const bcrypt = require('bcrypt');
-const db = mysql.createPool({
-	host: process.env.DB_HOST || 'localhost',
-	user: process.env.DB_USERNAME,
-	password: process.env.DB_PASSWORD,
-	database: 'user'
-});
+const db = require('jest-mock-extended').default; // Import the jest-mock-extended library
 
 // Mock the response object
 const mockResponse = {
@@ -22,7 +15,8 @@ test('search function should return a list of users', async () => {
     { id: 1, name: 'John Doe', picture: '...', friend_id: 2, status: 'friend' },
     // Add more mock data as needed
   ];
-  db.query = jest.fn(() => [mockResults]);
+  // Create a mock function for db.query
+  db.query.mockResolvedValueOnce([mockResults]);
 
   const response = await userModel.search(mockResponse, keyword);
 
@@ -39,7 +33,8 @@ test('signin function should return access token and user data', async () => {
   const mockResults = [
     { id: 1, name: 'John Doe', email: 'john@example.com', password: 'hashed_password', /* add other user data */ },
   ];
-  db.query = jest.fn(() => [mockResults]);
+  // Create a mock function for db.query
+  db.query.mockResolvedValueOnce([mockResults]);
 
   const response = await userModel.signin(mockResponse, email, password, provider);
 
@@ -51,4 +46,3 @@ test('signin function should return access token and user data', async () => {
 
 // Add test cases for other functions in the userModel file
 // ...
-
