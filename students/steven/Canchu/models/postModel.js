@@ -290,10 +290,12 @@ module.exports = {
             const decode_cursor = cursor === undefined ? 0 : Number(Buffer.from(cursor, 'base64').toString('ascii'))
             
             // 如果沒有ID：回傳自己的文章
-            const redis_Array = user_id === undefined ? 
+            var redis_Array = user_id === undefined ? 
             await redis.get_redis(`/posts/${token_id}/${decode_cursor}`) :    // /posts/${token_id}/${decode_cursor} 放自己和朋友的文章
             await redis.get_redis(`/posts/self/${user_id}/${decode_cursor}`)  // /posts/self/${user_id} 只放自己的文章
             
+            
+
             if(!redis_Array) {
 
                 const sql = (user_id === undefined) ? 
@@ -404,9 +406,9 @@ module.exports = {
 
                 // 去 Redis 新增資料
                 if (user_id === undefined) {
-                    redis.set_redis(`/posts/${token_id}/${decode_cursor}`,redis_arr)
+                    redis.set_redis(`/posts/${token_id}/${decode_cursor}`,JSON.stringify(redis_arr))
                 } else {
-                    redis.set_redis(`/posts/self/${user_id}/${decode_cursor}`,redis_arr)
+                    redis.set_redis(`/posts/self/${user_id}/${decode_cursor}`,JSON.stringify(redis_arr))
                 }
                 
                 // 去 Redis 新增資料
@@ -421,6 +423,8 @@ module.exports = {
                 })
 
             } else {
+
+                redis_Array = JSON.parse(redis_Array)
 
                 var posts = [] //把文章放進 posts
                 redis_Array.forEach(post_id => posts.push(
