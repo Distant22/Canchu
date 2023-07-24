@@ -286,7 +286,7 @@ module.exports = {
                 },
             }
 
-            return res.status(200).json(redis_result);
+            return res.status(200).json(response);
 
         } catch (error) {
             return util.databaseError(error,'getDetail',res);
