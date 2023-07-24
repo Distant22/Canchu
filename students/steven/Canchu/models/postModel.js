@@ -43,7 +43,7 @@ module.exports = {
             // 重整一次和朋友的貼文資訊
             var cursor = 0 //0 10 20 30...
             var searchArray = []
-            var previousLength = null
+            var previousLength = -1
 
             while (searchArray.length > previousLength){
                 var next_list = await redis.get_redis(`/posts/${user_id}/${cursor}`)
@@ -64,7 +64,7 @@ module.exports = {
             // 重整
             var cursor = 0 //0 10 20 30...
             var searchArray = []
-            var previousLength = null
+            var previousLength = -1
 
             while (searchArray.length > previousLength){
                 var next_list = await redis.get_redis(`/posts/self/${user_id}/${decode_cursor}`)
