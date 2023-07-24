@@ -294,7 +294,7 @@ module.exports = {
             
             
 
-            if(!redis_Array) {
+            if(redis_Array === null) {
 
                 const sql = (user_id === undefined) ? 
                 `WITH my_post AS (
