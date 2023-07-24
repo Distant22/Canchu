@@ -357,15 +357,11 @@ module.exports = {
                 `
                 var [results] = (user_id === undefined) ? await db.query(sql,[token_id,token_id,token_id,token_id,token_id]) : await db.query(sql, [token_id,user_id])
                 const limitResults = results[0] === undefined ? [] : results.slice(decode_cursor, decode_cursor+10);
-
-
-                var id_array = []
+                console.log('檢查：',limitResults,results[0])
 
                 const postList = limitResults.map((result) => {
 
                     const { id, user_id, created_at, context, like_count, comment_count, picture, name, is_liked } = result;
-
-                    id_array.push(id)
 
                     // Format the date as "YYYY-MM-DD HH:mm:ss"
                     const formatted_created_at = new Date(created_at).toLocaleString('en-US', {
@@ -391,14 +387,14 @@ module.exports = {
                     };
                 })
 
-
+                
                 // 去 Redis 新增資料
                 (user_id === undefined) ?  
-                redis.set_redis(`/posts/${token_id}/${decode_cursor}`,id_array,res) : 
-                redis.set_redis(`/posts/self/${user_id}/${decode_cursor}`,id_array,res)
+                redis.set_redis(`/posts/${token_id}/${decode_cursor}`,postList.map(post => post.id),res) : 
+                redis.set_redis(`/posts/self/${user_id}/${decode_cursor}`,postList.map(post => post.id),res)
                 // 去 Redis 新增資料
 
-                console.log("Redis設置完成，使用者",user_id,"的cursor為",cursor,"文章id為",id_array)
+                console.log("Redis設置完成，使用者",user_id,"的cursor為",cursor,"文章id為",postList.map(post => post.id))
 
                 return res.status(200).json({
                     data: {
