@@ -209,12 +209,29 @@ module.exports = {
         console.log('Function:getDetail,參數：',my_id,post_id)
         try {
 
+            var get_result = null
+
             // 進Redis拿東西
             var redis_result = await redis.get_redis(`/posts/${post_id}`)
             redis_result = JSON.parse(redis_result)
             // 進Redis拿東西
 
-            var response = null
+            // 取得留言
+            const commentSql = "SELECT postcomment.id, postcomment.text, DATE_FORMAT(postcomment.created_at, '%Y-%m-%d %H:%i:%s') AS comment_created_at, users.id AS user_id , users.name, users.picture FROM postcomment LEFT JOIN users ON postcomment.user_id = users.id WHERE post_id = ?"
+            const [results_join] = await db.query(commentSql, [post_id])
+            const commentList = results_join.map((result) => {
+                const { id, text, comment_created_at, user_id, name, picture } = result
+                return {
+                    id: id,
+                    created_at : comment_created_at,
+                    content: text,
+                    user : {
+                        id: user_id,
+                        name: name,
+                        picture: picture
+                    }
+                };
+            })
 
             if (!redis_result){
                 // Select required information from post table given post ID
@@ -225,25 +242,9 @@ module.exports = {
                 const likedSql = "SELECT COUNT(*) AS is_liked FROM postlike WHERE user_id = ? AND post_id = ?"
                 const [count] = await db.query(likedSql, [my_id,post_id])
                 // Select needed user and comment information from join table given user ID and post ID
-                const commentSql = "SELECT postcomment.id, postcomment.text, DATE_FORMAT(postcomment.created_at, '%Y-%m-%d %H:%i:%s') AS comment_created_at, users.id AS user_id , users.name, users.picture FROM postcomment LEFT JOIN users ON postcomment.user_id = users.id WHERE post_id = ?"
-                const [results_join] = await db.query(commentSql, [post_id])
-                // Map the results
-                const commentList = results_join.map((result) => {
-                    const { id, text, comment_created_at, user_id, name, picture } = result
-                    return {
-                        id: id,
-                        created_at : comment_created_at,
-                        content: text,
-                        user : {
-                            id: user_id,
-                            name: name,
-                            picture: picture
-                        }
-                    };
-                })
 
                 // 去 Redis 新增資料
-                const post = {
+                const get_result = {
                     id: parseInt(post_id,10),
                     user_id: user_id,
                     created_at: created_at,
@@ -254,28 +255,42 @@ module.exports = {
                     picture: picture,
                     name: name
                 }
-                redis.set_redis(`/posts/${post_id}`,JSON.stringify(post),res)
+                redis.set_redis(`/posts/${post_id}`,JSON.stringify(get_result),res)
                 // 去 Redis 新增資料
-
-                response = {
-                    data: {
-                            post: {
-                                id: parseInt(post_id,10),
-                                user_id: user_id,
-                                created_at: created_at,
-                                context: context,
-                                is_liked: parseInt(count[0].is_liked) === 1 ? true : false,
-                                like_count: like_count,
-                                comment_count: comment_count,
-                                picture: picture,
-                                name: name,
-                                comments: commentList
-                            }
-                    },
-                };
-                
-                return res.status(200).json(response);
             }
+
+            var response = get_result === null ? {
+                data: {
+                        post: {
+                            id: redis_result.id,
+                            user_id: redis_result.user_id,
+                            created_at: redis_result.created_at,
+                            context: redis_result.context,
+                            is_liked: redis_result.is_liked,
+                            like_count: redis_result.like_count,
+                            comment_count: redis_result.comment_count,
+                            picture: redis_result.picture,
+                            name: redis_result.name,
+                            comments: commentList
+                        }
+                },
+            } : {
+                data: {
+                    post: {
+                        id: get_result.id,
+                        user_id: get_result.user_id,
+                        created_at: get_result.created_at,
+                        context: get_result.context,
+                        is_liked: get_result.is_liked,
+                        like_count: get_result.like_count,
+                        comment_count: get_result.comment_count,
+                        picture: get_result.picture,
+                        name: get_result.name,
+                        comments: commentList
+                    }
+                },
+            }
+
             return res.status(200).json(redis_result);
 
         } catch (error) {
