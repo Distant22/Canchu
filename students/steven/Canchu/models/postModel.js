@@ -252,7 +252,11 @@ module.exports = {
                 }
                 redis.set_redis(`/posts/${post_id}`,JSON.stringify(get_result),res)
                 // 去 Redis 新增資料
+
+                console.log("get_result的內容",get_result)
             }
+
+            console.log("Redis_Result的內容：",redis_result)
 
             var response = get_result === null ? {
                 data: {
