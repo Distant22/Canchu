@@ -297,9 +297,57 @@ module.exports = {
                 redis_Array = JSON.parse(redis_Array)
 
                 var posts = [] //把文章放進 posts
-                redis_Array.forEach(async post_id => posts.push(
-                    JSON.parse(await redis.get_redis(`/posts/${post_id}`))
-                ))
+
+                for(let i = 0 ; i < redis_Array.length ; i++) {
+
+                    var single_post = await redis.get_redis(`/posts/${redis_Array[i]}`)
+
+                    if(single_post === null) {
+
+                        console.log("文章ID",redis_Array[i],"為Null，去資料庫找")
+                        const sql = `
+                        SELECT 
+                            p.id, p.user_id, p.created_at, p.context, p.like_count, p.comment_count, p.picture, p.name, 
+                            (CASE 
+                                WHEN EXISTS (
+                                    SELECT 1 FROM postlike AS pl WHERE pl.user_id = ? AND pl.post_id = p.id
+                                ) THEN 1 ELSE 0
+                            END) AS is_liked
+                        FROM post AS p 
+                        WHERE p.id = ?
+                        `
+                        const [results] = await db.query(sql, [redis_Array[i]])
+                        const post = results[0] 
+                        const formatted_created_at = new Date(post.created_at).toLocaleString('en-US', {
+                            year: 'numeric',
+                            month: '2-digit',
+                            day: '2-digit',
+                            hour: '2-digit',
+                            minute: '2-digit',
+                            second: '2-digit',
+                            timeZone: 'UTC',
+                        });
+
+                        single_post = {
+                            id: post.id,
+                            user_id: post.user_id,
+                            created_at: formatted_created_at,
+                            context: post.context,
+                            is_liked: post.is_liked === 1 ? true : false,
+                            like_count: post.like_count,
+                            comment_count: post.comment_count,
+                            picture: post.picture,
+                            name: post.name
+                        };
+
+                        console.log("迴圈重新拿文章的結果為",single_post)
+                        posts.push(single_post)
+
+                    } else {
+                        console.log("迴圈有文章的結果為",single_post)
+                        posts.push(JSON.parse(single_post))
+                    }
+                }
 
                 console.log("取得Redis的Search Result文章為",posts)
 
