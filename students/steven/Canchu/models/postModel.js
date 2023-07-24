@@ -366,9 +366,13 @@ module.exports = {
 
                 console.log('檢查：',typeof limitResults,results[0],results.length,decode_cursor)
 
+                var redis_arr = []
+
                 const postList = limitResults.map((result) => {
 
                     const { id, user_id, created_at, context, like_count, comment_count, picture, name, is_liked } = result;
+
+                    redis_arr.push(id)
 
                     // Format the date as "YYYY-MM-DD HH:mm:ss"
                     const formatted_created_at = new Date(created_at).toLocaleString('en-US', {
@@ -397,10 +401,13 @@ module.exports = {
                 console.log("PostList為",postList,"型態為",typeof postList,"user_id為",user_id)
 
                 
+
                 // 去 Redis 新增資料
-                (user_id === undefined) ?  
-                redis.set_redis(`/posts/${token_id}/${decode_cursor}`,postList.map(post => post.id)) : 
-                redis.set_redis(`/posts/self/${user_id}/${decode_cursor}`,postList.map(post => post.id))
+                (user_id === undefined) ?  (   
+                    redis.set_redis(`/posts/${token_id}/${decode_cursor}`,redis_arr) 
+                ) : ( 
+                    redis.set_redis(`/posts/self/${user_id}/${decode_cursor}`,redis_arr) 
+                )
                 // 去 Redis 新增資料
 
                 console.log("Redis設置完成，使用者",user_id,"的cursor為",cursor,"文章id為",postList.map(post => post.id))
