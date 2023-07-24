@@ -403,11 +403,12 @@ module.exports = {
                 
 
                 // 去 Redis 新增資料
-                (user_id === undefined) ?  (   
-                    redis.set_redis(`/posts/${token_id}/${decode_cursor}`,redis_arr) 
-                ) : ( 
-                    redis.set_redis(`/posts/self/${user_id}/${decode_cursor}`,redis_arr) 
-                )
+                if (user_id === undefined) {
+                    redis.set_redis(`/posts/${token_id}/${decode_cursor}`,redis_arr)
+                } else {
+                    redis.set_redis(`/posts/self/${user_id}/${decode_cursor}`,redis_arr)
+                }
+                
                 // 去 Redis 新增資料
 
                 console.log("Redis設置完成，使用者",user_id,"的cursor為",cursor,"文章id為",postList.map(post => post.id))
