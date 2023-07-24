@@ -38,11 +38,10 @@ module.exports = {
             // 重整一次和朋友的貼文資訊
             var cursor = 0 //0 10 20 30...
             var searchArray = []
-            var previousLength = -1
-
-            while (searchArray.length > previousLength){
+            
+            while (true){
                 var next_list = JSON.parse(await redis.get_redis(`/posts/${id}/${cursor}`))
-                previousLength = searchArray.length
+                if(next_list === null) { break }
                 searchArray = [].concat(searchArray, next_list)
                 console.log("Redis取得的/posts/",id,"/",cursor,"為",next_list,"，searchArray為",searchArray)
                 redis.delete_redis(`/posts/${id}/${cursor}`)
@@ -59,11 +58,10 @@ module.exports = {
             // 重整
             var cursor = 0 //0 10 20 30...
             var searchArray = []
-            var previousLength = -1
 
-            while (searchArray.length > previousLength){
+            while (true){
                 var next_list = JSON.parse(await redis.get_redis(`/posts/self/${id}/${cursor}`))
-                previousLength = searchArray.length
+                if(next_list === null) { break }
                 searchArray = [].concat(searchArray, next_list)
                 console.log("Redis取得的/posts/self/",id,"/",cursor,"為",next_list,"，searchArray為",searchArray)
                 redis.delete_redis(`/posts/self/${id}/${cursor}`)
