@@ -292,9 +292,25 @@ module.exports = {
             await redis.get_redis(`/posts/${token_id}/${decode_cursor}`) :    // /posts/${token_id}/${decode_cursor} 放自己和朋友的文章
             await redis.get_redis(`/posts/self/${user_id}/${decode_cursor}`)  // /posts/self/${user_id} 只放自己的文章
             
-            
+            if(redis_Array !== null) {
 
-            if(redis_Array === null) {
+                redis_Array = JSON.parse(redis_Array)
+
+                var posts = [] //把文章放進 posts
+                redis_Array.forEach(async post_id => posts.push(
+                    JSON.parse(await redis.get_redis(`/posts/${post_id}`))
+                ))
+
+                console.log("取得Redis的Search Result文章為",posts)
+
+                return res.status(200).json({
+                    data: {
+                        posts: posts,
+                        next_cursor: (redis_Array.length - parseInt(decode_cursor) > 10) ? Buffer.from((decode_cursor+10).toString(), 'ascii').toString('base64') : null
+                    }
+                });
+
+            } else {
 
                 const sql = (user_id === undefined) ? 
                 `WITH my_post AS (
@@ -385,7 +401,7 @@ module.exports = {
                         timeZone: 'UTC',
                     });
 
-                    return {
+                    var post = {
                         id: id,
                         user_id: user_id,
                         created_at: formatted_created_at,
@@ -396,12 +412,13 @@ module.exports = {
                         picture: picture,
                         name: name
                     };
+
+                    redis.set_redis(`/posts/${id}`,JSON.stringify(post))
+
+                    return post
                 })
 
                 console.log("PostList為",postList,"型態為",typeof postList,"user_id為",user_id)
-
-                
-
                 // 去 Redis 新增資料
                 if (user_id === undefined) {
                     redis.set_redis(`/posts/${token_id}/${decode_cursor}`,JSON.stringify(redis_arr))
@@ -410,7 +427,6 @@ module.exports = {
                 }
                 
                 // 去 Redis 新增資料
-
                 console.log("Redis設置完成，使用者",user_id,"的cursor為",cursor,"文章id為",postList.map(post => post.id))
 
                 return res.status(200).json({
@@ -419,24 +435,6 @@ module.exports = {
                         next_cursor: (results.length - parseInt(decode_cursor) > 10) ? Buffer.from((decode_cursor+10).toString(), 'ascii').toString('base64') : null
                     }
                 })
-
-            } else {
-
-                redis_Array = JSON.parse(redis_Array)
-
-                var posts = [] //把文章放進 posts
-                redis_Array.forEach(async post_id => posts.push(
-                    await redis.get_redis(`/posts/${post_id}`)
-                ))
-
-                console.log("取得Redis的Search Result文章為",posts)
-
-                return res.status(200).json({
-                    data: {
-                        posts: posts,
-                        next_cursor: (redis_Array.length - parseInt(decode_cursor) > 10) ? Buffer.from((decode_cursor+10).toString(), 'ascii').toString('base64') : null
-                    }
-                });
 
             }
 
