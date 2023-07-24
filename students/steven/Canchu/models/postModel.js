@@ -94,7 +94,7 @@ module.exports = {
             await db.query(postSql, [post_id]);
 
             // 去Redis刪資料 
-            redis.delete_redis(`/posts/${post_id}`)
+            redis.delete_redis(`/posts/${id}/profile`)
             // 去Redis刪資料 
 
             // Response ID
@@ -122,7 +122,7 @@ module.exports = {
             await db.query(postSql, [post_id]);
             
             // 去Redis刪資料 
-            redis.delete_redis(`/posts/${post_id}`)
+            redis.delete_redis(`/posts/${id}/profile`)
             // 去Redis刪資料 
 
             // Response ID and commentID
@@ -151,7 +151,7 @@ module.exports = {
             await db.query(postSql, [post_id]);
 
             // 去Redis刪資料 
-            redis.delete_redis(`/posts/${post_id}`)
+            redis.delete_redis(`/posts/${id}/profile`)
             // 去Redis刪資料 
 
             // Response ID
@@ -184,7 +184,7 @@ module.exports = {
                 // Response post ID
 
                 // 去Redis刪資料 
-                redis.delete_redis(`/posts/${post_id}`)
+                redis.delete_redis(`/posts/${id}/profile`)
                 // 去Redis刪資料 
 
                 const response = {
@@ -207,7 +207,7 @@ module.exports = {
             var response = null
 
             // 進Redis拿東西
-            var redis_result = await redis.get_redis(`/posts/${post_id}`)
+            var redis_result = await redis.get_redis(`/posts/${userId}/profile`)
             redis_result = JSON.parse(redis_result)
             // 進Redis拿東西
 
