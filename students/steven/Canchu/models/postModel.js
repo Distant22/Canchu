@@ -71,6 +71,7 @@ module.exports = {
                 searchArray = [].concat(searchArray, next_list)
                 previousLength = searchArray.length
                 console.log("Redis取得的/posts/self/",user_id,"/",cursor,"為",next_list,"，searchArray為",searchArray)
+                redis.delete_redis(`/posts/self/${user_id}/${cursor}`)
                 cursor += 10
             }
 
