@@ -67,7 +67,7 @@ module.exports = {
             var previousLength = -1
 
             while (searchArray.length > previousLength){
-                var next_list = await redis.get_redis(`/posts/self/${id}/${decode_cursor}`)
+                var next_list = await redis.get_redis(`/posts/self/${id}/${cursor}`)
                 searchArray = [].concat(searchArray, next_list)
                 previousLength = searchArray.length
                 console.log("Redis取得的/posts/self/",id,"/",cursor,"為",next_list,"，searchArray為",searchArray)
