@@ -394,6 +394,8 @@ module.exports = {
                     };
                 })
 
+                console.log("PostList為",postList,"user_id為",user_id)
+
                 
                 // 去 Redis 新增資料
                 (user_id === undefined) ?  
