@@ -355,9 +355,16 @@ module.exports = {
                 WHERE p.user_id = ?
                 ORDER BY created_at DESC
                 `
-                var [results] = (user_id === undefined) ? await db.query(sql,[token_id,token_id,token_id,token_id,token_id]) : await db.query(sql, [token_id,user_id])
-                const limitResults = results[0] === undefined ? [] : results.slice(decode_cursor, decode_cursor+10);
-                console.log('檢查：',limitResults,results[0])
+                var [results] = (user_id === undefined) ? 
+                await db.query(sql,[token_id,token_id,token_id,token_id,token_id]) : 
+                await db.query(sql, [token_id,user_id])
+
+                const limitResults = results[0] === undefined ? [] : 
+                results.length - decode_cursor >= 10 ?  
+                results.slice(decode_cursor, decode_cursor+10) : 
+                results.slice(decode_cursor, results.length) 
+
+                console.log('檢查：',limitResults,results[0],results.length,decode_cursor)
 
                 const postList = limitResults.map((result) => {
 
