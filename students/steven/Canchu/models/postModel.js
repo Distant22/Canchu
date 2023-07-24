@@ -46,17 +46,17 @@ module.exports = {
             var previousLength = -1
 
             while (searchArray.length > previousLength){
-                var next_list = await redis.get_redis(`/posts/${user_id}/${cursor}`)
+                var next_list = await redis.get_redis(`/posts/${id}/${cursor}`)
                 searchArray = [].concat(searchArray, next_list)
                 previousLength = searchArray.length
-                console.log("Redis取得的/posts/",user_id,"/",cursor,"為",next_list,"，searchArray為",searchArray)
-                redis.delete_redis(`/posts/${user_id}/${cursor}`)
+                console.log("Redis取得的/posts/",id,"/",cursor,"為",next_list,"，searchArray為",searchArray)
+                redis.delete_redis(`/posts/${id}/${cursor}`)
                 cursor += 10
             }
 
             cursor = 0
             while (cursor < searchArray.length) {
-                redis.set_redis(`/posts/${user_id}/${cursor}`,searchArray.slice(cursor,cursor+10))
+                redis.set_redis(`/posts/${id}/${cursor}`,searchArray.slice(cursor,cursor+10))
                 console.log("設置：Cursor為",cursor,"Set Redis的Sub array為",searchArray.slice(cursor,cursor+10))
                 cursor += 10
             }
@@ -67,17 +67,17 @@ module.exports = {
             var previousLength = -1
 
             while (searchArray.length > previousLength){
-                var next_list = await redis.get_redis(`/posts/self/${user_id}/${decode_cursor}`)
+                var next_list = await redis.get_redis(`/posts/self/${id}/${decode_cursor}`)
                 searchArray = [].concat(searchArray, next_list)
                 previousLength = searchArray.length
-                console.log("Redis取得的/posts/self/",user_id,"/",cursor,"為",next_list,"，searchArray為",searchArray)
-                redis.delete_redis(`/posts/self/${user_id}/${cursor}`)
+                console.log("Redis取得的/posts/self/",id,"/",cursor,"為",next_list,"，searchArray為",searchArray)
+                redis.delete_redis(`/posts/self/${id}/${cursor}`)
                 cursor += 10
             }
 
             cursor = 0
             while (cursor < searchArray.length) {
-                redis.set_redis(`/posts/self/${user_id}/${decode_cursor}`,searchArray.slice(cursor,cursor+10))
+                redis.set_redis(`/posts/self/${id}/${decode_cursor}`,searchArray.slice(cursor,cursor+10))
                 console.log("設置：Cursor為",cursor,"Set Redis的Sub array為",searchArray.slice(cursor,cursor+10))
                 cursor += 10
             }
