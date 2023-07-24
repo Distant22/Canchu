@@ -427,8 +427,8 @@ module.exports = {
                 redis_Array = JSON.parse(redis_Array)
 
                 var posts = [] //把文章放進 posts
-                redis_Array.forEach(post_id => posts.push(
-                    redis.get_redis(`/posts/${post_id}`)
+                redis_Array.forEach(async post_id => posts.push(
+                    await redis.get_redis(`/posts/${post_id}`)
                 ))
 
                 console.log("取得Redis的Search Result文章為",posts)
