@@ -81,10 +81,10 @@ describe('userModel', () => {
     const provider = 'native';
 
     // Call the signin function
-    const result = await userModel.signin(email, password, provider);
+    await userModel.signin(mockResponse, email, password, provider);
 
     // Assertions
-    expect(result).toEqual({
+    expect(mockResponse).toEqual({
       data: {
         access_token: 'mocked_access_token',
         user: {
