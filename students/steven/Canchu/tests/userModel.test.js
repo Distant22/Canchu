@@ -13,7 +13,7 @@ describe("POST /api/1.0/users/signin", () => {
       database: 'user'
     });
 
-    const res = await request(app).post("/api/1.0/users").send({
+    const res = await request(app).post("/api/1.0/users/signin").send({
       email: "Steven@gmail.com",
       password: "123",
       provider: "native",
