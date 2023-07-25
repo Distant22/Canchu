@@ -5,7 +5,7 @@ require("dotenv").config();
 
 var token; 
 
-afterAll((done) => {
+afterAll(async (done) => {
   if (app) {
     app.close(() => {
       done();
