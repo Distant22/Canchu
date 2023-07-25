@@ -206,7 +206,7 @@ module.exports = {
                 await db.query(sql, [name, introduction, tags, id])
 
                 // 去Redis刪資料 
-                redis.delete_redis(`/users/${id}/profile`)
+                await redis.delete_redis(`/users/${id}/profile`)
                 // 去Redis刪資料 
 
                 const response = {
@@ -243,7 +243,7 @@ module.exports = {
                 , id])
 
                 // 去Redis刪資料 
-                redis.delete_redis(`/users/${id}/profile`)
+                await redis.delete_redis(`/users/${id}/profile`)
                 // 去Redis刪資料 
 
                 const response = {
