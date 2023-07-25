@@ -40,10 +40,10 @@ jest.mock('../utils/util', () => ({
 // Mock the redis module
 jest.mock('../utils/redis', () => ({}));
 
-const mockResponse = {
-  status: jest.fn().mockReturnThis(),
-  json: jest.fn(),
-};
+// const mockResponse = {
+//   status: jest.fn().mockReturnThis(),
+//   json: jest.fn(),
+// };
 
 describe('userModel', () => {
   beforeEach(() => {
@@ -81,7 +81,7 @@ describe('userModel', () => {
     const provider = 'native';
 
     // Call the signin function
-    await userModel.signin(mockResponse, email, password, provider);
+    const mockResponse = await userModel.signin(null, email, password, provider);
 
     // Assertions
     expect(mockResponse).toEqual({
