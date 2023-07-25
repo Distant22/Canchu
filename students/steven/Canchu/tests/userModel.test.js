@@ -21,3 +21,15 @@ describe("POST /api/1.0/users/signin", () => {
     expect(res.statusCode).toBe(200);
   });
 });
+
+describe("POST /api/1.0/users/signup", () => {
+  it("should signup", async () => {
+
+    const res = await request(app).post("/api/1.0/users/signup").send({
+      name: "Steven",
+      password: "123",
+      email: "Steven@gmail.com",
+    });
+    expect(res.statusCode).toBe(200);
+  });
+});
