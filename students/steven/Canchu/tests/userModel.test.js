@@ -3,6 +3,8 @@ const request = require("supertest");
 const util = require('../utils/util')
 require("dotenv").config();
 
+var token; 
+
 afterAll((done) => {
   if (app) {
     app.close(() => {
