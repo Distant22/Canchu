@@ -6,9 +6,9 @@ test('signin function should return access token and user data', async () => {
   const password = '123';
   const provider = 'native';
 
-  const response = await userModel.signin(res, email, password, provider);
-  expect(response.data).toHaveProperty('access_token');
-  expect(response.data.user).toHaveProperty('name','Steven');
+  await userModel.signin(res, email, password, provider);
+  expect(res.data).toHaveProperty('access_token');
+  expect(res.data.user).toHaveProperty('name','Steven');
 })
 
 
