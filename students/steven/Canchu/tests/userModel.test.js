@@ -17,7 +17,7 @@ afterAll((done) => {
 
 // Signin｜測試成功情況（200）
 describe("POST /api/1.0/users/signin", () => {
-  it("should signin", async () => {
+  it("Signin｜測試成功情況（200）", async () => {
 
     const res = await request(app).post("/api/1.0/users/signin").send({
       email: "Steven@gmail.com",
@@ -31,7 +31,7 @@ describe("POST /api/1.0/users/signin", () => {
 
 // Signin｜測試Provider未提供情況（400）
 describe("POST /api/1.0/users/signin", () => {
-  it("should signin", async () => {
+  it("Signin｜測試Provider未提供情況（400）", async () => {
 
     const res = await request(app).post("/api/1.0/users/signin").send({
       email: "Steven@gmail.com",
@@ -43,7 +43,7 @@ describe("POST /api/1.0/users/signin", () => {
 
 // Signin｜測試Provider提供錯誤情況（403）
 describe("POST /api/1.0/users/signin", () => {
-  it("should signin", async () => {
+  it("Signin｜測試Provider提供錯誤情況（403）", async () => {
 
     const res = await request(app).post("/api/1.0/users/signin").send({
       email: "Steven@gmail.com",
@@ -56,7 +56,7 @@ describe("POST /api/1.0/users/signin", () => {
 
 // Signin｜測試臉書登入未提供Token情況（400）
 describe("POST /api/1.0/users/signin", () => {
-  it("should signin", async () => {
+  it("Signin｜測試臉書登入未提供Token情況（400）", async () => {
 
     const res = await request(app).post("/api/1.0/users/signin").send({
       provider: "facebook"
@@ -67,7 +67,7 @@ describe("POST /api/1.0/users/signin", () => {
 
 // Signin｜測試沒有密碼/Email情況（400）
 describe("POST /api/1.0/users/signin", () => {
-  it("should signin", async () => {
+  it("Signin｜測試沒有密碼情況（400）", async () => {
 
     const res = await request(app).post("/api/1.0/users/signin").send({
       email: "Steven@gmail.com",
@@ -77,7 +77,7 @@ describe("POST /api/1.0/users/signin", () => {
   });
 });
 describe("POST /api/1.0/users/signin", () => {
-  it("should signin", async () => {
+  it("Signin｜測試沒有Email情況（400）", async () => {
 
     const res = await request(app).post("/api/1.0/users/signin").send({
       password: "123",
@@ -89,7 +89,7 @@ describe("POST /api/1.0/users/signin", () => {
 
 // Signin｜測試密碼錯誤情況（403）
 describe("POST /api/1.0/users/signin", () => {
-  it("should signin", async () => {
+  it("Signin｜測試密碼錯誤情況（403）", async () => {
 
     const res = await request(app).post("/api/1.0/users/signin").send({
       email: "Steven@gmail.com",
@@ -104,7 +104,7 @@ describe("POST /api/1.0/users/signin", () => {
 
 // Signup｜測試成功情況（200）
 describe("POST /api/1.0/users/signup", () => {
-  it("should signup", async () => {
+  it("Signup｜測試成功情況（200）", async () => {
 
     const res = await request(app).post("/api/1.0/users/signup").send({
       name: util.generateRandomString(8),
@@ -117,7 +117,7 @@ describe("POST /api/1.0/users/signup", () => {
 
 // Signup｜測試欄位缺失情況（400）
 describe("POST /api/1.0/users/signup", () => {
-  it("should signup", async () => {
+  it("Signup｜測試欄位缺失情況（400）", async () => {
 
     const res = await request(app).post("/api/1.0/users/signup").send({
       name: util.generateRandomString(8),
@@ -129,7 +129,7 @@ describe("POST /api/1.0/users/signup", () => {
 
 // Signup｜測試信箱格式出錯情況（400）
 describe("POST /api/1.0/users/signup", () => {
-  it("should signup", async () => {
+  it("Signup｜測試信箱格式出錯情況（400）", async () => {
 
     const res = await request(app).post("/api/1.0/users/signup").send({
       name: util.generateRandomString(8),
@@ -142,7 +142,7 @@ describe("POST /api/1.0/users/signup", () => {
 
 // Signup｜測試Email已被使用情況（403）
 describe("POST /api/1.0/users/signup", () => {
-  it("should signup", async () => {
+  it("Signup｜測試Email已被使用情況（403）", async () => {
 
     const res = await request(app).post("/api/1.0/users/signup").send({
       name: util.generateRandomString(8),
