@@ -48,3 +48,5 @@ app.get('/', (req, res) => {res.send('Main Page listening! -Dt22')})
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`)
 })
+
+module.exports = app;
