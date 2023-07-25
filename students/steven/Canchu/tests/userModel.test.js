@@ -34,3 +34,23 @@ describe("POST /api/1.0/users/signup", () => {
     expect(res.statusCode).toBe(200);
   });
 });
+
+describe("GET /api/1.0/users/407/profile", () => {
+  it("should get profile", async () => {
+
+    const res = await request(app).post("/api/1.0/users/407/profile");
+    expect(res.statusCode).toBe(200);
+  });
+});
+
+describe("PUT /api/1.0/users/profile", () => {
+  it("should signup", async () => {
+
+    const res = await request(app).put("/api/1.0/users/profile").send({
+      name: util.generateRandomString(5),
+      introduction: util.generateRandomString(10),
+      tags: util.generateRandomString(5)
+    });
+    expect(res.statusCode).toBe(200);
+  });
+});

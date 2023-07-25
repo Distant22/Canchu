@@ -57,8 +57,8 @@ module.exports = {
     },
 
     generateRandomString(length) {
-        const characters = 'abcdefghijklmnopqrstuvwxyz';
-        let result = '';
+        const characters = 'abcdefghijklmnopqrstuvwxyz1234567890';
+        let result = 'u-';
       
         for (let i = 0; i < length; i++) {
           const randomIndex = Math.floor(Math.random() * characters.length);
