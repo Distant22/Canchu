@@ -54,5 +54,17 @@ module.exports = {
         console.error('Error happened at function -',fn)
         console.error('Database error:', error);
         return res.status(500).json({ error: 'Server error' });
+    },
+
+    generateRandomString(length) {
+        const characters = 'abcdefghijklmnopqrstuvwxyz';
+        let result = '';
+      
+        for (let i = 0; i < length; i++) {
+          const randomIndex = Math.floor(Math.random() * characters.length);
+          result += characters.charAt(randomIndex);
+        }
+      
+        return result;
     }
 }

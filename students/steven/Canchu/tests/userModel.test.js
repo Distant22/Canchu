@@ -1,5 +1,6 @@
 const app = require('../server');
 const request = require("supertest");
+const util = require('../utils/util')
 require("dotenv").config();
 
 afterAll((done) => {
@@ -26,9 +27,9 @@ describe("POST /api/1.0/users/signup", () => {
   it("should signup", async () => {
 
     const res = await request(app).post("/api/1.0/users/signup").send({
-      name: "Steven",
+      name: util.generateRandomString(8),
       password: "123",
-      email: "Steven@gmail.com",
+      email: util.generateRandomString(5)+"@gmail.com",
     });
     expect(res.statusCode).toBe(200);
   });
