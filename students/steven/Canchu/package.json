@@ -25,8 +25,5 @@
   "devDependencies": {
     "jest-mock-extended": "^3.0.4",
     "jest-mysql": "^2.0.0"
-  },
-  "jest": {
-    "preset": "jest-mysql"
   }
 }
