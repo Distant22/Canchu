@@ -1,4 +1,4 @@
-module.exports = {
-    preset: "jest-mysql"
-    //any other configuration
-  };
+// module.exports = {
+//     preset: "jest-mysql"
+//     //any other configuration
+//   };
