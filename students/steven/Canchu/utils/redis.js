@@ -21,12 +21,12 @@ module.exports = {
         } catch (err) { console.log("Error in redis! msg：", err ) }
     },
 
-    delete_redis: (path) => {
+    delete_redis: async (path) => {
         try {
             const redis = new Redis();
-            redis.del(path).then((result) => {
-                console.log("Redis 刪除成功，paht：",path); 
-            })
+            await redis.del(path);
+            console.log("Redis 刪除成功，path：", path);
+            redis.disconnect();
         } catch (err) { console.log("Error in redis! msg：", err ) }
     }
 
