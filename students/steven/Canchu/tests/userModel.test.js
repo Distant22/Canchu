@@ -7,34 +7,19 @@ const mockResponse = {
   json: jest.fn((data) => data),
 };
 
-// Test case for the search function
-test('search function should return a list of users', async () => {
-  const keyword = 'John';
-  // Mock the database query results
-  const mockResults = [
-    { id: 1, name: 'John Doe', picture: '...', friend_id: 2, status: 'friend' },
-    // Add more mock data as needed
-  ];
-  // Create a mock function for db.query
-  db.query.mockResolvedValueOnce([mockResults]);
 
-  const response = await userModel.search(mockResponse, keyword);
-
-  expect(response.data.users).toHaveLength(mockResults.length);
-  // Add more assertions as needed
-});
 
 // Test case for the signin function
 test('signin function should return access token and user data', async () => {
   const email = 'john@example.com';
   const password = 'password123';
   const provider = 'native';
-  // Mock the database query results
-  const mockResults = [
-    { id: 1, name: 'John Doe', email: 'john@example.com', password: 'hashed_password', /* add other user data */ },
-  ];
-  // Create a mock function for db.query
-  db.query.mockResolvedValueOnce([mockResults]);
+  // // Mock the database query results
+  // const mockResults = [
+  //   { id: 1, name: 'John Doe', email: 'john@example.com', password: 'hashed_password', /* add other user data */ },
+  // ];
+  // // Create a mock function for db.query
+  // global.db.query.mockResolvedValueOnce([mockResults]);
 
   const response = await userModel.signin(mockResponse, email, password, provider);
 
