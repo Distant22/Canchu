@@ -1,14 +1,18 @@
 const userModel = require('../models/userModel');
 
+const mockResponse = {
+  status: jest.fn().mockReturnThis(),
+  json: jest.fn(),
+};
 
 test('signin function should return access token and user data', async () => {
   const email = 'Steven@gmail.com';
   const password = '123';
   const provider = 'native';
 
-  const response = await userModel.signin(null, email, password, provider);
-  expect(response.data).toHaveProperty('access_token');
-  expect(response.data.user).toHaveProperty('name','Steven');
+  await userModel.signin(mockResponse, email, password, provider);
+  expect(mockResponse.data).toHaveProperty('access_token');
+  expect(mockResponse.data.user).toHaveProperty('name','Steven');
 })
 
 
