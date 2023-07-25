@@ -3,9 +3,11 @@ const request = require("supertest");
 require("dotenv").config();
 
 afterAll((done) => {
-  app.close(() => {
-    done();
-  });
+  if (app) {
+    app.close(() => {
+      done();
+    });
+  }
 });
 
 describe("POST /api/1.0/users/signin", () => {
