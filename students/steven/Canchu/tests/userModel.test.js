@@ -5,23 +5,19 @@ require("dotenv").config();
 
 var token; 
 
-afterAll(async () => {
+afterAll(async (done) => {
   if (app) {
-    // Close the app server
-    await new Promise((resolve) => app.close(resolve));
-    console.log('App server closed');
-  }
+    try {
+      // You can add additional await here if there are other async operations to wait for
+      await redis.delete_redis('/users/407/profile');
+      console.log('Redis 刪除成功，path：/users/407/profile');
+    } catch (err) {
+      console.log('Error in redis! msg：', err);
+    }
 
-  // Close the Redis connection
-  const redis = new Redis();
-  try {
-    const path = '/users/407/profile';
-    const result = await redis.del(path);
-    console.log('Redis 刪除成功，path:', path);
-  } catch (err) {
-    console.log('Error in redis! msg:', err);
-  } finally {
-    redis.disconnect();
+    app.close(() => {
+      done();
+    });
   }
 });
 
