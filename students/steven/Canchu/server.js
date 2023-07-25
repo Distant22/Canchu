@@ -45,8 +45,8 @@ app.use('/api/1.0/posts', post_route);
 
 app.get('/', (req, res) => {res.send('Main Page listening! -Dt22')})
 
-app.listen(port, () => {
+const server = app.listen(port, () => {
   console.log(`Example app listening on port ${port}`)
 })
 
-module.exports = app;
+module.exports = server;
