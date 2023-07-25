@@ -9,7 +9,7 @@ const rateLimit = require('express-rate-limit');
 // Use Limiter
 const limiter = rateLimit({
   windowMs: 1000,   // 1 second
-  max: 10,          // 10 requests per windowMs
+  max: 20,          // 20 requests per windowMs
   message: 'Too many requests from this IP, please try again later.',
 });
 app.use(limiter);
