@@ -39,6 +39,7 @@ module.exports = {
         }
     },
     signin: async(res,email,password,provider) => {
+        console.log("印出登入資訊：res為",res,"，email為",email,"，password為",password)
         const sql = "SELECT * FROM users WHERE email = ?"
         const [resultsCheck] = await db.query(sql, [email]) ;
         if(resultsCheck.length == 0){
