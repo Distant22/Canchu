@@ -7,11 +7,12 @@ module.exports = {
         const clientIP = req.ip;
       
         const key = `rate_limiter:${clientIP}`;
-        const windowSeconds = 5; // e.g., 5 seconds
-        const maxRequests = 30; // e.g., 30 requests per window
+        const windowSeconds = 1; // e.g., 1 seconds
+        const maxRequests = 10; // e.g., 10 requests per window
       
         try {
           const results = await redis.watch(key); // Start watching the key
+          console.log("Redis watch result:",results)
       
           const currentValue = await redis.get(key);
           const requestsMade = currentValue ? parseInt(currentValue) : 0;
