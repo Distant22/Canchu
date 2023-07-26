@@ -28,8 +28,8 @@ afterAll((done) => {
 describe("POST /api/1.0/users/signin", () => {
   it("Signin｜測試成功情況（200）", async () => {
 
-    mysql.createConnection = jest.fn();
-    mysql.createConnection.mockImplementation(() => mysql.createPool(mockOptions));
+    // mysql.createPool = jest.fn();
+    mysql.createPool.mockImplementation(() => mysql.createPool(mockOptions));
 
     const userId = await userModel.signin(
       "/api/1.0/users/signin",
