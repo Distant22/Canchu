@@ -1,7 +1,26 @@
 const jwt = require('jsonwebtoken');
+const mysql = require('mysql2/promise');
+
+const db = mysql.createPool({
+    host: process.env.DB_HOST || 'localhost',
+    user: process.env.DB_USERNAME,
+    password: process.env.DB_PASSWORD,
+    database: 'user'
+  });
 
 
 module.exports = {
+
+    db: db,
+    closeConnection: () => {
+        db.end((err) => {
+          if (err) {
+            console.error('Error closing the database connection:', err.message);
+          } else {
+            console.log('Database connection closed.');
+          }
+        });
+    },
 
     authorize_bearer: (req, res, next) => {
         const token = req.headers.authorization;
