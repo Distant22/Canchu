@@ -10,7 +10,10 @@ var token;
 
 jest.mock('../utils/util', () => ({
   db: {
-    query: jest.fn().mockResolvedValue([[{ insertId: 1 }]]) // Assuming the query returns the insertId
+    query: jest.fn().mockResolvedValue({
+        access_token,
+        user,
+    }) // Assuming the query returns the insertId
   }
 }));
 
@@ -48,7 +51,7 @@ describe("POST /api/1.0/users/signin", () => {
       [name, email, password]
     );
     expect(userId).toBe(1);
-    
+
     // token = res.body.data.access_token;
   });
 });
