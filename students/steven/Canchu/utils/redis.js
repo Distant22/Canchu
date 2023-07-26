@@ -17,8 +17,9 @@ module.exports = {
           const currentValue = await redis.get(key);
           const requestsMade = currentValue ? parseInt(currentValue) : 0;
       
+          console.log("Request數量為",requestsMade,"最大限制為",maxRequests)
+
           if (requestsMade >= maxRequests) {
-            console.log("爆了；Request數量為",requestsMade,"最大限制為",maxRequests)
             return res.status(429).json({ error: 'Rate limit exceeded' });
           }
       
