@@ -5,18 +5,21 @@ module.exports = {
     rateLimiter: (req, res, next) => {
 
         const redis = new Redis();
-        const clientIP = '13.54.210.189'; // Assuming you're using Express and the client IP is in req.ip
+        const clientIP = req.ip; // Assuming you're using Express and the client IP is in req.ip
 
         // Replace 'CLIENT_IP' with the client IP or API key, and 'RATE_LIMIT_WINDOW' and 'RATE_LIMIT_MAX' with your desired limits.
         const key = `rate_limiter:${clientIP}`;
-        const windowSeconds = 10; // e.g., 60 seconds
-        const maxRequests = 10; // e.g., 100 requests per window
+        const windowSeconds = 60; // e.g., 60 seconds
+        const maxRequests = 5; // e.g., 100 requests per window
 
         redis
             .multi()
             .incr(key)
             .expire(key, windowSeconds)
             .exec((err, results) => {
+
+            console.log("rate limiter redis:",results)
+            
             if (err) {
                 console.error('Redis error:', err);
                 return res.status(500).json({ error: 'Internal server error' });
