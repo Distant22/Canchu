@@ -1,5 +1,5 @@
 const util = require('../utils/util')
-const { db, closeConnection } = require('../utils/util');
+const { db } = require('../utils/util');
 
 module.exports = {
     getEvent: async(res,userId) => {

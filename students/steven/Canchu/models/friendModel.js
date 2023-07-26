@@ -1,6 +1,6 @@
 const util = require('../utils/util')
 const redis = require('../utils/redis')
-const { db, closeConnection } = require('../utils/util');
+const { db } = require('../utils/util');
 
 module.exports = {
     postRequest: async(res,friend_id,my_id) => {

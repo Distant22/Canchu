@@ -1,7 +1,7 @@
 const bcrypt = require('bcrypt');
 const util = require('../utils/util')
 const redis = require('../utils/redis')
-const { db, closeConnection } = require('../utils/util');
+const { db } = require('../utils/util');
 
 module.exports = {
     // 取得User ID, User name, User picture, Friendship 的主鍵id, Friendship 的status
