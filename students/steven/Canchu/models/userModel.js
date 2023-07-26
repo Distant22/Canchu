@@ -1,15 +1,7 @@
-const mysql = require('mysql2/promise');
 const bcrypt = require('bcrypt');
 const util = require('../utils/util')
 const redis = require('../utils/redis')
 const { db, closeConnection } = require('../utils/util');
-
-// const db = mysql.createPool({
-// 	host: process.env.DB_HOST || 'localhost',
-// 	user: process.env.DB_USERNAME,
-// 	password: process.env.DB_PASSWORD,
-// 	database: 'user'
-// });
 
 module.exports = {
     // 取得User ID, User name, User picture, Friendship 的主鍵id, Friendship 的status
@@ -80,9 +72,7 @@ module.exports = {
             }
         } catch (error) {
             return util.databaseError(error,'signin',res);
-        } finally {
-            closeConnection()
-        }
+        } 
     },
 
     signup: async (res,name,email,password) => {
