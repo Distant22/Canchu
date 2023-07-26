@@ -40,7 +40,7 @@ module.exports = {
 
     authorize_json: (req,res,next) => {
         const type = req.get('content-type')
-        if (type !== 'application/json'){
+        if (type !== ''){
             return res.status(415).json({ error: 'Invalid content type' })
         } else { next(); }
     },

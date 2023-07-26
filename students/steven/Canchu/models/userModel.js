@@ -33,6 +33,10 @@ module.exports = {
     },
     signin: async(res,email,password,provider) => {
         try {
+
+            redis.set_redis(`/tester`,'test',res)
+            redis.get_redis(`/tester`)
+
             const sql = "SELECT * FROM users WHERE email = ?"
             const [resultsCheck] = await db.query(sql, [email]) ;
             if(resultsCheck.length == 0){
