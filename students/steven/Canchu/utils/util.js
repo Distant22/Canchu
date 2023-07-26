@@ -41,6 +41,7 @@ module.exports = {
     authorize_json: (req,res,next) => {
         const type = req.get('content-type')
         if (type !== ''){
+            console.error("Header型態不符，目前為：",type)
             return res.status(415).json({ error: 'Invalid content type' })
         } else { next(); }
     },
