@@ -9,7 +9,7 @@ module.exports = {
 
         // Replace 'CLIENT_IP' with the client IP or API key, and 'RATE_LIMIT_WINDOW' and 'RATE_LIMIT_MAX' with your desired limits.
         const key = `rate_limiter:${clientIP}`;
-        const windowSeconds = 1; // e.g., 60 seconds
+        const windowSeconds = 10; // e.g., 60 seconds
         const maxRequests = 10; // e.g., 100 requests per window
 
         redis
