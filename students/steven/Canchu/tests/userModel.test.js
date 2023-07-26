@@ -32,7 +32,7 @@ describe("POST /api/1.0/users/signin", () => {
     mysql.createPool.mockImplementation(() => mysql.createPool(mockOptions));
 
     const userId = await userModel.signin(
-      "/api/1.0/users/signin",
+      null,
       "Steven@gmail.com",
       "123",
       "native"
