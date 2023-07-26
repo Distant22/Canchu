@@ -1,9 +1,18 @@
 const app = require('../server');
 const request = require("supertest");
 const util = require('../utils/util')
+const mysql = require('mysql2/promise');
+const { db } = require('../utils/util');
+const userModel = require('../models/userModel');
 require("dotenv").config();
 
 var token; 
+
+jest.mock('../utils/util', () => ({
+  db: {
+    query: jest.fn().mockResolvedValue([[{ insertId: 1 }]]) // Assuming the query returns the insertId
+  }
+}));
 
 afterAll((done) => {
   if (app) {
@@ -19,12 +28,27 @@ afterAll((done) => {
 describe("POST /api/1.0/users/signin", () => {
   it("Signin｜測試成功情況（200）", async () => {
 
-    const res = await request(app).post("/api/1.0/users/signin").send({
-      email: "Steven@gmail.com",
-      password: "123",
-      provider: "native",
-    });
+    mysql.createConnection = jest.fn();
+    mysql.createConnection.mockImplementation(() => mysql.createPool(mockOptions));
+
+    const userId = await userModel.signin(
+      "/api/1.0/users/signin",
+      "Steven@gmail.com",
+      "123",
+      "native"
+    )
+    // const res = await request(app).post("/api/1.0/users/signin").send({
+    //   email: "Steven@gmail.com",
+    //   password: "123",
+    //   provider: "native",
+    // });
     expect(res.statusCode).toBe(200);
+    expect(db.query).toHaveBeenCalledWith(
+      'INSERT INTO users (name, email, password) VALUES (?, ?, ?)',
+      [name, email, password]
+    );
+    expect(userId).toBe(1);
+    
     // token = res.body.data.access_token;
   });
 });
