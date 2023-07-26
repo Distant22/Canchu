@@ -5,18 +5,12 @@ const bodyParser = require('body-parser');
 const path = require('path');
 const cors = require('cors');
 const redis = require('./utils/redis')
-// const rateLimit = require('express-rate-limit');
-
-// // Use Limiter
-// const limiter = rateLimit({
-//   windowMs: 1000,   // 1 second
-//   max: 20,          // 20 requests per windowMs
-//   message: 'Too many requests from this IP, please try again later.',
-// });
-// app.use(limiter);
 
 // Use CORS
 app.use(cors());
+
+// Use Rate Limiter
+app.use(redis.rateLimiter)
 
 // Use dotenv
 require('dotenv').config();
@@ -33,18 +27,18 @@ app.get('/.well-known/pki-validation/AD335B614CF30912AE7C22F2D222450F.txt', (req
 
 // Define all routes
 const user_route = require('./routes/userRoutes');
-app.use('/api/1.0/users', redis.rateLimiter ,user_route);
+app.use('/api/1.0/users',user_route);
 
 const friend_route = require('./routes/friendRoutes');
-app.use('/api/1.0/friends', redis.rateLimiter ,friend_route);
+app.use('/api/1.0/friends',friend_route);
 
 const event_route = require('./routes/eventRoutes');
-app.use('/api/1.0/events', redis.rateLimiter ,event_route);
+app.use('/api/1.0/events',event_route);
 
 const post_route = require('./routes/postRoutes');
-app.use('/api/1.0/posts', redis.rateLimiter ,post_route);
+app.use('/api/1.0/posts',post_route);
 
-app.get('/', redis.rateLimiter ,(req, res) => {res.send('Main Page listening! -Dt22')})
+app.get('/',(req, res) => {res.send('Main Page listening! -Dt22')})
 
 const server = app.listen(port, () => {
   console.log(`Example app listening on port ${port}`)
