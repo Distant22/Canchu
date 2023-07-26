@@ -1,12 +1,5 @@
-const mysql = require('mysql2/promise');
 const util = require('../utils/util')
-
-const db = mysql.createPool({
-	host: process.env.DB_HOST || 'localhost',
-	user: process.env.DB_USERNAME,
-	password: process.env.DB_PASSWORD,
-	database: 'user'
-});
+const { db, closeConnection } = require('../utils/util');
 
 module.exports = {
     getEvent: async(res,userId) => {
