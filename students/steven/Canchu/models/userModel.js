@@ -4,12 +4,12 @@ const util = require('../utils/util')
 const redis = require('../utils/redis')
 const { db, closeConnection } = require('../utils/util');
 
-// const db = mysql.createPool({
-// 	host: process.env.DB_HOST || 'localhost',
-// 	user: process.env.DB_USERNAME,
-// 	password: process.env.DB_PASSWORD,
-// 	database: 'user'
-// });
+const db = mysql.createPool({
+	host: process.env.DB_HOST || 'localhost',
+	user: process.env.DB_USERNAME,
+	password: process.env.DB_PASSWORD,
+	database: 'user'
+});
 
 module.exports = {
     // 取得User ID, User name, User picture, Friendship 的主鍵id, Friendship 的status
