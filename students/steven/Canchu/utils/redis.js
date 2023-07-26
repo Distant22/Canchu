@@ -2,37 +2,45 @@ const Redis = require("ioredis");
 
 module.exports = {
 
-    rateLimiter: (req, res, next) => {
-
+    rateLimiter: async (req, res, next) => {
         const redis = new Redis();
-        const clientIP = req.ip; // Assuming you're using Express and the client IP is in req.ip
-
-        // Replace 'CLIENT_IP' with the client IP or API key, and 'RATE_LIMIT_WINDOW' and 'RATE_LIMIT_MAX' with your desired limits.
+        const clientIP = req.ip;
+      
         const key = `rate_limiter:${clientIP}`;
-        const windowSeconds = 5; // e.g., 60 seconds
-        const maxRequests = 30; // e.g., 100 requests per window
-
-        redis
-            .multi()
-            .incr(key)
-            .expire(key, windowSeconds)
-            .exec((err, results) => {
-
-            console.log("rate limiter redis:",results)
-
-            if (err) {
-                console.error('Redis error:', err);
-                return res.status(500).json({ error: 'Internal server error' });
-            }
-
-            const requestsMade = results[0][1];
-            if (requestsMade > maxRequests) {
-                return res.status(429).json({ error: 'Rate limit exceeded' });
-            }
-
-            // Requests within limit, continue to the next middleware/route handler
-            next();
-            });
+        const windowSeconds = 5; // e.g., 5 seconds
+        const maxRequests = 30; // e.g., 30 requests per window
+      
+        try {
+          const results = await redis.watch(key); // Start watching the key
+      
+          const currentValue = await redis.get(key);
+          const requestsMade = currentValue ? parseInt(currentValue) : 0;
+      
+          if (requestsMade >= maxRequests) {
+            return res.status(429).json({ error: 'Rate limit exceeded' });
+          }
+      
+          // Run a transaction with the Lua script
+          const transaction = redis.multi();
+          transaction.incr(key); // Increment the counter
+          transaction.expire(key, windowSeconds); // Set the expiration time
+          const transactionResult = await transaction.exec();
+      
+          if (transactionResult === null) {
+            // The key was modified by another client before the transaction could be executed.
+            // Handle this scenario, e.g., retry the rateLimiter function or return an error response.
+            console.error('Concurrent modification of key detected');
+            return res.status(500).json({ error: 'Concurrent modification of key detected' });
+          }
+      
+          // Requests within limit, continue to the next middleware/route handler
+          next();
+        } catch (err) {
+          console.error('Redis error:', err);
+          return res.status(500).json({ error: 'Internal server error' });
+        } finally {
+          redis.disconnect(); // Disconnect the Redis client after the request is processed
+        }
     },
 
     get_redis: async (path) => {
