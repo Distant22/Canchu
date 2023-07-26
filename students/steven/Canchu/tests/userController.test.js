@@ -6,8 +6,9 @@ require("dotenv").config();
 const userController = require('../controllers/userController');
 const userModel = require('../models/userModel');
 
-
-var token; 
+jest.mock('../models/userModel', () => ({
+  signin: jest.fn()
+}));
 
 afterAll((done) => {
   if (app) {
@@ -37,7 +38,9 @@ describe("POST /api/1.0/users/signin", () => {
     };
 
     // Mock the behavior of userModel.signin
-    userModel.signin = jest.fn().mockResolvedValue({
+
+    // Mock the behavior of userModel.signin
+    userModel.signin.mockResolvedValue({
       // Provide the expected response here
       data: {
         access_token: 'some_access_token',
@@ -53,7 +56,7 @@ describe("POST /api/1.0/users/signin", () => {
 
     await userController.signin(req, res);
 
-    // expect(res.status).toHaveBeenCalledWith(200);
+    expect(res.status).toHaveBeenCalledWith(200);
     expect(res.json).toHaveBeenCalledWith({
       data: {
         access_token: 'some_access_token',
@@ -181,15 +184,15 @@ describe("POST /api/1.0/users/signup", () => {
 });
 
 // Signup｜測試Email已被使用情況（403）
-// describe("POST /api/1.0/users/signup", () => {
-//   it("Signup｜測試Email已被使用情況（403）", async () => {
+describe("POST /api/1.0/users/signup", () => {
+  it("Signup｜測試Email已被使用情況（403）", async () => {
 
-//     const res = await request(app).post("/api/1.0/users/signup").send({
-//       name: util.generateRandomString(8),
-//       password: "123",
-//       email: "Steven@gmail.com",
-//     });
-//     expect(res.statusCode).toBe(403);
-//   });
-// });
+    const res = await request(app).post("/api/1.0/users/signup").send({
+      name: util.generateRandomString(8),
+      password: "123",
+      email: "Steven@gmail.com",
+    });
+    expect(res.statusCode).toBe(403);
+  });
+});
 
