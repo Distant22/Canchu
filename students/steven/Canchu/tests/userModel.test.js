@@ -37,7 +37,7 @@ describe("POST /api/1.0/users/signin", () => {
     };
 
     // Mock the behavior of userModel.signin
-    userModel.signin.mockResolvedValue({
+    userModel.signin = jest.fn().mockResolvedValue({
       // Provide the expected response here
       data: {
         access_token: 'some_access_token',
