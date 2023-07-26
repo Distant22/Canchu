@@ -3,16 +3,6 @@ const request = require("supertest");
 const util = require('../utils/util')
 require("dotenv").config();
 
-const userController = require('../controllers/userController');
-const userModel = require('../models/userModel');
-
-<<<<<<< HEAD:students/steven/Canchu/tests/userController.test.js
-jest.mock('../models/userModel', () => ({
-  signin: jest.fn()
-}));
-
-=======
->>>>>>> parent of 9214f26 (fix(userModel.test):modify test setting):students/steven/Canchu/tests/userModel.test.js
 afterAll((done) => {
   if (app) {
     app.close(() => {
@@ -27,53 +17,6 @@ afterAll((done) => {
 describe("POST /api/1.0/users/signin", () => {
   it("Signin｜測試成功情況（200）", async () => {
 
-<<<<<<< HEAD:students/steven/Canchu/tests/userController.test.js
-    const req = {
-      body: {
-        provider: 'native',
-        email: 'test@example.com',
-        password: 'password'
-      }
-    };
-
-    const res = {
-      status: jest.fn().mockReturnThis(),
-      json: jest.fn()
-    };
-
-    // Mock the behavior of userModel.signin
-
-    // Mock the behavior of userModel.signin
-    userModel.signin.mockResolvedValue({
-      // Provide the expected response here
-      data: {
-        access_token: 'some_access_token',
-        user: {
-          id: 1,
-          name: 'John Doe',
-          email: 'test@example.com',
-          picture: 'profile_picture.jpg',
-          // Add other properties as needed
-        }
-      }
-    });
-
-    await userController.signin(req, res);
-
-    expect(res.status).toHaveBeenCalledWith(200);
-    expect(res.json).toHaveBeenCalledWith({
-      data: {
-        access_token: 'some_access_token',
-        user: {
-          id: 1,
-          name: 'John Doe',
-          email: 'test@example.com',
-          picture: 'profile_picture.jpg',
-          // Add other properties as needed
-        }
-      }
-    });
-=======
     const res = await request(app).post("/api/1.0/users/signin").send({
       email: "Steven@gmail.com",
       password: "123",
@@ -81,7 +24,6 @@ describe("POST /api/1.0/users/signin", () => {
     });
     expect(res.statusCode).toBe(200);
     // token = res.body.data.access_token;
->>>>>>> parent of 9214f26 (fix(userModel.test):modify test setting):students/steven/Canchu/tests/userModel.test.js
   });
 });
 
