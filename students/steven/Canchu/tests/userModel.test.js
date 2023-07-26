@@ -37,11 +37,14 @@ describe("POST /api/1.0/users/signin", () => {
       "123",
       "native"
     )
-    // const res = await request(app).post("/api/1.0/users/signin").send({
-    //   email: "Steven@gmail.com",
-    //   password: "123",
-    //   provider: "native",
-    // });
+
+    db.query.mockResolvedValue([[{
+      id: 428,
+      name: "Steven",
+      email: "Steven@gmail.com",
+      password: "123" // You may want to provide a hashed password here for testing
+    }]]);
+
     expect(res.statusCode).toBe(200);
     expect(db.query).toHaveBeenCalledWith(
       'INSERT INTO users (name, email, password) VALUES (?, ?, ?)',
