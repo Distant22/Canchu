@@ -4,7 +4,7 @@ const port = 3000
 const bodyParser = require('body-parser');
 const path = require('path');
 const cors = require('cors');
-const redis = require('../utils/redis')
+const redis = require('./utils/redis')
 // const rateLimit = require('express-rate-limit');
 
 // // Use Limiter
