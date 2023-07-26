@@ -12,7 +12,7 @@ module.exports = {
       
         try {
           const results = await redis.watch(key); // Start watching the key
-          console.log("Redis watch result:",results)
+          console.log("Redis watch result:",results,req.ip)
       
           const currentValue = await redis.get(key);
           const requestsMade = currentValue ? parseInt(currentValue) : 0;
@@ -23,7 +23,6 @@ module.exports = {
             return res.status(429).json({ error: 'Rate limit exceeded' });
           }
       
-          // Run a transaction with the Lua script
           const transaction = redis.multi();
           transaction.incr(key); // Increment the counter
           transaction.expire(key, windowSeconds); // Set the expiration time
