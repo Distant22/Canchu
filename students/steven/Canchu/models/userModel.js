@@ -2,13 +2,14 @@ const mysql = require('mysql2/promise');
 const bcrypt = require('bcrypt');
 const util = require('../utils/util')
 const redis = require('../utils/redis')
+const { db, closeConnection } = require('../utils/util');
 
-const db = mysql.createPool({
-	host: process.env.DB_HOST || 'localhost',
-	user: process.env.DB_USERNAME,
-	password: process.env.DB_PASSWORD,
-	database: 'user'
-});
+// const db = mysql.createPool({
+// 	host: process.env.DB_HOST || 'localhost',
+// 	user: process.env.DB_USERNAME,
+// 	password: process.env.DB_PASSWORD,
+// 	database: 'user'
+// });
 
 module.exports = {
     // 取得User ID, User name, User picture, Friendship 的主鍵id, Friendship 的status
@@ -39,42 +40,48 @@ module.exports = {
         }
     },
     signin: async(res,email,password,provider) => {
-        const sql = "SELECT * FROM users WHERE email = ?"
-        const [resultsCheck] = await db.query(sql, [email]) ;
-        if(resultsCheck.length == 0){
-            return res.status(403).json({ error: 'Email not exist' });
-        } else {
-            const userInfo = resultsCheck[0]
-            bcrypt.compare(password, userInfo.password).then(function (pwdResult) {
-                if(!pwdResult){
-                    return res.status(403).json({ error: 'Incorrect Password' });
-                } else {
-                    // 全部包起來做成Token
-                    const user = {
-                        id: userInfo.id,
-                        provider: provider,
-                        name: userInfo.name,
-                        email: userInfo.email,
-                        picture: userInfo.picture,
-                        introduction: userInfo.introduction,
-                        tags: userInfo.tags,
-                        friend_count: userInfo.friend_count
-                    }
-                    console.log("登入成功。登入資訊為：",user)
-                    return res.status(200).json({
-                        data: {
-                            access_token: util.generateToken(user),
-                            user: {
-                                id: user.id,
-                                provider: user.provider,
-                                name: user.name,
-                                email: user.email,
-                                picture: user.picture
-                            }
+        try {
+            const sql = "SELECT * FROM users WHERE email = ?"
+            const [resultsCheck] = await db.query(sql, [email]) ;
+            if(resultsCheck.length == 0){
+                return res.status(403).json({ error: 'Email not exist' });
+            } else {
+                const userInfo = resultsCheck[0]
+                bcrypt.compare(password, userInfo.password).then(function (pwdResult) {
+                    if(!pwdResult){
+                        return res.status(403).json({ error: 'Incorrect Password' });
+                    } else {
+                        // 全部包起來做成Token
+                        const user = {
+                            id: userInfo.id,
+                            provider: provider,
+                            name: userInfo.name,
+                            email: userInfo.email,
+                            picture: userInfo.picture,
+                            introduction: userInfo.introduction,
+                            tags: userInfo.tags,
+                            friend_count: userInfo.friend_count
                         }
-                    })
-                }
-            })
+                        console.log("登入成功。登入資訊為：",user)
+                        return res.status(200).json({
+                            data: {
+                                access_token: util.generateToken(user),
+                                user: {
+                                    id: user.id,
+                                    provider: user.provider,
+                                    name: user.name,
+                                    email: user.email,
+                                    picture: user.picture
+                                }
+                            }
+                        })
+                    }
+                })
+            }
+        } catch (error) {
+            return util.databaseError(error,'signin',res);
+        } finally {
+            closeConnection()
         }
     },
 
