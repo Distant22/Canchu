@@ -3,7 +3,7 @@ const request = require("supertest");
 const util = require('../utils/util')
 require("dotenv").config();
 
-const userController = require('./userController');
+const userController = require('../controllers/userController');
 const userModel = require('../models/userModel');
 
 
