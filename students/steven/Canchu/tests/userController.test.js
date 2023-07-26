@@ -6,10 +6,13 @@ require("dotenv").config();
 const userController = require('../controllers/userController');
 const userModel = require('../models/userModel');
 
+<<<<<<< HEAD:students/steven/Canchu/tests/userController.test.js
 jest.mock('../models/userModel', () => ({
   signin: jest.fn()
 }));
 
+=======
+>>>>>>> parent of 9214f26 (fix(userModel.test):modify test setting):students/steven/Canchu/tests/userModel.test.js
 afterAll((done) => {
   if (app) {
     app.close(() => {
@@ -24,6 +27,7 @@ afterAll((done) => {
 describe("POST /api/1.0/users/signin", () => {
   it("Signin｜測試成功情況（200）", async () => {
 
+<<<<<<< HEAD:students/steven/Canchu/tests/userController.test.js
     const req = {
       body: {
         provider: 'native',
@@ -69,6 +73,15 @@ describe("POST /api/1.0/users/signin", () => {
         }
       }
     });
+=======
+    const res = await request(app).post("/api/1.0/users/signin").send({
+      email: "Steven@gmail.com",
+      password: "123",
+      provider: "native",
+    });
+    expect(res.statusCode).toBe(200);
+    // token = res.body.data.access_token;
+>>>>>>> parent of 9214f26 (fix(userModel.test):modify test setting):students/steven/Canchu/tests/userModel.test.js
   });
 });
 
