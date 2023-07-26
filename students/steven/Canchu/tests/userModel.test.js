@@ -3,6 +3,10 @@ const request = require("supertest");
 const util = require('../utils/util')
 require("dotenv").config();
 
+const userController = require('./userController');
+const userModel = require('../models/userModel');
+
+
 var token; 
 
 afterAll((done) => {
@@ -19,13 +23,49 @@ afterAll((done) => {
 describe("POST /api/1.0/users/signin", () => {
   it("Signin｜測試成功情況（200）", async () => {
 
-    const res = await request(app).post("/api/1.0/users/signin").send({
-      email: "Steven@gmail.com",
-      password: "123",
-      provider: "native",
+    const req = {
+      body: {
+        provider: 'native',
+        email: 'test@example.com',
+        password: 'password'
+      }
+    };
+
+    const res = {
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn()
+    };
+
+    // Mock the behavior of userModel.signin
+    userModel.signin.mockResolvedValue({
+      // Provide the expected response here
+      data: {
+        access_token: 'some_access_token',
+        user: {
+          id: 1,
+          name: 'John Doe',
+          email: 'test@example.com',
+          picture: 'profile_picture.jpg',
+          // Add other properties as needed
+        }
+      }
     });
-    expect(res.statusCode).toBe(200);
-    // token = res.body.data.access_token;
+
+    await userController.signin(req, res);
+
+    expect(res.status).toHaveBeenCalledWith(200);
+    expect(res.json).toHaveBeenCalledWith({
+      data: {
+        access_token: 'some_access_token',
+        user: {
+          id: 1,
+          name: 'John Doe',
+          email: 'test@example.com',
+          picture: 'profile_picture.jpg',
+          // Add other properties as needed
+        }
+      }
+    });
   });
 });
 
