@@ -10,10 +10,7 @@ var token;
 
 jest.mock('../utils/util', () => ({
   db: {
-    query: jest.fn().mockResolvedValue({
-        access_token,
-        user,
-    }) // Assuming the query returns the insertId
+    query: jest.fn().mockResolvedValue(1) // Assuming the query returns the insertId
   }
 }));
 
