@@ -19,13 +19,13 @@ module.exports = {
             .exec((err, results) => {
 
             console.log("rate limiter redis:",results)
-            
+
             if (err) {
                 console.error('Redis error:', err);
                 return res.status(500).json({ error: 'Internal server error' });
             }
 
-            const requestsMade = results[0];
+            const requestsMade = results[0][1];
             if (requestsMade > maxRequests) {
                 return res.status(429).json({ error: 'Rate limit exceeded' });
             }
