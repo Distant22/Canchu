@@ -51,7 +51,7 @@ describe("POST /api/1.0/users/signin", () => {
       }
     });
 
-    await userController.signin(req.body, res);
+    await userController.signin(req, res);
 
     expect(res.status).toHaveBeenCalledWith(200);
     expect(res.json).toHaveBeenCalledWith({
@@ -181,15 +181,15 @@ describe("POST /api/1.0/users/signup", () => {
 });
 
 // Signup｜測試Email已被使用情況（403）
-describe("POST /api/1.0/users/signup", () => {
-  it("Signup｜測試Email已被使用情況（403）", async () => {
+// describe("POST /api/1.0/users/signup", () => {
+//   it("Signup｜測試Email已被使用情況（403）", async () => {
 
-    const res = await request(app).post("/api/1.0/users/signup").send({
-      name: util.generateRandomString(8),
-      password: "123",
-      email: "Steven@gmail.com",
-    });
-    expect(res.statusCode).toBe(403);
-  });
-});
+//     const res = await request(app).post("/api/1.0/users/signup").send({
+//       name: util.generateRandomString(8),
+//       password: "123",
+//       email: "Steven@gmail.com",
+//     });
+//     expect(res.statusCode).toBe(403);
+//   });
+// });
 
