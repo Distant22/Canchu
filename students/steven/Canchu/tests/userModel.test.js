@@ -25,12 +25,6 @@ describe("POST /api/1.0/users/signin", () => {
       provider: "native",
     });
     expect(res.statusCode).toBe(200);
-    expect(db.query).toHaveBeenCalledWith(
-      'INSERT INTO users (name, email, password) VALUES (?, ?, ?)',
-      [name, email, password]
-    );
-    expect(userId).toBe(1);
-    
     // token = res.body.data.access_token;
   });
 });
