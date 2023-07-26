@@ -23,18 +23,18 @@ module.exports = {
             return res.status(429).json({ error: 'Rate limit exceeded' });
           }
       
-        //   // Run a transaction with the Lua script
-        //   const transaction = redis.multi();
-        //   transaction.incr(key); // Increment the counter
-        //   transaction.expire(key, windowSeconds); // Set the expiration time
-        //   const transactionResult = await transaction.exec();
+          // Run a transaction with the Lua script
+          const transaction = redis.multi();
+          transaction.incr(key); // Increment the counter
+          transaction.expire(key, windowSeconds); // Set the expiration time
+          const transactionResult = await transaction.exec();
       
-        //   if (transactionResult === null) {
-        //     // The key was modified by another client before the transaction could be executed.
-        //     // Handle this scenario, e.g., retry the rateLimiter function or return an error response.
-        //     console.error('Concurrent modification of key detected');
-        //     return res.status(500).json({ error: 'Concurrent modification of key detected' });
-        //   }
+          if (transactionResult === null) {
+            // The key was modified by another client before the transaction could be executed.
+            // Handle this scenario, e.g., retry the rateLimiter function or return an error response.
+            console.error('Concurrent modification of key detected');
+            return res.status(500).json({ error: 'Concurrent modification of key detected' });
+          }
       
           // Requests within limit, continue to the next middleware/route handler
           next();
