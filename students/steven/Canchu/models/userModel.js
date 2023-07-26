@@ -199,8 +199,16 @@ module.exports = {
             if (resultsCheck[0].count === 0) {
                 return res.status(400).json({ error: 'User not found' });
             } else {
-                const sql = 'UPDATE users SET name = ? , introduction = ? , tags = ? WHERE id = ?'
-                await db.query(sql, [name, introduction, tags, id])
+                const sql = `
+                UPDATE users AS u
+                LEFT JOIN post AS p ON u.id = p.user_id
+                SET u.name = ?,
+                    p.name = ?,
+                    u.introduction = ?,
+                    u.tags = ?
+                WHERE u.id = ?
+                `
+                await db.query(sql, [name, name, introduction, tags, id])
 
                 // 去Redis刪資料 
                 await redis.delete_redis(`/users/${id}/profile`)
