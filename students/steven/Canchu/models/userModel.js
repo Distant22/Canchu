@@ -160,7 +160,7 @@ module.exports = {
                 console.log("Redis 沒東西，直接去資料庫拿，ID為",userId,"Result回傳：",userProfile)
 
                 // 去 Redis 新增資料
-                redis.set_redis(`/users/${userId}/profile`,JSON.stringify(userProfile),res)
+                redis.set_redis(`/users/${userId}/profile`,JSON.stringify(userProfile),3600)
                 // 去 Redis 新增資料
             } 
 
