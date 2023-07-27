@@ -5,13 +5,13 @@ const util = require('../utils/util')
 
 require("dotenv").config();
 
-afterAll((done) => {
-  if (app) {
-    app.close(() => {
-      done();
-    });
-  }
-});
+// afterAll((done) => {
+//   if (app) {
+//     app.close(() => {
+//       done();
+//     });
+//   }
+// });
 
 // Signup｜測試成功情況（200）
 describe("POST /api/1.0/users/signup", () => {
