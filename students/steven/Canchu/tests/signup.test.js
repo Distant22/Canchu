@@ -1,13 +1,14 @@
 process.env.NODE_ENV = "test";
 const app = require('../app');
+const server = require('../server');
 const request = require("supertest");
 const util = require('../utils/util')
 
 require("dotenv").config();
 
 afterAll((done) => {
-  if (app) {
-    app.close(() => {
+  if (server) {
+    server.close(() => {
       done();
     });
   }
