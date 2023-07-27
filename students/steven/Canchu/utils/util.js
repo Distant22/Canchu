@@ -5,21 +5,12 @@ const db = mysql.createPool({
     host: process.env.DB_HOST || 'localhost',
     user: process.env.DB_USERNAME,
     password: process.env.DB_PASSWORD,
-    database: 'user'
+    database: process.env.NODE_ENV === "test" ? 'test' : 'user'
 });
-
-const db_test = mysql.createPool({
-    host: process.env.DB_HOST || 'localhost',
-    user: process.env.DB_USERNAME,
-    password: process.env.DB_PASSWORD,
-    database: 'test'
-});
-
 
 module.exports = {
 
-    db_users: db,
-    db_test: db_test,
+    db: db,
     closeConnection: () => {
         db.end((err) => {
           if (err) {
