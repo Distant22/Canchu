@@ -13,8 +13,10 @@ module.exports = {
         }
 
         try {
+            console.log("Try 1")
             const redis = new Redis();
-            var redis_result = JSON.parse(redis.get(`${ip}`))
+            console.log("Try 2")
+            var redis_result = JSON.parse(await redis.get(`${ip}`))
 
             console.log(`取得${ip}快取的結果是`,redis_result)
 
@@ -32,7 +34,7 @@ module.exports = {
             }
             next();
         } catch (err) {
-
+            res.status(500).json({ error: 'Redis Error' });
         } 
     },
 
