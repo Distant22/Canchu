@@ -36,7 +36,7 @@ module.exports = {
             } else {
 
                 redis.set(`${ip}`, 1, 'EX', 10)
-                console.error(`Set New ${ip} Redis to 1`);
+                console.log(`Set New ${ip} Redis to 1`);
 
             }
             next();
