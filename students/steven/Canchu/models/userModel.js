@@ -1,16 +1,9 @@
 const bcrypt = require('bcrypt');
 const util = require('../utils/util')
 const redis = require('../utils/redis')
-const { db_test, db_users } = require('../utils/util');
-
-let isUnitTest = false;
-const db = isUnitTest ? db_test : db_users
+const { db } = require('../utils/util');
 
 module.exports = {
-
-    setUnitTestFlag: (flag) => {
-        isUnitTest = flag;
-    },
 
     // 取得User ID, User name, User picture, Friendship 的主鍵id, Friendship 的status
     search: async(res,keyword) => {
