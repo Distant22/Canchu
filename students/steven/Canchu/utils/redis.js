@@ -13,17 +13,18 @@ module.exports = {
         }
 
         try {
-            console.log("Try 1")
+
             const redis = new Redis();
-            console.log("Try 2")
             var redis_result = JSON.parse(await redis.get(`${ip}`))
+            var violate_result = JSON.parse(await redis.get(`${ip}_banned`))
 
-            console.log(`取得${ip}快取的結果是`,redis_result)
+            if(redis_result > 10 || violate_result){
 
-            if(redis_result > 10){
-                console.log("WARNING: VIOLATE!",redis_result)
-            }
-            if(redis_result){ 
+                redis.set(`${ip}_banned`, null, 'EX', 10)
+                return res.status(429).json({ error: 'You exceed your rate limit.' });
+
+            } else if(redis_result){ 
+
                 redis.incr(`${ip}`, (err, newCount) => {
                     if (err) {
                       console.error('Error incrementing counter:', err);
@@ -31,11 +32,15 @@ module.exports = {
                       console.log(`New count:${newCount}`)
                     }
                 });
+
             } else {
+
                 redis.set(`${ip}`, 1, 'EX', 10)
                 console.error(`Set New ${ip} Redis to 1`);
+
             }
             next();
+
         } catch (err) {
             res.status(500).json({ error: 'Redis Error' });
         } 
