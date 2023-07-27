@@ -23,7 +23,10 @@ afterAll((done) => {
 describe("POST /api/1.0/users/signin", () => {
   it("Signin｜測試成功情況（200）", async () => {
 
-    const res = await request(app).set('X-Forwarded-For', '127.0.0.1').post("/api/1.0/users/signin").send({
+    const res = await request(app)
+    .post("/api/1.0/users/signin")
+    .set('X-Forwarded-For', '127.0.0.1')
+    .send({
       email: "Steven@gmail.com",
       password: "123",
       provider: "native",
