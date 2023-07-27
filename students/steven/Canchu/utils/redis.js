@@ -20,6 +20,9 @@ module.exports = {
 
             console.log(`取得${ip}快取的結果是`,redis_result)
 
+            if(redis_result > 10){
+                console.log("WARNING: VIOLATE!",redis_result)
+            }
             if(redis_result){ 
                 redis.incr(`${ip}`, (err, newCount) => {
                     if (err) {
