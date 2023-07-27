@@ -37,7 +37,7 @@ describe("POST /api/1.0/users/signin", () => {
 describe("POST /api/1.0/users/signin", () => {
   it("Signin｜測試Provider未提供情況（400）", async () => {
 
-    const res = await request(app).set('X-Forwarded-For', '127.0.0.1').post("/api/1.0/users/signin").send({
+    const res = await request(app).post("/api/1.0/users/signin").send({
       email: "Steven@gmail.com",
       password: "123"
     });
@@ -49,7 +49,7 @@ describe("POST /api/1.0/users/signin", () => {
 describe("POST /api/1.0/users/signin", () => {
   it("Signin｜測試Provider提供錯誤情況（403）", async () => {
 
-    const res = await request(app).set('X-Forwarded-For', '127.0.0.1').post("/api/1.0/users/signin").send({
+    const res = await request(app).post("/api/1.0/users/signin").send({
       email: "Steven@gmail.com",
       password: "123",
       provider: "wrong",
@@ -62,7 +62,7 @@ describe("POST /api/1.0/users/signin", () => {
 describe("POST /api/1.0/users/signin", () => {
   it("Signin｜測試臉書登入未提供Token情況（400）", async () => {
 
-    const res = await request(app).set('X-Forwarded-For', '127.0.0.1').post("/api/1.0/users/signin").send({
+    const res = await request(app).post("/api/1.0/users/signin").send({
       provider: "facebook"
     });
     expect(res.statusCode).toBe(400);
@@ -73,7 +73,7 @@ describe("POST /api/1.0/users/signin", () => {
 describe("POST /api/1.0/users/signin", () => {
   it("Signin｜測試沒有密碼情況（400）", async () => {
 
-    const res = await request(app).set('X-Forwarded-For', '127.0.0.1').post("/api/1.0/users/signin").send({
+    const res = await request(app).post("/api/1.0/users/signin").send({
       email: "Steven@gmail.com",
       provider: "native"
     });
@@ -83,7 +83,7 @@ describe("POST /api/1.0/users/signin", () => {
 describe("POST /api/1.0/users/signin", () => {
   it("Signin｜測試沒有Email情況（400）", async () => {
 
-    const res = await request(app).set('X-Forwarded-For', '127.0.0.1').post("/api/1.0/users/signin").send({
+    const res = await request(app).post("/api/1.0/users/signin").send({
       password: "123",
       provider: "native"
     });
@@ -95,7 +95,7 @@ describe("POST /api/1.0/users/signin", () => {
 describe("POST /api/1.0/users/signin", () => {
   it("Signin｜測試密碼錯誤情況（403）", async () => {
 
-    const res = await request(app).set('X-Forwarded-For', '127.0.0.1').post("/api/1.0/users/signin").send({
+    const res = await request(app).post("/api/1.0/users/signin").send({
       email: "Steven@gmail.com",
       password: "dhcldskcdskc",
       provider: "native",
@@ -110,7 +110,7 @@ describe("POST /api/1.0/users/signin", () => {
 describe("POST /api/1.0/users/signup", () => {
   it("Signup｜測試成功情況（200）", async () => {
 
-    const res = await request(app).set('X-Forwarded-For', '127.0.0.1').post("/api/1.0/users/signup").send({
+    const res = await request(app).post("/api/1.0/users/signup").send({
       name: util.generateRandomString(8),
       password: "123",
       email: util.generateRandomString(5)+"@gmail.com",
@@ -123,7 +123,7 @@ describe("POST /api/1.0/users/signup", () => {
 describe("POST /api/1.0/users/signup", () => {
   it("Signup｜測試欄位缺失情況（400）", async () => {
 
-    const res = await request(app).set('X-Forwarded-For', '127.0.0.1').post("/api/1.0/users/signup").send({
+    const res = await request(app).post("/api/1.0/users/signup").send({
       name: util.generateRandomString(8),
       password: "123",
     });
@@ -135,7 +135,7 @@ describe("POST /api/1.0/users/signup", () => {
 describe("POST /api/1.0/users/signup", () => {
   it("Signup｜測試信箱格式出錯情況（400）", async () => {
 
-    const res = await request(app).set('X-Forwarded-For', '127.0.0.1').post("/api/1.0/users/signup").send({
+    const res = await request(app).post("/api/1.0/users/signup").send({
       name: util.generateRandomString(8),
       password: "123",
       email: util.generateRandomString(8)
@@ -148,7 +148,7 @@ describe("POST /api/1.0/users/signup", () => {
 describe("POST /api/1.0/users/signup", () => {
   it("Signup｜測試Email已被使用情況（403）", async () => {
 
-    const res = await request(app).set('X-Forwarded-For', '127.0.0.1').post("/api/1.0/users/signup").send({
+    const res = await request(app).post("/api/1.0/users/signup").send({
       name: util.generateRandomString(8),
       password: "123",
       email: "Steven@gmail.com",
