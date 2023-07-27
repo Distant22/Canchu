@@ -1,9 +1,17 @@
 const bcrypt = require('bcrypt');
 const util = require('../utils/util')
 const redis = require('../utils/redis')
-const { db } = require('../utils/util');
+const { db_test, db_users } = require('../utils/util');
+
+let isUnitTest = false;
+const db = isUnitTest ? db_test : db_users
 
 module.exports = {
+
+    setUnitTestFlag: (flag) => {
+        isUnitTest = flag;
+    },
+
     // 取得User ID, User name, User picture, Friendship 的主鍵id, Friendship 的status
     search: async(res,keyword) => {
         try {
@@ -33,7 +41,7 @@ module.exports = {
     },
     signin: async(res,email,password,provider) => {
         try {
-
+            console.log("確認Flag：",isUnitTest)
             const sql = "SELECT * FROM users WHERE email = ?"
             const [resultsCheck] = await db.query(sql, [email]) ;
             if(resultsCheck.length == 0){
