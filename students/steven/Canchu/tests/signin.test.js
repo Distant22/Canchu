@@ -14,6 +14,14 @@ afterAll((done) => {
   }
 });
 
+afterEach((done) => {
+    if (server) {
+      server.close(() => {
+        done();
+      });
+    }
+  });
+
 // Signin｜測試成功情況（200）
 describe("POST /api/1.0/users/signin", () => {
     it("Signin｜測試成功情況（200）", async () => {
