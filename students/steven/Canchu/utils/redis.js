@@ -18,8 +18,6 @@ module.exports = {
             var redis_result = JSON.parse(await redis.get(`${ip}`))
             var violate_result = JSON.parse(await redis.get(`${ip}_banned`))
 
-            console.log("Check violation：",violate_result)
-
             if(redis_result > 10 || violate_result){
 
                 redis.set(`${ip}_banned`, 0, 'EX', 10)
