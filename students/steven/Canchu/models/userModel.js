@@ -55,7 +55,7 @@ module.exports = {
                             tags: userInfo.tags,
                             friend_count: userInfo.friend_count
                         }
-                        console.log("登入成功。登入資訊為：",user)
+                        // console.log("登入成功。登入資訊為：",user)
                         return res.status(200).json({
                             data: {
                                 access_token: util.generateToken(user),
