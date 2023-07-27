@@ -1,7 +1,13 @@
 const app = require('../server');
 const request = require("supertest");
 const util = require('../utils/util')
+const userModel = require("../models/userModel");
+
 require("dotenv").config();
+
+beforeAll(() => {
+  userModel.setUnitTestFlag(true);
+});
 
 afterAll((done) => {
   if (app) {
