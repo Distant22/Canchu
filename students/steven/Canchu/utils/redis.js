@@ -12,10 +12,25 @@ module.exports = {
             console.log("The IP:",ip)
         }
 
-
         try {
-          
-          next();
+            const redis = new Redis();
+            var redis_result = JSON.parse(redis.get(`${ip}`))
+
+            console.log(`取得${ip}快取的結果是`,redis_result)
+
+            if(redis_result){ 
+                redis.incr(`${ip}`, (err, newCount) => {
+                    if (err) {
+                      console.error('Error incrementing counter:', err);
+                    } else {
+                      console.log(`New count:${newCount}`)
+                    }
+                });
+            } else {
+                redis.set(`${ip}`, 1, 'EX', 10)
+                console.error(`Set New ${ip} Redis to 1`);
+            }
+            next();
         } catch (err) {
 
         } 
@@ -30,10 +45,10 @@ module.exports = {
         } catch (err) { console.log("Error in redis! msg：", err ) }
     },
 
-    set_redis: (path,data) => {
+    set_redis: (path,data,expireTime) => {
         try {
             const redis = new Redis();
-            redis.set(path, data, 'EX', 3600)
+            redis.set(path, data, 'EX', expireTime)
             redis.get(path).then((result) => {
                 console.log("Redis 設置成功，path：",path,"result：",result); // Prints "value"
             });
