@@ -83,7 +83,6 @@ module.exports = {
             const userCount = resultsCheck[0].count
             if (userCount > 0) {
                 // A user with the same email already exists
-                console.error('Email Fail!',name,email,password)
                 return res.status(403).json({ error: 'Email already exists' });
             } else {
                 const hashPwd = bcrypt.hashSync(password, 10);
