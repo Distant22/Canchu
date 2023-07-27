@@ -8,10 +8,18 @@ const db = mysql.createPool({
     database: 'user'
 });
 
+const db_test = mysql.createPool({
+    host: process.env.DB_HOST || 'localhost',
+    user: process.env.DB_USERNAME,
+    password: process.env.DB_PASSWORD,
+    database: 'test'
+});
+
 
 module.exports = {
 
-    db: db,
+    db_users: db,
+    db_test: db_test,
     closeConnection: () => {
         db.end((err) => {
           if (err) {
