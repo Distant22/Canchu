@@ -22,7 +22,7 @@ module.exports = {
 
             if(redis_result > 10 || violate_result){
 
-                redis.set(`${ip}_banned`, '', 'EX', 10)
+                redis.set(`${ip}_banned`, 0, 'EX', 10)
                 return res.status(429).json({ error: 'You exceed your rate limit.' });
 
             } else if(redis_result){ 
