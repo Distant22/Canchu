@@ -34,7 +34,6 @@ module.exports = {
     },
     signin: async(res,email,password,provider) => {
         try {
-            console.log("確認Flag：",isUnitTest)
             const sql = "SELECT * FROM users WHERE email = ?"
             const [resultsCheck] = await db.query(sql, [email]) ;
             if(resultsCheck.length == 0){
