@@ -40,6 +40,9 @@ app.use('/api/1.0/posts',post_route);
 const group_route = require('./routes/groupRoutes');
 app.use('/api/1.0/groups',group_route);
 
+const chat_route = require('./routes/chatRoutes');
+app.use('/api/1.0/chat',chat_route);
+
 app.get('/',(req, res) => {res.send('Main Page listening! -Dt22')})
 
 module.exports = app;
