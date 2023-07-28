@@ -4,7 +4,7 @@ const groupController = require('../controllers/groupController');
 const util = require('../utils/util')
 
 router.get('/:group_id/member/pending', [util.authorize_bearer], groupController.getPending);
-router.get('/groups/:group_id/posts', [util.authorize_bearer], groupController.search)
+router.get('/:group_id/posts', [util.authorize_bearer], groupController.search)
 
 router.post('/:group_id/member/:user_id/agree', [util.authorize_bearer], groupController.agreeJoin );
 router.post('/:group_id/join', [util.authorize_bearer], groupController.joinGroup );
