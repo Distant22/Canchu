@@ -176,16 +176,16 @@ module.exports = {
             } else if(validate_result[0].creator_id !== id){ 
                 return res.status(400).json({ error: `You have no permission to post this.` });
             }
-            const postTime = new Date().toLocaleString('en-US', {
-                timeZone: 'Asia/Taipei', 
-                hour12: false,
+            const postTime = new Date().toISOString().slice(0, 19).replace('T', ' ');
+            const formatted_postTime = new Date(postTime).toLocaleString('en-US', {
                 year: 'numeric',
                 month: '2-digit',
                 day: '2-digit',
                 hour: '2-digit',
                 minute: '2-digit',
-                second: '2-digit'
-            }).replace(/\//g, '-').replace(',', '');
+                second: '2-digit',
+                timeZone: 8,
+            });
             const update_sql = `
             INSERT INTO groupPost (group_id, user_id, created_at, context, picture, name)
             WITH my_info AS (
@@ -194,7 +194,7 @@ module.exports = {
             SELECT ?, ?, ?, ?, picture, name
             FROM my_info;
             `
-            const [results] = await db.query(update_sql, [id,group_id,id,postTime,context])
+            const [results] = await db.query(update_sql, [id,group_id,id,formatted_postTime,context])
             const resultID = results.insertId;
             const response = {
                 data: {
