@@ -10,11 +10,12 @@ module.exports = {
         await groupModel.createGroup(res,id,name)
     },
     deleteGroup: async(req,res) => {
+        const user_id = req.user.id
         const id = req.params.id;
         if (!id) { 
             return res.status(400).json({ error: `There's no id.` });
         }
-        await groupModel.deleteGroup(res,id)
+        await groupModel.deleteGroup(res,user_id,id)
     },
     joinGroup: async(req,res) => {
         const group_id = req.params.group_id;
