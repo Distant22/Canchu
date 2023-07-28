@@ -12,6 +12,7 @@ module.exports = {
 
     // 2023-07-28 06:44:23
     time_converter: (time) => {
+        time = time.toString()
         const charArray = time.split('');
         console.log("Array:",charArray)
         const hour = charArray[11] + charArray[12]
