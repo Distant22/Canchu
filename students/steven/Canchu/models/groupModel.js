@@ -223,7 +223,7 @@ module.exports = {
             if(validate_result.length === 0){ 
                 return res.status(400).json({ error: `You have no permission to post this.` });
             }
-            
+
             const sql = `
             SELECT p.id, p.user_id, p.created_at, p.context, p.like_count, p.comment_count, u.picture, u.name, 
                 CASE 
@@ -267,7 +267,7 @@ module.exports = {
             };
             return res.status(200).json(response);
         } catch (error) {
-            return util.databaseError(error,'postGroup',res);
+            return util.databaseError(error,'search',res);
         }
     }
 }
