@@ -172,14 +172,14 @@ module.exports = {
             const [search_result] = await db.query(search_sql, [group_id])
             if(search_result.length === 0){ 
                 return res.status(400).json({ error: `There's no such group.` });
+            } else if (search_result[0].creator_id !== id) {
+                const validate_sql = `SELECT * FROM groupMember WHERE group_id = ? AND user_id = ? AND status = 'agreed'`
+                const [validate_result] = await db.query(validate_sql, [group_id,id])
+                if(validate_result.length === 0){ 
+                    return res.status(400).json({ error: `You have no permission to post this.` });
+                }
             }
             
-            const validate_sql = `SELECT * FROM groupMember WHERE group_id = ? AND user_id = ? AND status = 'agreed'`
-            const [validate_result] = await db.query(validate_sql, [group_id,id])
-            if(validate_result.length === 0){ 
-                return res.status(400).json({ error: `You have no permission to post this.` });
-            }
-
             const postTime = new Date().toISOString().slice(0, 19).replace('T', ' ');
             const update_sql = `
             INSERT INTO groupPost (group_id, user_id, created_at, context, picture, name)
@@ -212,16 +212,18 @@ module.exports = {
     search: async(res,id,group_id) => {
         try {
 
+            console.log("確認Search：Token ID為",id,"Group ID為",group_id);
+
             const search_sql = 'SELECT creator_id FROM group_data WHERE id = ?'
             const [search_result] = await db.query(search_sql, [group_id])
             if(search_result.length === 0){ 
                 return res.status(400).json({ error: `There's no such group.` });
-            } 
-
-            const validate_sql = `SELECT * FROM groupMember WHERE group_id = ? AND user_id = ? AND status = 'agreed'`
-            const [validate_result] = await db.query(validate_sql, [group_id,id])
-            if(validate_result.length === 0){ 
-                return res.status(400).json({ error: `You have no permission to post this.` });
+            } else if (search_result[0].creator_id !== id){
+                const validate_sql = `SELECT * FROM groupMember WHERE group_id = ? AND user_id = ? AND status = 'agreed'`
+                const [validate_result] = await db.query(validate_sql, [group_id,id])
+                if(validate_result.length === 0){ 
+                    return res.status(400).json({ error: `You have no permission to post this.` });
+                }
             }
 
             const sql = `
