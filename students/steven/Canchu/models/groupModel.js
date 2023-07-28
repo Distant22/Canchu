@@ -237,7 +237,7 @@ module.exports = {
             FROM groupPost AS p LEFT JOIN users AS u ON p.user_id = u.id 
             WHERE p.group_id = ? 
             `
-            const [results] = await db.quert(sql, [id,group_id])
+            const [results] = await db.query(sql, [id,group_id])
             const postList = results.map((result) => {
                 const { id, user_id, created_at, context, like_count, comment_count, picture, name, is_liked } = result;
                 // Format the date as "YYYY-MM-DD HH:mm:ss"
