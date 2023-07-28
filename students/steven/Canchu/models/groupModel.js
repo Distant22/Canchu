@@ -25,18 +25,18 @@ module.exports = {
         try {
             console.log("刪除社團：社團ID為",id)
 
-            const validate_sql = 'SELECT creator_id FROM group_data WHERE id = ?'
-            const [validate_result] = await db.query(validate_sql, [id])
-            if(validate_result[0].creator_id !== user_id){ 
-                return res.status(400).json({ error: `You have no permission to delete this.` });
-            }
-
             const search_sql = 'SELECT * FROM group_data WHERE id = ?'
             const [search_result] = await db.query(search_sql, [id])
             console.log("刪除驗證：",search_result)
             if(search_result.length === 0){ 
                 return res.status(400).json({ error: `There's no such group.` });
             } else {
+
+                const validate_sql = 'SELECT creator_id FROM group_data WHERE id = ?'
+                const [validate_result] = await db.query(validate_sql, [id])
+                if(validate_result[0].creator_id !== user_id){ 
+                    return res.status(400).json({ error: `You have no permission to delete this.` });
+                }
 
                 const sql = 'DELETE FROM group_data WHERE id = ?'
                 await db.query(sql, [id])
@@ -82,11 +82,20 @@ module.exports = {
     // id：Token持有者；group_id：他想看的社團ID
     getPending: async(res,id,group_id) => {
         try {
-            const validate_sql = 'SELECT creator_id FROM group_data WHERE id = ?'
-            const [validate_result] = await db.query(validate_sql, [group_id])
-            if(validate_result[0].creator_id !== id){ 
-                return res.status(400).json({ error: `You have no permission to see this.` });
+
+            const search_sql = 'SELECT * FROM group_data WHERE id = ?'
+            const [search_result] = await db.query(search_sql, [id])
+            console.log("取得Pending驗證：",search_result)
+            if(search_result.length === 0){ 
+                return res.status(400).json({ error: `There's no such group.` });
             } else {
+
+                const validate_sql = 'SELECT creator_id FROM group_data WHERE id = ?'
+                const [validate_result] = await db.query(validate_sql, [group_id])
+                if(validate_result[0].creator_id !== id){ 
+                    return res.status(400).json({ error: `You have no permission to see this.` });
+                }
+
                 const sql = `SELECT u.id, u.name, u.picture, g.status FROM users AS u LEFT JOIN groupMember AS g ON u.id = g.user_id WHERE g.status = 'pending' AND g.group_id = ?`
                 const [results_list] = await db.query(sql, [group_id])
                 const userList = results_list.map((result) => {
