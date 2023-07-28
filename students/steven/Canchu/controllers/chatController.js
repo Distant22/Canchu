@@ -4,7 +4,7 @@ module.exports = {
     sendMessage: async(req,res) => {
         const id = req.user.id
         const user_id = req.params.user_id
-        if(id === user_id) {
+        if(parseInt(id,10) === parseInt(user_id,10)) {
             return res.status(400).json({ error: `You can't message yourself.` });
         }
         const { message } = req.body;
