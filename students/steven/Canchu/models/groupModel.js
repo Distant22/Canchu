@@ -85,6 +85,9 @@ module.exports = {
                 return res.status(200).json(response);
             }
         } catch (error) {
+            if(error.code === 'ER_DUP_ENTRY') {
+                return res.status(400).json({ error: `Duplicate Request.` })
+            }
             return util.databaseError(error,'joinGroup',res);
         }
     },
