@@ -19,7 +19,7 @@ module.exports = {
     },
     joinGroup: async(req,res) => {
         const group_id = req.params.group_id;
-        const id = req.params.id;
+        const id = req.user.id
         if (!group_id) { 
             return res.status(400).json({ error: `There's no id.` });
         }
