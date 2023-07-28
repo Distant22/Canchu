@@ -37,6 +37,9 @@ app.use('/api/1.0/events',event_route);
 const post_route = require('./routes/postRoutes');
 app.use('/api/1.0/posts',post_route);
 
+const group_route = require('./routes/groupRoutes');
+app.use('/api/1.0/groups',group_route);
+
 app.get('/',(req, res) => {res.send('Main Page listening! -Dt22')})
 
 module.exports = app;
