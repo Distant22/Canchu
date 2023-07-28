@@ -167,15 +167,19 @@ module.exports = {
     },
     postGroup: async(res,id,group_id,context) => {
         try {
-            console.log("postGroup：社團ID為",group_id,"內文為",context,"Token ID為",id)
+
             const search_sql = 'SELECT creator_id FROM group_data WHERE id = ?'
-            const [validate_result] = await db.query(search_sql, [group_id])
-            console.log("agreeJoin - 有無社團驗證：",validate_result)
-            if(validate_result.length === 0){ 
+            const [search_result] = await db.query(search_sql, [group_id])
+            if(search_result.length === 0){ 
                 return res.status(400).json({ error: `There's no such group.` });
-            } else if(validate_result[0].creator_id !== id){ 
+            }
+            
+            const validate_sql = `SELECT * FROM groupMember WHERE group_id = ? AND user_id = ? AND status = 'agreed'`
+            const [validate_result] = await db.query(validate_sql, [group_id,id])
+            if(validate_result.length === 0){ 
                 return res.status(400).json({ error: `You have no permission to post this.` });
             }
+
             const postTime = new Date().toISOString().slice(0, 19).replace('T', ' ');
             const update_sql = `
             INSERT INTO groupPost (group_id, user_id, created_at, context, picture, name)
@@ -199,6 +203,67 @@ module.exports = {
                         id: resultID
                     }
                 },
+            };
+            return res.status(200).json(response);
+        } catch (error) {
+            return util.databaseError(error,'postGroup',res);
+        }
+    },
+    search: async(res,id,group_id) => {
+        try {
+
+            const search_sql = 'SELECT creator_id FROM group_data WHERE id = ?'
+            const [search_result] = await db.query(search_sql, [group_id])
+            if(search_result.length === 0){ 
+                return res.status(400).json({ error: `There's no such group.` });
+            } 
+
+            const validate_sql = `SELECT * FROM groupMember WHERE group_id = ? AND user_id = ? AND status = 'agreed'`
+            const [validate_result] = await db.query(validate_sql, [group_id,id])
+            if(validate_result.length === 0){ 
+                return res.status(400).json({ error: `You have no permission to post this.` });
+            }
+            
+            const sql = `
+            SELECT p.id, p.user_id, p.created_at, p.context, p.like_count, p.comment_count, u.picture, u.name, 
+                CASE 
+                    WHEN EXISTS (
+                        SELECT 1 FROM group_postlike AS pl WHERE pl.user_id = ? AND pl.post_id = p.id
+                    ) THEN 1
+                    ELSE 0
+                END AS is_liked 
+            FROM groupPost AS p LEFT JOIN users AS u ON p.user_id = u.id 
+            WHERE p.group_id = ? 
+            `
+            const [results] = await db.quert(sql, [id,group_id])
+            const postList = results.map((result) => {
+                const { id, user_id, created_at, context, like_count, comment_count, picture, name, is_liked } = result;
+                // Format the date as "YYYY-MM-DD HH:mm:ss"
+                const formatted_created_at = new Date(created_at).toLocaleString('en-US', {
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit',
+                timeZone: 'Asia/Taipei',
+                });
+                return {
+                    id: id,
+                    user_id: user_id,
+                    created_at: formatted_created_at,
+                    context: context,
+                    is_liked: is_liked === 1 ? true : false,
+                    like_count: like_count,
+                    comment_count: comment_count,
+                    picture: picture,
+                    name: name
+                };
+            })
+            const response = {
+                data: {
+                    posts: postList
+                }
             };
             return res.status(200).json(response);
         } catch (error) {

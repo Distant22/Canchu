@@ -33,4 +33,9 @@ module.exports = {
         const id = req.user.id
         await groupModel.agreeJoin(res,id,user_id,group_id)
     },
+    search: async(req,res) => {
+        const group_id = req.params.group_id;
+        const id = req.user.id
+        await groupModel.search(res,id,group_id)
+    },
 }
