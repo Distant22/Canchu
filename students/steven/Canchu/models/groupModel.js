@@ -93,7 +93,7 @@ module.exports = {
         try {
 
             const search_sql = 'SELECT * FROM group_data WHERE id = ?'
-            const [search_result] = await db.query(search_sql, [id])
+            const [search_result] = await db.query(search_sql, [group_id])
             console.log("取得Pending驗證：",search_result)
             if(search_result.length === 0){ 
                 return res.status(400).json({ error: `There's no such group.` });
