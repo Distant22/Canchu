@@ -177,15 +177,6 @@ module.exports = {
                 return res.status(400).json({ error: `You have no permission to post this.` });
             }
             const postTime = new Date().toISOString().slice(0, 19).replace('T', ' ');
-            const formatted_postTime = new Date(postTime).toLocaleString('en-US', {
-                year: 'numeric',
-                month: '2-digit',
-                day: '2-digit',
-                hour: '2-digit',
-                minute: '2-digit',
-                second: '2-digit',
-                timeZone: 'Asia/Taipei',
-            });
             const update_sql = `
             INSERT INTO groupPost (group_id, user_id, created_at, context, picture, name)
             WITH my_info AS (
