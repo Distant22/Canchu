@@ -16,7 +16,7 @@ module.exports = {
         console.log("Array:",charArray)
         const hour = charArray[11] + charArray[12]
         const newHour = (parseInt(hour, 10) + 8 >= 24) ? parseInt(hour, 10) + 8 - 24 : parseInt(hour, 10) + 8
-        const hourArray = newHour.split('');
+        const hourArray = (newHour.toString()).split('');
         charArray[11] = hourArray[0]
         charArray[12] = hourArray[1]
         return charArray.join('');
