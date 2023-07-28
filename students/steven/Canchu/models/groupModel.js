@@ -178,10 +178,10 @@ module.exports = {
             }
             const postTime = new Date().toISOString().slice(0, 19).replace('T', ' ');
             const update_sql = `
+            INSERT INTO groupPost (group_id, user_id, created_at, context, picture, name)
             WITH my_info AS (
                 SELECT picture, name FROM users WHERE id = ?
             )
-            INSERT INTO groupPost (group_id, user_id, created_at, context, picture, name)
             SELECT ?, ?, ?, ?, picture, name
             FROM my_info;
             `
