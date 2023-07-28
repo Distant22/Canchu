@@ -10,31 +10,16 @@ const db = mysql.createPool({
 
 module.exports = {
 
+    // 2023-07-28 06:44:23
     time_converter: (time) => {
-
-        const converted_time = time.toString();
-        const hourDifference = 8;
-
-        // Split the inputTimeString into date and time parts
-        const [datePart, timePart] = converted_time.split(" ");
-        const [hours, minutes, seconds] = timePart.split(":");
-
-        // Convert the time components to integers
-        const originalHour = parseInt(hours, 10);
-        const originalMinute = parseInt(minutes, 10);
-        const originalSecond = parseInt(seconds, 10);
-
-        // Calculate the new hour after adding the hour difference
-        const newHour = (originalHour + hourDifference) % 24;
-
-        // Convert the new hour, original minute, and original second back to strings
-        const newHourString = newHour.toString().padStart(2, "0");
-        const originalMinuteString = originalMinute.toString().padStart(2, "0");
-        const originalSecondString = originalSecond.toString().padStart(2, "0");
-
-        // Construct the new output time string
-        const outputTimeString = `${datePart} ${newHourString}:${originalMinuteString}:${originalSecondString}`;
-        return outputTimeString
+        const charArray = time.split('');
+        console.log("Array:",charArray)
+        const hour = charArray[11] + charArray[12]
+        const newHour = (parseInt(hour, 10) + 8 >= 24) ? parseInt(hour, 10) + 8 - 24 : parseInt(hour, 10) + 8
+        const hourArray = newHour.split('');
+        charArray[11] = hourArray[0]
+        charArray[12] = hourArray[1]
+        return charArray.join('');
     },
     db: db,
     closeConnection: () => {

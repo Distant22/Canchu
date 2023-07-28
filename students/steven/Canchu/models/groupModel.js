@@ -243,7 +243,7 @@ module.exports = {
                 return {
                     id: id,
                     user_id: user_id,
-                    created_at: util.time_converter(created_at),
+                    created_at: util.time_converter(created_at.toString()),
                     context: context,
                     is_liked: is_liked === 1 ? true : false,
                     like_count: like_count,
