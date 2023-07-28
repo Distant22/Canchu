@@ -20,5 +20,11 @@ module.exports = {
         const group_id = req.params.group_id;
         const id = req.user.id;
         await groupModel.getPending(res,id,group_id)
-    }
+    },
+    agreeJoin: async(req,res) => {
+        const group_id = req.params.group_id;
+        const user_id = req.params.user_id;
+        const id = req.user.id
+        await groupModel.joinGroup(res,id,user_id,group_id)
+    },
 }

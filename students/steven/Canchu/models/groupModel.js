@@ -131,5 +131,50 @@ module.exports = {
         } catch (error) {
             return util.databaseError(error,'joinGroup',res);
         }
+    },
+    // id：Token持有者，要答應讓這個人入社
+    // user_id：想要入社的人的ID
+    // 1.確認有無此社團 2.確認我是否有權限 3.確認有無此人 4.確認此人是否在社團 5.確認此人是否已入社
+    agreeJoin: async(res,id,user_id,group_id) => {
+        try {
+            // 1.確認有無此社團
+            const search_sql = 'SELECT * FROM group_data WHERE id = ?'
+            const [search_result] = await db.query(search_sql, [group_id])
+            console.log("agreeJoin - 有無社團驗證：",search_result)
+            if(search_result.length === 0){ 
+                return res.status(400).json({ error: `There's no such group.` });
+            }
+
+            // 2.確認我是否有權限
+            const validate_sql = 'SELECT creator_id FROM group_data WHERE id = ?'
+            const [validate_result] = await db.query(validate_sql, [group_id])
+            if(validate_result[0].creator_id !== id){ 
+                return res.status(400).json({ error: `You have no permission to agree this.` });
+            }
+
+            // 3.確認有無此人 4.確認此人是否在社團 5.確認此人是否已入社
+            const sql = 'SELECT status FROM groupMember WHERE group_id = ? AND user_id = ?'
+            const [result] = await db.query(sql, [group_id,user_id])
+            if(result.length === 0) {
+                return res.status(400).json({ error: `This user has not request to join the group.` });
+            } else if(result[0].status !== 'pending'){ 
+                return res.status(400).json({ error: `This user is already joined.` });
+            } else {
+                const update_sql = 'UPDATE groupMember SET status = ? ON group_id = ? AND user_id = ?'
+                await db.query(update_sql, ['agreed',group_id,user_id])
+
+                const response = {
+                    data: {
+                        user: {
+                            id: user_id
+                        }
+                    },
+                };
+                return res.status(200).json(response);
+            }
+
+        } catch (error) {
+            return util.databaseError(error,'agreeJoin',res);
+        }
     }
 }

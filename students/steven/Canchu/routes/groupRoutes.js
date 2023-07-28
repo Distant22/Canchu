@@ -9,6 +9,9 @@ router.post('/', [util.authorize_bearer,util.authorize_json], groupController.cr
 
 router.post('/:group_id/join', [util.authorize_bearer], groupController.joinGroup );
 
+router.post('/:group_id/member/:user_id/agree', [util.authorize_bearer], groupController.agreeJoin );
+
+
 router.delete('/:id', [util.authorize_bearer], groupController.deleteGroup );
 
 module.exports = router;
