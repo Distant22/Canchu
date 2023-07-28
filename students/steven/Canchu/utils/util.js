@@ -11,10 +11,12 @@ const db = mysql.createPool({
 module.exports = {
 
     time_converter: (time) => {
+
+        const converted_time = time.toString();
         const hourDifference = 8;
 
         // Split the inputTimeString into date and time parts
-        const [datePart, timePart] = time.split(" ");
+        const [datePart, timePart] = converted_time.split(" ");
         const [hours, minutes, seconds] = timePart.split(":");
 
         // Convert the time components to integers
