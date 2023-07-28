@@ -10,6 +10,30 @@ const db = mysql.createPool({
 
 module.exports = {
 
+    time_converter: (time) => {
+        const hourDifference = 8;
+
+        // Split the inputTimeString into date and time parts
+        const [datePart, timePart] = time.split(" ");
+        const [hours, minutes, seconds] = timePart.split(":");
+
+        // Convert the time components to integers
+        const originalHour = parseInt(hours, 10);
+        const originalMinute = parseInt(minutes, 10);
+        const originalSecond = parseInt(seconds, 10);
+
+        // Calculate the new hour after adding the hour difference
+        const newHour = (originalHour + hourDifference) % 24;
+
+        // Convert the new hour, original minute, and original second back to strings
+        const newHourString = newHour.toString().padStart(2, "0");
+        const originalMinuteString = originalMinute.toString().padStart(2, "0");
+        const originalSecondString = originalSecond.toString().padStart(2, "0");
+
+        // Construct the new output time string
+        const outputTimeString = `${datePart} ${newHourString}:${originalMinuteString}:${originalSecondString}`;
+        return outputTimeString
+    },
     db: db,
     closeConnection: () => {
         db.end((err) => {

@@ -222,7 +222,7 @@ module.exports = {
                 const validate_sql = `SELECT * FROM groupMember WHERE group_id = ? AND user_id = ? AND status = 'agreed'`
                 const [validate_result] = await db.query(validate_sql, [group_id,id])
                 if(validate_result.length === 0){ 
-                    return res.status(400).json({ error: `You have no permission to post this.` });
+                    return res.status(400).json({ error: `You have no permission to search this.` });
                 }
             }
 
@@ -240,20 +240,10 @@ module.exports = {
             const [results] = await db.query(sql, [id,group_id])
             const postList = results.map((result) => {
                 const { id, user_id, created_at, context, like_count, comment_count, picture, name, is_liked } = result;
-                // Format the date as "YYYY-MM-DD HH:mm:ss"
-                const formatted_created_at = new Date(created_at).toLocaleString('en-US', {
-                year: 'numeric',
-                month: '2-digit',
-                day: '2-digit',
-                hour: '2-digit',
-                minute: '2-digit',
-                second: '2-digit',
-                timeZone: 'Asia/Taipei',
-                });
                 return {
                     id: id,
                     user_id: user_id,
-                    created_at: formatted_created_at,
+                    created_at: util.time_converter(created_at),
                     context: context,
                     is_liked: is_liked === 1 ? true : false,
                     like_count: like_count,
