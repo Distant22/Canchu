@@ -176,7 +176,16 @@ module.exports = {
             } else if(validate_result[0].creator_id !== id){ 
                 return res.status(400).json({ error: `You have no permission to post this.` });
             }
-            const postTime = new Date().toISOString().slice(0, 19).toLocaleString('en-US', { timeZone: 8 });
+            const postTime = new Date().toLocaleString('en-US', {
+                timeZone: 'Asia/Taipei', // Replace 'YOUR_TIMEZONE' with your actual timezone, like 'America/New_York' or 'Asia/Tokyo'
+                hour12: false,
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit'
+            });
             const update_sql = `
             INSERT INTO groupPost (group_id, user_id, created_at, context, picture, name)
             WITH my_info AS (

@@ -5,7 +5,16 @@ module.exports = {
     // id：TokenID,送訊息者｜user_id：接收訊息者
     sendMessage: async(res,id,user_id,message) => {
         try {
-            const postTime = new Date().toISOString().slice(0, 19).toLocaleString('en-US', { timeZone: 8 });
+            const postTime = new Date().toLocaleString('en-US', {
+                timeZone: 'Asia/Taipei', // Replace 'YOUR_TIMEZONE' with your actual timezone, like 'America/New_York' or 'Asia/Tokyo'
+                hour12: false,
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit'
+            });
             const sql ='INSERT INTO message (context, send_id, receive_id, created_at) VALUES (?, ?, ?, ?)';
             const [postResults] = await db.query(sql, [message, id, user_id, postTime]);
             const insertId = postResults.insertId
@@ -48,7 +57,7 @@ module.exports = {
                     hour: '2-digit',
                     minute: '2-digit',
                     second: '2-digit',
-                    timeZone: 'UTC',
+                    timeZone: 8,
                 });
                 return {
                     id: id,
