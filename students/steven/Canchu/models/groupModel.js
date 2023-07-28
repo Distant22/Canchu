@@ -240,6 +240,7 @@ module.exports = {
                 END AS is_liked 
             FROM groupPost AS p LEFT JOIN users AS u ON p.user_id = u.id 
             WHERE p.group_id = ? 
+            ORDER BY created_at DESC
             `
             const [results] = await db.query(sql, [id,group_id])
             const postList = results.map((result) => {
