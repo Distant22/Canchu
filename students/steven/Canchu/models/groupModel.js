@@ -137,6 +137,7 @@ module.exports = {
     // 1.確認有無此社團 2.確認我是否有權限 3.確認有無此人 4.確認此人是否在社團 5.確認此人是否已入社
     agreeJoin: async(res,id,user_id,group_id) => {
         try {
+            console.log("agreeJoin：社團ID為",group_id,"使用者為",user_id,"Token ID為",id)
             // 1.確認有無此社團
             const search_sql = 'SELECT * FROM group_data WHERE id = ?'
             const [search_result] = await db.query(search_sql, [group_id])
