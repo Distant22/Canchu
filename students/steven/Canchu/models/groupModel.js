@@ -185,7 +185,7 @@ module.exports = {
             SELECT ?, ?, ?, ?, picture, name
             FROM my_info;
             `
-            const [results] = await db.query(update_sql, [id,group_id,id,formatted_postTime,context])
+            const [results] = await db.query(update_sql, [id,group_id,id,postTime,context])
             const resultID = results.insertId;
             const response = {
                 data: {
