@@ -161,7 +161,7 @@ module.exports = {
             } else if(result[0].status !== 'pending'){ 
                 return res.status(400).json({ error: `This user is already joined.` });
             } else {
-                const update_sql = 'UPDATE groupMember SET status = ? ON group_id = ? AND user_id = ?'
+                const update_sql = 'UPDATE groupMember SET status = ? WHERE group_id = ? AND user_id = ?'
                 await db.query(update_sql, ['agreed',group_id,user_id])
 
                 const response = {
