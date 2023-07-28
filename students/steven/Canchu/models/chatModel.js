@@ -33,10 +33,10 @@ module.exports = {
             FROM 
                 users AS u RIGHT JOIN message AS m ON u.id = m.receive_id
             WHERE 
-                m.send_id = ? AND m.receive_id = ?
+                (m.send_id = ? AND m.receive_id = ?) OR (m.send_id = ? AND m.receive_id = ?)
             ORDER BY created_at DESC
             `
-            var [temp] = await db.query(sql, [user_id,id])
+            var [temp] = await db.query(sql, [user_id,id,id,user_id])
             const results = temp[0] === undefined ? [] : temp.slice(decode_cursor, decode_cursor+10);
             const messageList = results.map((result) => {
                 const { id, context, created_at, user_id, name, picture } = result;
