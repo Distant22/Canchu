@@ -26,7 +26,7 @@ module.exports = {
             console.log("刪除社團：社團ID為",id)
 
             const validate_sql = 'SELECT creator_id FROM group_data WHERE id = ?'
-            const [validate_result] = await db.query(validate_sql, [group_id])
+            const [validate_result] = await db.query(validate_sql, [id])
             if(validate_result[0].creator_id !== user_id){ 
                 return res.status(400).json({ error: `You have no permission to delete this.` });
             }
