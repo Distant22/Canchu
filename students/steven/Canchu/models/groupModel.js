@@ -185,7 +185,7 @@ module.exports = {
                 hour: '2-digit',
                 minute: '2-digit',
                 second: '2-digit'
-            }).replace(',', '');
+            }).replace(/\//g, '-').replace(',', '');
             const update_sql = `
             INSERT INTO groupPost (group_id, user_id, created_at, context, picture, name)
             WITH my_info AS (
