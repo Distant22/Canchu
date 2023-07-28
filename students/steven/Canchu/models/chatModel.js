@@ -57,7 +57,7 @@ module.exports = {
                     hour: '2-digit',
                     minute: '2-digit',
                     second: '2-digit',
-                    timeZone: 8,
+                    timeZone: 'Asia/Taipei',
                 });
                 return {
                     id: id,
