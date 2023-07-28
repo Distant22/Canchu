@@ -16,6 +16,12 @@ module.exports = {
         const id = req.user.id
         await groupModel.joinGroup(res,id,group_id)
     },
+    postGroup: async(req,res) => {
+        const group_id = req.params.group_id;
+        const id = req.user.id
+        const { context } = req.body;
+        await groupModel.postGroup(res,id,group_id,context)
+    },
     getPending: async(req,res) => {
         const group_id = req.params.group_id;
         const id = req.user.id;
