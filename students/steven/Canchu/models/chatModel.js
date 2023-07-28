@@ -31,7 +31,7 @@ module.exports = {
             SELECT 
                 m.id, m.context, m.created_at, u.id AS user_id, u.name, u.picture
             FROM 
-                user AS u RIGHT JOIN message AS m ON u.id = m.receive_id
+                users AS u RIGHT JOIN message AS m ON u.id = m.receive_id
             WHERE 
                 m.send_id = ? AND m.receive_id = ?
             ORDER BY created_at DESC
