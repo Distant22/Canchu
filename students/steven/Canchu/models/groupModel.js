@@ -27,7 +27,7 @@ module.exports = {
             const validate_sql = 'SELECT * FROM group_data WHERE id = ?'
             const [validate_result] = await db.query(validate_sql, [id])
             console.log("刪除驗證：",validate_result)
-            if(!validate_result){ 
+            if(validate_result.length === 0){ 
                 return res.status(400).json({ error: `There's no such group.` });
             } else {
                 const sql = 'DELETE FROM group_data WHERE id = ?'
