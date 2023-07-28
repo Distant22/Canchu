@@ -34,7 +34,11 @@ module.exports = {
                 return res.status(400).json({ error: `You have no permission to delete this.` });
             } else {
 
-                const sql = 'DELETE FROM group_data WHERE id = ?'
+                var sql = 'DELETE FROM groupPost WHERE group_id = ?'
+                await db.query(sql, [id])
+                sql = 'DELETE FROM groupMember WHERE group_id = ?'
+                await db.query(sql, [id])
+                sql = 'DELETE FROM group_data WHERE id = ?'
                 await db.query(sql, [id])
                 // Construct the response object
                 const response = {
