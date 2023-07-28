@@ -30,7 +30,7 @@ module.exports = {
             if(!validate_result){ 
                 return res.status(400).json({ error: `There's no such group.` });
             } else {
-                const sql = 'DELETE FROM group WHERE id = ?'
+                const sql = 'DELETE FROM group_data WHERE id = ?'
                 await db.query(sql, [id])
                 // Construct the response object
                 const response = {
