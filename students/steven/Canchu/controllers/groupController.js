@@ -25,6 +25,6 @@ module.exports = {
         const group_id = req.params.group_id;
         const user_id = req.params.user_id;
         const id = req.user.id
-        await groupModel.joinGroup(res,id,user_id,group_id)
+        await groupModel.agreeJoin(res,id,user_id,group_id)
     },
 }
