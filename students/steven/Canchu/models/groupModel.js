@@ -57,12 +57,21 @@ module.exports = {
     // id：Token持有者；group_id：他想加的社團ID
     joinGroup: async(res,id,group_id) => {
         try {
-            console.log("加入社團：社團ID為",group_id,"使用者ID為",id)
-            const validate_sql = 'SELECT creator_id FROM group_data WHERE id = ?'
-            const [validate_result] = await db.query(validate_sql, [group_id])
-            if(validate_result[0].creator_id === id){ 
-                return res.status(400).json({ error: `You can't join your own group.` });
+
+            const search_sql = 'SELECT * FROM group_data WHERE id = ?'
+            const [search_result] = await db.query(search_sql, [group_id])
+            console.log("取得joinGroup驗證：",search_result)
+            if(search_result.length === 0){ 
+                return res.status(400).json({ error: `There's no such group.` });
             } else {
+
+                console.log("加入社團：社團ID為",group_id,"使用者ID為",id)
+                const validate_sql = 'SELECT creator_id FROM group_data WHERE id = ?'
+                const [validate_result] = await db.query(validate_sql, [group_id])
+                if(validate_result[0].creator_id === id){ 
+                    return res.status(400).json({ error: `You can't join your own group.` });
+                } 
+
                 const sql = 'INSERT INTO groupMember (group_id,user_id) VALUES (?,?)'
                 await db.query(sql, [group_id,id])
                 // Construct the response object
