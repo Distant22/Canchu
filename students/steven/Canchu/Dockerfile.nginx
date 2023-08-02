@@ -1,0 +1,11 @@
+# Use the official NGINX image as the base image
+FROM nginx:1.25.1-alpine
+
+# Copy your NGINX configuration to the container
+COPY nginx.conf /etc/nginx/nginx.conf
+
+# Expose the necessary ports
+EXPOSE 80
+
+# Start NGINX when the container starts
+CMD ["nginx", "-g", "daemon off;"]

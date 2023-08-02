@@ -25,6 +25,15 @@ services:
     networks:
       - canchu-network
 
+  nginx:
+    build:
+      context: .
+      dockerfile: Dockerfile.nginx
+    ports:
+      - "80:80"
+    networks:
+      - canchu-network
+
   redis:
     image: redis:6.0-alpine
     command: redis-server --requirepass ''    
@@ -43,3 +52,4 @@ services:
       - "3306:3306"
     networks:
       - canchu-network
+
