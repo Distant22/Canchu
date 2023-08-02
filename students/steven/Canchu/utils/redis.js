@@ -5,16 +5,19 @@ module.exports = {
     rateLimiter: async (req, res, next) => {
 
         var ip = req.headers['x-forwarded-for'];
-        if (!ip) {
-            console.log("The illegal IP:",ip)
-            return res.status(403).json({ error: 'Illegal access' });
-        } else {
-            console.log("The IP:",ip)
-        }
-
+        //if (!ip) {
+            //console.log("The illegal IP:",ip)
+            //return res.status(403).json({ error: 'Illegal access' });
+        //} else {
+            //console.log("The IP:",ip)
+        //}
+        console.log("Redis進入IP：",ip)
         try {
-
-            const redis = new Redis();
+            console.log("進入Redis")
+            const redis = new Redis({
+  		host: 'canchu_redis_1', // Redis container name
+  		port: 6379, // Redis port
+	    });
             var redis_result = JSON.parse(await redis.get(`${ip}`))
             var violate_result = JSON.parse(await redis.get(`${ip}_banned`))
 
@@ -50,7 +53,10 @@ module.exports = {
 
     get_redis: async (path) => {
         try {
-            const redis = new Redis();
+            const redis = new Redis({
+  	    	host: 'canchu_redis_1', // Redis container name
+  	    	port: 6379, // Redis port
+	    });
             const result = await redis.get(path)
             console.log("Redis 取得成功，path：",path,"result：",result)
             return result
@@ -59,7 +65,10 @@ module.exports = {
 
     set_redis: (path,data,expireTime) => {
         try {
-            const redis = new Redis();
+            const redis = new Redis({
+  		host: 'canchu_redis_1', // Redis container name
+  		port: 6379, // Redis port
+	    });
             redis.set(path, data, 'EX', expireTime)
             redis.get(path).then((result) => {
                 console.log("Redis 設置成功，path：",path,"result：",result); // Prints "value"
@@ -69,7 +78,10 @@ module.exports = {
 
     delete_redis: async (path) => {
         try {
-            const redis = new Redis();
+            const redis = new Redis({
+  		host: 'canchu_redis_1', // Redis container name
+  		port: 6379, // Redis port
+	    });
             await redis.del(path);
             console.log("Redis 刪除成功，path：", path);
             redis.disconnect();
