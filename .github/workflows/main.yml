@@ -1,0 +1,20 @@
+name: Canchu
+
+on:
+  push:
+    branches: [ "develop" ]
+  pull_request:
+    branches: [ "develop" ]
+
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Docker Compose Up
+        run: |
+          cd ~/assignment0706/Campus-Summer-Back-End/students/steven/Canchu
+          docker-compose up --build
