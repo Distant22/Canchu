@@ -16,5 +16,6 @@ jobs:
 
       - name: Docker Compose Up
         run: |
-          cd ~/assignment0706/Campus-Summer-Back-End/students/steven/Canchu
+          pwd
+          ls -la
           docker-compose up --build
