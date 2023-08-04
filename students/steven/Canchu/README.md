@@ -120,3 +120,9 @@
   <summary>Week 2 Part 2</summary>
 
 </details>
+
+<details>
+	<summary>
+	Week 2 Part 3
+	</summary>
+</details>
