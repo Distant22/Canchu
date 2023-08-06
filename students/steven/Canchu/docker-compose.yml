@@ -30,9 +30,9 @@ services:
     environment:
       REDIS_HOST: redis-container
       REDIS_PORT: 6379
-      DATABASE_HOST: ${{ secrets.CANCHU_SECRET }}
-      DATABASE_USER: ${{ secrets.CANCHU_SECRET }}
-      DATABASE_PASSWORD: ${{ secrets.CANCHU_SECRET }}
+      DATABASE_HOST: ${ DB_HOST }
+      DATABASE_USER: ${ DB_USERNAME }
+      DATABASE_PASSWORD: ${ DB_PASSWORD }
       DATABASE_NAME: user 
     ports:
       - "6380:6379"
@@ -48,10 +48,10 @@ services:
     networks:
       - canchu-network
     environment:
-      MYSQL_ROOT_PASSWORD: ${{ secrets.CANCHU_SECRET }}
+      MYSQL_ROOT_PASSWORD: ${ DB_PASSWORD }
       MYSQL_DATABASE: user
-      MYSQL_USER: ${{ secrets.CANCHU_SECRET }}
-      MYSQL_PASSWORD: ${{ secrets.CANCHU_SECRET }}
+      MYSQL_USER: ${ DB_USERNAME }
+      MYSQL_PASSWORD: ${ DB_PASSWORD }
     volumes:
       - type: bind
         source: ./mysql-init-scripts/init.sql
