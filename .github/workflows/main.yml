@@ -21,7 +21,7 @@ jobs:
       - name: Docker Compose Up
         run: |
           ls
-          cd mysql-init-scripts
+          cd ./students/steven/Canchu/mysql-init-scripts
           echo "${{ secrets.CANCHU_SECRET }}" > .env
           cd ..
           ls
