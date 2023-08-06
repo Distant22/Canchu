@@ -16,5 +16,4 @@ jobs:
         run: |
           ls
           cd ./students/steven/Canchu
-          echo "${{ secrets.CANCHU_SECRET  }}" > .env
           docker-compose up --build
