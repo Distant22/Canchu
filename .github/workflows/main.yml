@@ -17,9 +17,9 @@ jobs:
           ls
           cd ./students/steven/Canchu
           echo "${{ secrets.CANCHU_SECRET }}" > .env
-          cd ./students/steven/Canchu/mysql-init-scripts
+          cd mysql-init-scripts
           ls
           echo "${{ secrets.CANCHU_SECRET }}" > .env
-          cd ./students/steven/Canchu
+          cd ..
           ls
           docker-compose up --build
