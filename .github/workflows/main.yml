@@ -47,6 +47,7 @@ jobs:
       - name: Docker Compose Down
         run: |
           ls
+          cd ./students/steven/Canchu
           docker-compose down
           docker volume prune
           docker system prune -a
