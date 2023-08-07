@@ -38,7 +38,9 @@ jobs:
         run: |
           ls
           cd ./students/steven/Canchu
-          docker exec canchu_canchu_1 npm test --detectOpenHandles --forceExit
+          docker exec canchu_canchu_1 npm test
+          docker ps -a
+          docker logs canchu_mysql_1
 
       - name: Docker Compose Down
         run: |
