@@ -39,9 +39,9 @@ services:
     image: redis:6.0-alpine
     command: redis-server --requirepass ''    
     environment:
-      REDIS_HOST: redis-container
+      REDIS_HOST: canchu_redis_1
       REDIS_PORT: 6379
-      DATABASE_HOST: ${DB_HOST}
+      DATABASE_HOST: canchu_mysql_1
       DATABASE_USER: ${DB_USERNAME}
       DATABASE_PASSWORD: ${DB_PASSWORD}
       DATABASE_NAME: user 
@@ -61,6 +61,7 @@ services:
       MYSQL_DATABASE: user
       MYSQL_USER: ${DB_USERNAME}
       MYSQL_PASSWORD: ${DB_PASSWORD}
+      MYSQL_HOST: canchu_mysql_1
     volumes:
       - type: bind
         source: ./mysql-init-scripts/init_test.sql
