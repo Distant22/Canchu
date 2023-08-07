@@ -7,7 +7,7 @@ on:
     branches: [ "develop" ]
 
 jobs:
-  build:
+  canchu:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -43,11 +43,31 @@ jobs:
           cd ./students/steven/Canchu
           docker ps -a
           docker exec canchu_canchu_1 npm test
-          
-      - name: Docker Compose Down
-        run: |
-          ls
-          cd ./students/steven/Canchu
           docker-compose down
           docker volume prune
           docker system prune -a
+          
+  canchu_deploy:
+    needs: canchu
+    runs-on: ubuntu-latest
+    steps:
+    - name: Deploy to AWS EC2
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.EC2_HOST }}
+        username: ${{ secrets.EC2_USERNAME }}
+        key: ${{ secrets.EC2_KEY }}
+        port: ${{ secrets.EC2_PORT }}
+        script: |
+          cd Campus-Summer-Back-End
+          git switch develop
+          git branch
+          git pull
+          cd students/steven/Canchu
+          echo "${{ secrets.CANCHU_SECRET }}" > .env
+          cd mysql-init-scripts
+          echo "${{ secrets.CANCHU_SECRET }}" > .env
+          echo "${{ secrets.CANCHU_NGINX_CERTIFICATE }}" > nginx_docker/certificate.crt
+          echo "${{ secrets.CANCHU_NGINX_KEY }}" > nginx_docker/private.key
+          docker-compose up --build -d
+      
