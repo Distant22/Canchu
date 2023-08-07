@@ -18,6 +18,8 @@ services:
       DB_USER: ${DB_USERNAME}
       DB_PASSWORD: ${DB_PASSWORD}
       DB_HOST: canchu_mysql_1
+    volumes:
+      - ./static:/canchu/static
     networks:
       - canchu-network
 
