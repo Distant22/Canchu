@@ -46,14 +46,14 @@ services:
       DATABASE_PASSWORD: ${DB_PASSWORD}
       DATABASE_NAME: user 
     ports:
-      - "6379:6379"
+      - "6380:6379"
     networks:
       - canchu-network
 
   mysql:
     image: mysql:8.0.34
     ports:
-      - "3306:3306"
+      - "3307:3306"
     networks:
       - canchu-network
     environment:
