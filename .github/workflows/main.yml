@@ -59,11 +59,11 @@ jobs:
         key: ${{ secrets.EC2_KEY }}
         port: ${{ secrets.EC2_PORT }}
         script: |
+          cd assignment0706/Campus-Summer-Back-End/students/steven/Canchu
           ls
           git switch develop
           git branch
           git pull
-          cd students/steven/Canchu
           echo "${{ secrets.CANCHU_SECRET }}" > .env
           cd mysql-init-scripts
           echo "${{ secrets.CANCHU_SECRET }}" > .env
