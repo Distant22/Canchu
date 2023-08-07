@@ -59,7 +59,7 @@ jobs:
         key: ${{ secrets.EC2_KEY }}
         port: ${{ secrets.EC2_PORT }}
         script: |
-          cd Campus-Summer-Back-End
+          ls
           git switch develop
           git branch
           git pull
