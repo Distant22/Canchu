@@ -12,17 +12,29 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Put into secrets
+      - name: Setup .env variables
         run: |
           ls
           cd ./students/steven/Canchu
+          echo "${{ secrets.CANCHU_SECRET }}" > .env
+          cd mysql-init-scripts
           echo "${{ secrets.CANCHU_SECRET }}" > .env
 
       - name: Docker Compose Up
         run: |
           ls
-          cd ./students/steven/Canchu/mysql-init-scripts
-          echo "${{ secrets.CANCHU_SECRET }}" > .env
-          cd ..
-          ls
+          cd ./students/steven/Canchu
           docker-compose up --build
+
+      - name: Run test
+        run: |
+          ls
+          cd ./students/steven/Canchu
+          docker exec canchu_canchu_1 npm test
+
+      - name: Docker Compose Down
+        run: |
+          ls
+          docker-compose down
+          docker volume prune
+          docker system prune -a
