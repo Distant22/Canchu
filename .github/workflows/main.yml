@@ -12,13 +12,21 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Setup .env variables
+      - name: Setup sql .env variables
         run: |
           ls
           cd ./students/steven/Canchu
           echo "${{ secrets.CANCHU_SECRET }}" > .env
           cd mysql-init-scripts
           echo "${{ secrets.CANCHU_SECRET }}" > .env
+
+      - name: Setup nginx .env variables
+        run: |
+          ls
+          cd ./students/steven/Canchu
+          mkdir nginx_docker
+          echo "${{ secrets.CANCHU_NGINX_CERTIFICATE }}" > nginx_docker/certificate.crt
+          echo "${{ secrets.CANCHU_NGINX_KEY }}" > nginx_docker/private.key
 
       - name: Docker Compose Up
         run: |
