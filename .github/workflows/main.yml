@@ -42,9 +42,6 @@ jobs:
           ls
           cd ./students/steven/Canchu
           docker ps -a
-          docker logs canchu_mysql_1
-          docker logs canchu_nginx_1
-          docker logs canchu_canchu_1
           docker exec canchu_canchu_1 npm test
           
       - name: Docker Compose Down
