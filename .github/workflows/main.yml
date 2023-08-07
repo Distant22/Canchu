@@ -38,10 +38,10 @@ jobs:
         run: |
           ls
           cd ./students/steven/Canchu
-          docker exec canchu_canchu_1 npm test
           docker ps -a
           docker logs canchu_mysql_1
-
+          docker exec canchu_canchu_1 npm test
+          
       - name: Docker Compose Down
         run: |
           ls
