@@ -19,6 +19,7 @@
 -- Table structure for table `event`
 --
 
+CREATE DATABASE IF NOT EXISTS user;
 use user;
 
 

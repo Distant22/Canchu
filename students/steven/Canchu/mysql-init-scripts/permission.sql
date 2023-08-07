@@ -1,0 +1,2 @@
+GRANT ALL PRIVILEGES ON user.* TO 'dt22'@'%';
+GRANT ALL PRIVILEGES ON test.* TO 'dt22'@'%';

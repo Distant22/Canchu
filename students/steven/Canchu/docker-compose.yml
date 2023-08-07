@@ -8,7 +8,7 @@ services:
   canchu:
     build: .
     ports:
-      - "3000:3000"
+      - "3001:3000"
     depends_on:
       - redis
       - mysql
@@ -41,8 +41,6 @@ services:
 
   mysql:
     image: mysql:8.0.34
-    env_file:
-      - ./mysql-init-scripts/.env
     ports:
       - "3306:3306"
     networks:
@@ -54,8 +52,14 @@ services:
       MYSQL_PASSWORD: ${DB_PASSWORD}
     volumes:
       - type: bind
-        source: ./mysql-init-scripts/init.sql
-        target: /docker-entrypoint-initdb.d/init.sql
+        source: ./mysql-init-scripts/init_test.sql
+        target: /docker-entrypoint-initdb.d/init_test.sql
+      - type: bind
+        source: ./mysql-init-scripts/init_user.sql
+        target: /docker-entrypoint-initdb.d/init_user.sql
+      - type: bind
+        source: ./mysql-init-scripts/permission.sql
+        target: /docker-entrypoint-initdb.d/permission.sql
       - mysql:/var/lib/mysql
 
 volumes:
