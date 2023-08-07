@@ -53,6 +53,7 @@ services:
   mysql:
     image: mysql:8.0.34
     container_name: canchu_mysql_1
+    env_file: .env
     ports:
       - "3307:3306"
     networks:
