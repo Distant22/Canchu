@@ -38,7 +38,7 @@ jobs:
         run: |
           ls
           cd ./students/steven/Canchu
-          docker exec canchu_canchu_1 npm test
+          docker exec canchu_canchu_1 npm test --detectOpenHandles
 
       - name: Docker Compose Down
         run: |
