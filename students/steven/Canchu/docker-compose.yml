@@ -17,7 +17,7 @@ services:
     environment:
       DB_USER: ${DB_USERNAME}
       DB_PASSWORD: ${DB_PASSWORD}
-      DB_HOST: ${DB_HOST}
+      DB_HOST: canchu_mysql_1
     networks:
       - canchu-network
 
