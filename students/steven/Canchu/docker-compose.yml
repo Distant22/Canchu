@@ -52,18 +52,14 @@ services:
 
   mysql:
     image: mysql:8.0.34
-    env_file:
-      - .env
+    container_name: canchu_mysql_1
     ports:
       - "3307:3306"
     networks:
       - canchu-network
     environment:
-      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
-      MYSQL_DATABASE: user
-      MYSQL_USER: ${DB_USERNAME}
-      MYSQL_PASSWORD: ${DB_PASSWORD}
-      MYSQL_HOST: canchu_mysql_1
+      - MYSQL_ROOT_PASSWORD=${DB_PASSWORD}
+      - MYSQL_DATABASE=user
     volumes:
       - type: bind
         source: ./mysql-init-scripts/init_test.sql
