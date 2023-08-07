@@ -24,7 +24,7 @@ jobs:
         run: |
           ls
           cd ./students/steven/Canchu
-          docker-compose up --build
+          docker-compose up --build -d
 
       - name: Run test
         run: |
