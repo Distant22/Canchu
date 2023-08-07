@@ -52,6 +52,8 @@ services:
 
   mysql:
     image: mysql:8.0.34
+    env_file:
+      - .env
     ports:
       - "3307:3306"
     networks:
