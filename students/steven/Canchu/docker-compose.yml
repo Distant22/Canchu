@@ -60,7 +60,8 @@ services:
       - canchu-network
     environment:
       - MYSQL_ROOT_PASSWORD=${DB_ROOT_PASSWORD}
-      - MYSQL_DATABASE=user
+      - MYSQL_USER=${DB_USERNAME}
+      - MYSQL_PASSWORD=${DB_PASSWORD}
     volumes:
       - type: bind
         source: ./mysql-init-scripts/init_test.sql
