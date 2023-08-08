@@ -46,7 +46,7 @@ jobs:
           cd ./students/steven/Canchu
           docker ps -a
           docker exec canchu_canchu_1 npm test
-          docker-compose down
+          docker-compose down 
           docker volume prune
           docker system prune -a
           
