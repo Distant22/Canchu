@@ -1,0 +1,5 @@
+DROP USER IF EXISTS 'dt22'@'%';
+CREATE USER 'dt22'@'%' IDENTIFIED BY 'pwd';
+
+GRANT ALL PRIVILEGES ON user.* TO 'dt22'@'%';
+GRANT ALL PRIVILEGES ON test.* TO 'dt22'@'%';

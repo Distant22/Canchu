@@ -1,0 +1,72 @@
+name: Canchu
+
+on:
+  push:
+    branches: [ "develop" ]
+  pull_request:
+    branches: [ "develop" ]
+
+permissions:
+  contents: write
+  
+jobs:
+  canchu:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup sql .env variables
+        run: |
+          ls
+          cd ./students/steven/Canchu
+          echo "${{ secrets.CANCHU_SECRET }}" > .env
+          cd mysql-init-scripts
+          echo "${{ secrets.CANCHU_SECRET }}" > .env
+
+      - name: Setup nginx .env variables
+        run: |
+          ls
+          cd ./students/steven/Canchu
+          mkdir nginx_docker
+          echo "${{ secrets.CANCHU_NGINX_CERTIFICATE }}" > nginx_docker/certificate.crt
+          echo "${{ secrets.CANCHU_NGINX_KEY }}" > nginx_docker/private.key
+
+      - name: Docker Compose Up
+        run: |
+          ls
+          cd ./students/steven/Canchu
+          docker-compose up --build -d
+
+      - name: Wait for setup
+        run: sleep 15
+
+      - name: Run test
+        run: |
+          ls
+          cd ./students/steven/Canchu
+          docker ps -a
+          docker exec canchu_canchu_1 npm test
+          docker-compose down 
+          docker volume prune
+          docker system prune -a
+          
+  deploy:
+    runs-on: ubuntu-latest
+    needs: canchu
+
+    steps:
+     - name: Deploy to EC2
+       run: |
+        echo "${{ secrets.EC2_KEY  }}" > private_key && chmod 600 private_key
+        ssh -o StrictHostKeyChecking=no -i private_key ${{ secrets.EC2_USERNAME  }}@${{ secrets.EC2_HOST  }} '
+          cd /home/ubuntu/Campus-Summer-Back-End/students/steven/Canchu &&
+          git pull &&
+          echo "${{ secrets.CANCHU_SECRET  }}" > .env &&
+          echo "${{ secrets.CANCHU_NGINX_CERTIFICATE  }}" > nginx_docker/certificate.crt &&
+          echo "${{ secrets.CANCHU_NGINX_KEY  }}" > nginx_docker/private.key &&
+          sudo docker-compose down &&
+          sudo docker-compose --env-file .env up --build -d &&
+          sudo docker image prune -af &&
+          sudo docker volume prune
+        '
+      
