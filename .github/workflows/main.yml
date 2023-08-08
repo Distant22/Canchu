@@ -76,5 +76,5 @@ jobs:
           echo "${{ secrets.CANCHU_NGINX_KEY }}" > nginx_docker/private.key
           sudo apt-get update
           sudo apt-get install -y docker-compose
-          docker-compose up --build -d
-          docker ps -a
+          sudo docker-compose up --build -d
+          sudo docker ps -a
