@@ -54,12 +54,6 @@ jobs:
     needs: canchu
     runs-on: ubuntu-latest
     steps:
-
-    - name: Change permissions for .env file
-      run: |
-        ls
-        chmod +w ./Campus-Summer-Back-End/students/steven/Canchu/.env
-
     - name: Deploy to AWS EC2
       uses: appleboy/ssh-action@master
       with:
@@ -69,6 +63,7 @@ jobs:
         script: |
           cd assignment0706/Campus-Summer-Back-End/students/steven/Canchu
           ls
+          chmod +w .env
           git pull
           git branch
           echo "${{ secrets.CANCHU_SECRET }}" > .env
