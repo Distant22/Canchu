@@ -54,10 +54,6 @@ jobs:
     needs: canchu
     runs-on: ubuntu-latest
     steps:
-    - name: Install Docker Compose
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y docker-compose
     - name: Deploy to AWS EC2
       uses: appleboy/ssh-action@v0.1.4
       with:
@@ -78,5 +74,7 @@ jobs:
           fi
           echo "${{ secrets.CANCHU_NGINX_CERTIFICATE }}" > nginx_docker/certificate.crt
           echo "${{ secrets.CANCHU_NGINX_KEY }}" > nginx_docker/private.key
+          sudo apt-get update
+          sudo apt-get install -y docker-compose
           docker-compose up --build -d
           docker ps -a
