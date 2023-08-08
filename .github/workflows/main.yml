@@ -61,10 +61,9 @@ jobs:
         username: "${{ secrets.EC2_USERNAME }}"
         key: "${{ secrets.EC2_KEY }}"
         script: |
-          cd assignment0706/Campus-Summer-Back-End/students/steven/Canchu
           ls
+          cd Campus-Summer-Back-End/students/steven/Canchu
           git pull
-          
           echo "${{ secrets.CANCHU_SECRET }}" > .env
           cd mysql-init-scripts
           echo "${{ secrets.CANCHU_SECRET }}" > .env
