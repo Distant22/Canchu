@@ -54,6 +54,10 @@ jobs:
     needs: canchu
     runs-on: ubuntu-latest
     steps:
+    - name: Install Docker Compose
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y docker-compose
     - name: Deploy to AWS EC2
       uses: appleboy/ssh-action@v0.1.4
       with:
