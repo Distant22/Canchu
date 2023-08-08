@@ -63,6 +63,7 @@ jobs:
         script: |
           cd assignment0706/Campus-Summer-Back-End/students/steven/Canchu
           git pull
+          ls
           echo "${{ secrets.CANCHU_SECRET }}" > .env
           cd mysql-init-scripts
           echo "${{ secrets.CANCHU_SECRET }}" > .env
