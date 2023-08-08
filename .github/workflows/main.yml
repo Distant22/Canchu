@@ -56,7 +56,9 @@ jobs:
     steps:
 
     - name: Change permissions for .env file
-      run: chmod +w assignment0706/Campus-Summer-Back-End/students/steven/Canchu/.env
+      run: |
+        cd assignment0706/Campus-Summer-Back-End/students/steven/Canchu
+        chmod +w .env
 
     - name: Deploy to AWS EC2
       uses: appleboy/ssh-action@master
