@@ -73,3 +73,4 @@ jobs:
           echo "${{ secrets.CANCHU_NGINX_CERTIFICATE }}" > nginx_docker/certificate.crt
           echo "${{ secrets.CANCHU_NGINX_KEY }}" > nginx_docker/private.key
           docker-compose up --build -d
+          docker ps -a
