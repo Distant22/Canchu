@@ -54,6 +54,10 @@ jobs:
     needs: canchu
     runs-on: ubuntu-latest
     steps:
+
+    - name: Change permissions for .env file
+      run: chmod +w assignment0706/Campus-Summer-Back-End/students/steven/Canchu/.env
+
     - name: Deploy to AWS EC2
       uses: appleboy/ssh-action@master
       with:
@@ -71,6 +75,7 @@ jobs:
           cd ..
           if [ ! -d "nginx_docker" ]; then
             mkdir nginx_docker
+          fi
           echo "${{ secrets.CANCHU_NGINX_CERTIFICATE }}" > nginx_docker/certificate.crt
           echo "${{ secrets.CANCHU_NGINX_KEY }}" > nginx_docker/private.key
           docker-compose up --build -d
