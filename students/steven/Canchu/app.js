@@ -19,7 +19,7 @@ app.use(bodyParser.json());
 
 // Use static
 app.use('/static', express.static(path.join(__dirname, 'static')));
-app.get('/.well-known/pki-validation/pki-validation/78A58ABC0325C433B8226825EECA3AB3.txt', (req, res) => {
+app.get('/.well-known/pki-validation/78A58ABC0325C433B8226825EECA3AB3.txt', (req, res) => {
   const filePath = path.join(__dirname, 'public', 'pki-validation/78A58ABC0325C433B8226825EECA3AB3.txt');
   res.sendFile(filePath);
 });
