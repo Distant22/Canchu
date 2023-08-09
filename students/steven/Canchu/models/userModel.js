@@ -239,12 +239,12 @@ module.exports = {
 
                 const sql = 'UPDATE users SET picture = ? WHERE id = ?'
                 await db.query(sql, [
-                    `https://${process.env.DB_HOST}/static/${picture}`
+                    `https://${process.env.CANCHU_IP}/static/${picture}`
                 , id])
 
                 const sql_postUpdate = 'UPDATE post SET picture = ? WHERE user_id = ?'
                 await db.query(sql_postUpdate,[
-                    `https://${process.env.DB_HOST}/static/${picture}`
+                    `https://${process.env.CANCHU_IP}/static/${picture}`
                 , id])
 
                 // 去Redis刪資料 

@@ -32,7 +32,7 @@ services:
       - "443:443"
     volumes:
       - ./nginx.conf:/etc/nginx/conf.d/default.conf
-      - ./nginx_docker/certificate.crt:/etc/ssl/certificate.crt
+      - ./nginx_docker/bundle_chained.crt:/etc/ssl/bundle_chained.crt
       - ./nginx_docker/private.key:/etc/ssl/private.key
     networks:
       - canchu-network
@@ -55,7 +55,8 @@ services:
   mysql:
     image: mysql:8.0.34
     container_name: canchu_mysql_1
-    env_file: .env
+    env_file:
+      - .env
     ports:
       - "3307:3306"
     networks:
