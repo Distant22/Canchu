@@ -21,12 +21,13 @@ module.exports = {
             var redis_result = JSON.parse(await redis.get(`${ip}`))
             var violate_result = JSON.parse(await redis.get(`${ip}_banned`))
 
-            if(redis_result > 20 || violate_result){
+            // if(redis_result > 20 || violate_result){
 
-                redis.set(`${ip}_banned`, 0, 'EX', 10)
-                return res.status(429).json({ error: 'You exceed your rate limit.' });
+              //  redis.set(`${ip}_banned`, 0, 'EX', 10)
+              //  return res.status(429).json({ error: 'You exceed your rate limit.' });
 
-            } else if(redis_result){ 
+            //} else 
+	    if(redis_result){ 
 
                 redis.incr(`${ip}`, (err, newCount) => {
                     if (err) {
