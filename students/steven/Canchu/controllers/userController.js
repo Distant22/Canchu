@@ -75,5 +75,9 @@ module.exports = {
     search: async(req,res) => {
         const keyword = req.query.keyword;
         await userModel.search(res,keyword)
+    },
+
+    k6: async(req,res) => {
+        await userModel.k6(res) 
     }
 }

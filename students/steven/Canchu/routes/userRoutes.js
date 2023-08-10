@@ -23,6 +23,7 @@ var upload = multer({storage: storage})
 
 router.post('/signin', [util.authorize_json], userController.signin);
 router.post('/signup', [util.authorize_json], userController.signup);
+router.post('/k6', [util.authorize_json], userController.k6)
 
 router.get('/signup', (req, res) => {res.send('This is the signup page for Week1 Assignment. -Dt22')})
 router.get('/signin', (req, res) => {res.send('This is the signin page for Week1 Assignment. -Dt22')})

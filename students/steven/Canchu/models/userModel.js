@@ -228,6 +228,33 @@ module.exports = {
         }
     },
 
+    k6: async (res) => {
+        try{
+            for (var i = 1 ; i <= 5000 ; i++){
+                const sql ='INSERT INTO post (user_id, created_at, context, picture, name) VALUES (?, ?, ?, ?, ?)';
+                const postTime = new Date().toISOString().slice(0, 19).replace('T', ' ');
+                const [postResults] = await db.query(sql, [
+                    2, 
+                    postTime, 
+                    `SPAMMING for ${i}th time!`, 
+                    "https://13.238.130.147/static/picture-1691654949170", 
+                    "Steven"
+                ]);
+            }
+            
+            const response = {
+                data: {
+                    post: {
+                        result: "SPAM FINISHED",
+                    },
+                },
+            };
+            return res.status(200).json(response);
+        } catch (err) {
+            return util.databaseError(err,'k6',res);
+        }
+    },
+
     updatePicture: async (res, picture, id) => {
         try {
             const sql_validate = 'SELECT COUNT(*) as count FROM users WHERE id = ?'
