@@ -67,14 +67,8 @@ services:
       - MYSQL_PASSWORD=${DB_PASSWORD}
     volumes:
       - type: bind
-        source: ./mysql-init-scripts/init_test.sql
-        target: /docker-entrypoint-initdb.d/init_test.sql
-      - type: bind
-        source: ./mysql-init-scripts/init_user.sql
-        target: /docker-entrypoint-initdb.d/init_user.sql
-      - type: bind
-        source: ./mysql-init-scripts/permission.sql
-        target: /docker-entrypoint-initdb.d/permission.sql
+        source: ./mysql-init-scripts/init_rds.sql
+        target: /docker-entrypoint-initdb.d/init_rds.sql
       - mysql:/var/lib/mysql
 
 volumes:

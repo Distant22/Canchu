@@ -1,12 +1,19 @@
 const jwt = require('jsonwebtoken');
 const mysql = require('mysql2/promise');
 
+//const db = mysql.createPool({
+//    host: process.env.DB_HOST || 'localhost',
+//    user: process.env.DB_USERNAME,
+//    password: process.env.DB_PASSWORD,
+//    database: process.env.NODE_ENV === "test" ? 'test' : 'user'
+//});
+
 const db = mysql.createPool({
-    host: process.env.DB_HOST || 'localhost',
-    user: process.env.DB_USERNAME,
-    password: process.env.DB_PASSWORD,
-    database: process.env.NODE_ENV === "test" ? 'test' : 'user'
-});
+    host: "database-1.c7sxgxjjczof.ap-southeast-2.rds.amazonaws.com",
+    user: "Dt22",
+    password: "22pilots71416",
+    database: "user"
+})
 
 module.exports = {
 

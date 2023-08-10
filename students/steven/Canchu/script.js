@@ -27,7 +27,7 @@ export default function () {
   };
 
   const res = http.get('https://13.238.130.147/api/1.0/posts/search', params);
-  console.log('Response:', res.status);
+  console.log('Response:', res, res.status);
   check(res, { 'status was 200': (r) => r.status == 200 });
   sleep(1);
 }
