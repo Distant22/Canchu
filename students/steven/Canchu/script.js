@@ -18,8 +18,7 @@ export const options = {
 
 export default function () {
 
-  const accessToken = `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwicHJvdmlkZXIiOiJuYXRpdmUiLCJuYW1lIjoiaGV5IiwiZW1haWwiOiJEYXZpZEBnbWFpbC5jb20iLCJwaWN0dXJlIjoiIiwiaW50cm9kdWN0aW9uIjoiIiwidGFncyI6IiIsImZyaWVuZF9jb3VudCI6MCwiaWF0IjoxNjkxNjU1MTcyLCJleHAiOjE2OTE2NTg3NzJ9._wNg5iVzxyWQCPmHle_BMj79uydvUnbpnuDWuLvzrfM`
-
+  const accessToken = __ENV.TOKEN
   const params = {
     headers: {
       'Authorization': `Bearer ${accessToken}`,
