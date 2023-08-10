@@ -13,7 +13,7 @@ services:
       - "3000:3000"
     depends_on:
       - redis
-      - mysql
+#      - mysql
     environment:
       DB_USER: ${DB_USERNAME}
       DB_PASSWORD: ${DB_PASSWORD}

@@ -18,7 +18,7 @@ export const options = {
 
 export default function () {
 
-  const accessToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NDA4LCJwcm92aWRlciI6Im5hdGl2ZSIsIm5hbWUiOiJEYXZpZCIsImVtYWlsIjoiRGF2aWRAZ21haWwuY29tIiwicGljdHVyZSI6Imh0dHBzOi8vMTMuNTQuMjEwLjE4OS9zdGF0aWMvcGljdHVyZS0xNjg5ODMwMDYzMTM4IiwiaW50cm9kdWN0aW9uIjoi6JeN6Imy5bCP6bOlIiwidGFncyI6IiIsImZyaWVuZF9jb3VudCI6MiwiaWF0IjoxNjkxNTY3NjcxLCJleHAiOjE2OTE1NzEyNzF9.yXzeTvCRTZYU3FeFKrcEmMOiLD6yVa0X00GtcDtj-uU"
+  const accessToken = `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwicHJvdmlkZXIiOiJuYXRpdmUiLCJuYW1lIjoiaGV5IiwiZW1haWwiOiJEYXZpZEBnbWFpbC5jb20iLCJwaWN0dXJlIjoiIiwiaW50cm9kdWN0aW9uIjoiIiwidGFncyI6IiIsImZyaWVuZF9jb3VudCI6MCwiaWF0IjoxNjkxNjU1MTcyLCJleHAiOjE2OTE2NTg3NzJ9._wNg5iVzxyWQCPmHle_BMj79uydvUnbpnuDWuLvzrfM`
 
   const params = {
     headers: {
@@ -27,7 +27,7 @@ export default function () {
   };
 
   const res = http.get('https://13.238.130.147/api/1.0/posts/search', params);
-  console.log('Response:', res, res.status);
+  console.log('Response:', res.status);
   check(res, { 'status was 200': (r) => r.status == 200 });
   sleep(1);
 }
