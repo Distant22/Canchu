@@ -230,7 +230,7 @@ module.exports = {
 
     k6: async (res) => {
         try{
-            for (var i = 1 ; i <= 5000 ; i++){
+            for (var i = 5001 ; i <= 6000 ; i++){
                 const sql ='INSERT INTO post (user_id, created_at, context, picture, name) VALUES (?, ?, ?, ?, ?)';
                 const postTime = new Date().toISOString().slice(0, 19).replace('T', ' ');
                 const [postResults] = await db.query(sql, [
