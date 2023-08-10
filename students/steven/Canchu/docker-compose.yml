@@ -52,24 +52,24 @@ services:
     networks:
       - canchu-network
 
-  mysql:
-    image: mysql:8.0.34
-    container_name: canchu_mysql_1
-    env_file:
-      - .env
-    ports:
-      - "3307:3306"
-    networks:
-      - canchu-network
-    environment:
-      - MYSQL_ROOT_PASSWORD=${DB_ROOT_PASSWORD}
-      - MYSQL_USER=${DB_USERNAME}
-      - MYSQL_PASSWORD=${DB_PASSWORD}
-    volumes:
-      - type: bind
-        source: ./mysql-init-scripts/init_rds.sql
-        target: /docker-entrypoint-initdb.d/init_rds.sql
-      - mysql:/var/lib/mysql
+  # mysql:
+  #   image: mysql:8.0.34
+  #   container_name: canchu_mysql_1
+  #   env_file:
+  #     - .env
+  #   ports:
+  #     - "3307:3306"
+  #   networks:
+  #     - canchu-network
+  #   environment:
+  #     - MYSQL_ROOT_PASSWORD=${DB_ROOT_PASSWORD}
+  #     - MYSQL_USER=${DB_USERNAME}
+  #     - MYSQL_PASSWORD=${DB_PASSWORD}
+  #   volumes:
+  #     - type: bind
+  #       source: ./mysql-init-scripts/init_rds.sql
+  #       target: /docker-entrypoint-initdb.d/init_rds.sql
+  #     - mysql:/var/lib/mysql
 
-volumes:
-  mysql:
+# volumes:
+#   mysql:
